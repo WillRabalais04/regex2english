@@ -1,58 +1,103 @@
 grammar regex2english;
 
 // PARSER:
- 
+
 //start : expr | test | <EOF> ;
  
-expr : '-' expr     # UMINUS
-   | expr addop expr # ADDOPGRP
-   | expr mulop expr # MULOPGRP
-   | '(' expr ')'   # PARENGRP
-   | NUMBER    # DOUBLE
-   | predefinedCharacterClass # PCC
-   ;
+expr : stringOfCharacters;
  
-test : HEXA_FOUR;
+test : range;
 
 start : test | <EOF> ;
-   
 
- 
-addop : '+' | '-' ;
- 
-mulop : '*' | '/' | '%' ;
 
-predefinedCharacterClass : '.' ;
+quantifier : PIPE
+| CAPTURE_GROUP 
+| ASTERISK 
+| QMARK
+| PLUS
+| MIN_QUANTIFIER
+| RANGE_QUANTIFIER 
+;
+
+/* expressions:
+characters
+quantifiers
+*/
+
+
+characterSequence: character 
+| predefinedCharacterClass ;
+
+range : LETTER_RANGE? LETTER_RANGE | NUMBER_RANGE;
+
+character: NUMBER
+| LETTER
+| BACKSLASH
+| OCTAL_1
+| OCTAL_2
+| OCTAL_3
+| HEXA_2
+| HEXA_4
+| CODE_POINT
+| CARRIAGE_RETURN
+| TAB
+| FORM_FEED
+| ALERT
+| ESC
+;
+
+characterClass: LBRACKET expr RBRACKET 
+| LBRACKET CARET expr RBRACKET
+| LBRACKET range
+;
+
+stringOfCharacters : character | character character;
+
+predefinedCharacterClass : WILDCARD
+| DIGIT
+| NON_DIGIT
+| HORIZONTAL_WS
+| NON_HORIZONTAL_WS
+| WS
+| NON_WS
+| VERTICAL_WS
+| WORD
+| NON_WORD
+;
 
 // LEXER:
+LBRACKET : '[';
+RBRACKET : ']';
 
 // Logical Operators
 PIPE : '|' ;
-CAPTURE_GROUP : '('~[)]* ')';
+CAPTURE_GROUP : '('~[)]*')';
 
 // Quantifiers
 ASTERISK : '*' ;
 QMARK : '?';
 PLUS : '+';
-
 MIN_QUANTIFIER : '{'[0-9]?'}' ;
-
-//make sure it has option for no upperbound
 RANGE_QUANTIFIER :'{'[0-9]? ','[0-9]?'}' ;
 
 // Characters
 BACKSLASH : '\\' ;
-OCTAL_ONE : '\\0'[0-7];
-OCTAL_TWO : '\\0'[0-7][0-7];
-OCTAL_THREE : '\\0'[0-3][0-7][0-7];
-HEXA_TWO : '\\x'[a-fA-F0-9];
-HEXA_FOUR : '\\x'[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9];
+OCTAL_1 : '\\0'[0-7];
+OCTAL_2 : '\\0'[0-7][0-7];
+OCTAL_3 : '\\0'[0-3][0-7][0-7];
+HEXA_2 : '\\x'[a-fA-F0-9];
+HEXA_4 : '\\x'[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9];
 CODE_POINT : 'U\\+'[1]?[a-fA-F0-9]{4,5};
 CARRIAGE_RETURN : '\\r' ;
 TAB : '\\t' ;
 FORM_FEED : '\\f' ;
 ALERT : '\\a' ;
 ESC : '\\e' ;
+
+//ranges:
+LETTER_RANGE : [a-zA-Z]'-'[a-zA-Z];
+NUMBER_RANGE : [0-9]'-'[0-9];
 
 // Predefined Character Classes 
 WILDCARD : '.';
@@ -71,6 +116,7 @@ NON_WORD : '\\W';
 CARET : '^';
 DOLLAR_SIGN : '$';
 WORD_BOUNDARY : '\\b';
+NON_WORD_BOUNDARY : '\\B';
 INPUT_START : '\\A';
 END_OF_MATCH : '\\G';
 INPUT_END : '\\z';
@@ -80,7 +126,7 @@ INPUT_END_INC_NEWLINE : '\\Z';
 LINEBREAK_MATCHER : '\\R' ;
 
 NUMBER : ('0' .. '9') + ('.' ('0' .. '9') +)? ;
-LETTERS : [a-z];
+LETTER : [a-z];
 
 // POSIX character classes (US-ASCII only)
 LOWERCASE_PO6 : '\\p{Lower}'; //[a-z]
@@ -98,8 +144,8 @@ HEXADECIMAL_PO6 : '\\p{XDigit}'; // [0-9a-fA-F]
 WS_PO6 : '\\p{Space}'; // whitespace character: [ \t\n\x0B\f\r]
 
 // java.lang.Character classes (simple java character type)
-CHAR_CLASS_LC : '\\p{javaLowerCase}';	//Equivalent to java.lang.Character.isLowerCase()
-CHAR_CLASS_UC :'\\p{javaUpperCase}';	//Equivalent to java.lang.Character.isUpperCase()
+CHAR_CLASS_LC : '\\p{javaLowerCase}'; // Equivalent to java.lang.Character.isLowerCase()
+CHAR_CLASS_UC :'\\p{javaUpperCase}';	// Equivalent to java.lang.Character.isUpperCase()
 CHAR_CLASS_WS : '\\p{javaWhitespace}'; //Equivalent to java.lang.Character.isWhitespace()
 CHAR_CLASS_MIRRORED : '\\p{javaMirrored}'; //Equivalent to java.lang.Character.isMirrored()
 
@@ -112,4 +158,24 @@ UNICODE_CLASS_CURR : '\\p{Sc}'; //A currency symbol
 UNICODE_CLASS_NOT_GREEK :'\\P{InGreek}';	//Any character except one in the Greek block (negation)
 UNICODE_CLASS_NOT_UC : '[\\p{L}&&[^\\p{Lu}]]'; //Any letter except an uppercase letter (subtraction)
 
-// NON_WORD_BOUNDARY : '\\B' ; 
+
+/*
+Special constructs (named-capturing and non-capturing)
+(?<name>X)	X, as a named-capturing group
+(?:X)	X, as a non-capturing group
+(?idmsuxU-idmsuxU) 	Nothing, but turns match flags i d m s u x U on - off
+(?idmsux-idmsux:X)  	X, as a non-capturing group with the given flags i d m s u x on - off
+(?=X)	X, via zero-width positive lookahead
+(?!X)	X, via zero-width negative lookahead
+(?<=X)	X, via zero-width positive lookbehind
+(?<!X)	X, via zero-width negative lookbehind
+(?>X)	X, as an independent, non-capturing group
+
+
+
+Back references
+\n	Whatever the nth capturing group matched
+\k<name>	Whatever the named-capturing group "name" matched
+
+
+ */
