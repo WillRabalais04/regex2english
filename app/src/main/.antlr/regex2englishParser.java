@@ -19,11 +19,17 @@ public class regex2englishParser extends Parser {
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, PIPE=6, CAPTURE_GROUP=7, ASTERISK=8, 
 		QMARK=9, PLUS=10, MIN_QUANTIFIER=11, RANGE_QUANTIFIER=12, BACKSLASH=13, 
 		OCTAL_ONE=14, OCTAL_TWO=15, OCTAL_THREE=16, HEXA_TWO=17, HEXA_FOUR=18, 
-		CARRIAGE_RETURN=19, TAB=20, FORM_FEED=21, ALERT=22, ESC=23, WILDCARD=24, 
-		DIGIT=25, NON_DIGIT=26, HORIZONTAL_WS=27, NON_HORIZONTAL_WS=28, WS=29, 
-		NON_WS=30, VERTICAL_WS=31, NON_VERTICAL_WS=32, WORD=33, NON_WORD=34, CARET=35, 
-		DOLLAR_SIGN=36, WORD_BOUNDARY=37, INPUT_START=38, END_OF_MATCH=39, INPUT_END=40, 
-		INPUT_END_INC_NEWLINE=41, LINEBREAK_MATCHER=42, NUMBER=43, LETTERS=44;
+		CODE_POINT=19, CARRIAGE_RETURN=20, TAB=21, FORM_FEED=22, ALERT=23, ESC=24, 
+		WILDCARD=25, DIGIT=26, NON_DIGIT=27, HORIZONTAL_WS=28, NON_HORIZONTAL_WS=29, 
+		WS=30, NON_WS=31, VERTICAL_WS=32, NON_VERTICAL_WS=33, WORD=34, NON_WORD=35, 
+		CARET=36, DOLLAR_SIGN=37, WORD_BOUNDARY=38, INPUT_START=39, END_OF_MATCH=40, 
+		INPUT_END=41, INPUT_END_INC_NEWLINE=42, LINEBREAK_MATCHER=43, NUMBER=44, 
+		LETTERS=45, LOWERCASE_PO6=46, UPPERCASE_PO6=47, ASCII_PO6=48, ALPHA_PO6=49, 
+		NUM_PO6=50, ALNUM_PO6=51, PUNCT_PO6=52, GLYPH_PO6=53, PRINTABLE_PO6=54, 
+		BLANK_PO6=55, CTRL_PO6=56, HEXADECIMAL_PO6=57, WS_PO6=58, CHAR_CLASS_LC=59, 
+		CHAR_CLASS_UC=60, CHAR_CLASS_WS=61, CHAR_CLASS_MIRRORED=62, UNICODE_CLASS_LATIN=63, 
+		UNICODE_CLASS_GREEK=64, UNICODE_CLASS_UC=65, UNICODE_CLASS_ALPHA=66, UNICODE_CLASS_CURR=67, 
+		UNICODE_CLASS_NOT_GREEK=68, UNICODE_CLASS_NOT_UC=69;
 	public static final int
 		RULE_expr = 0, RULE_test = 1, RULE_start = 2, RULE_addop = 3, RULE_mulop = 4, 
 		RULE_predefinedCharacterClass = 5;
@@ -37,10 +43,15 @@ public class regex2englishParser extends Parser {
 	private static String[] makeLiteralNames() {
 		return new String[] {
 			null, "'-'", "'('", "')'", "'/'", "'%'", "'|'", null, "'*'", "'?'", "'+'", 
-			null, null, "'\\'", null, null, null, null, null, "'\\r'", "'\\t'", "'\\f'", 
-			"'\\a'", "'\\e'", "'.'", "'\\d'", "'\\D'", "'\\h'", "'\\H'", "'\\s'", 
-			"'\\S'", "'\\v'", "'\\V'", "'\\w'", "'\\W'", "'^'", "'$'", "'\\b'", "'\\A'", 
-			"'\\G'", "'\\z'", "'\\Z'", "'\\R'"
+			null, null, "'\\'", null, null, null, null, null, null, "'\\r'", "'\\t'", 
+			"'\\f'", "'\\a'", "'\\e'", "'.'", "'\\d'", "'\\D'", "'\\h'", "'\\H'", 
+			"'\\s'", "'\\S'", "'\\v'", "'\\V'", "'\\w'", "'\\W'", "'^'", "'$'", "'\\b'", 
+			"'\\A'", "'\\G'", "'\\z'", "'\\Z'", "'\\R'", null, null, "'\\p{Lower}'", 
+			"'\\p{Upper}'", "'\\p{ASCII}'", "'\\p{Alpha}'", "'\\p{Digit}'", "'\\p{Alnum}'", 
+			"'\\p{Punct}'", "'\\p{Graph}'", "'\\p{Print}'", "'\\p{Blank}'", "'\\p{Cntrl}'", 
+			"'\\p{XDigit}'", "'\\p{Space}'", "'\\p{javaLowerCase}'", "'\\p{javaUpperCase}'", 
+			"'\\p{javaWhitespace}'", "'\\p{javaMirrored}'", "'\\p{IsLatin}'", "'\\p{InGreek}'", 
+			"'\\p{Lu}'", "'\\p{IsAlphabetic}'", "'\\p{Sc}'", "'\\P{InGreek}'", "'[\\p{L}&&[^\\p{Lu}]]'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -48,12 +59,17 @@ public class regex2englishParser extends Parser {
 		return new String[] {
 			null, null, null, null, null, null, "PIPE", "CAPTURE_GROUP", "ASTERISK", 
 			"QMARK", "PLUS", "MIN_QUANTIFIER", "RANGE_QUANTIFIER", "BACKSLASH", "OCTAL_ONE", 
-			"OCTAL_TWO", "OCTAL_THREE", "HEXA_TWO", "HEXA_FOUR", "CARRIAGE_RETURN", 
+			"OCTAL_TWO", "OCTAL_THREE", "HEXA_TWO", "HEXA_FOUR", "CODE_POINT", "CARRIAGE_RETURN", 
 			"TAB", "FORM_FEED", "ALERT", "ESC", "WILDCARD", "DIGIT", "NON_DIGIT", 
 			"HORIZONTAL_WS", "NON_HORIZONTAL_WS", "WS", "NON_WS", "VERTICAL_WS", 
 			"NON_VERTICAL_WS", "WORD", "NON_WORD", "CARET", "DOLLAR_SIGN", "WORD_BOUNDARY", 
 			"INPUT_START", "END_OF_MATCH", "INPUT_END", "INPUT_END_INC_NEWLINE", 
-			"LINEBREAK_MATCHER", "NUMBER", "LETTERS"
+			"LINEBREAK_MATCHER", "NUMBER", "LETTERS", "LOWERCASE_PO6", "UPPERCASE_PO6", 
+			"ASCII_PO6", "ALPHA_PO6", "NUM_PO6", "ALNUM_PO6", "PUNCT_PO6", "GLYPH_PO6", 
+			"PRINTABLE_PO6", "BLANK_PO6", "CTRL_PO6", "HEXADECIMAL_PO6", "WS_PO6", 
+			"CHAR_CLASS_LC", "CHAR_CLASS_UC", "CHAR_CLASS_WS", "CHAR_CLASS_MIRRORED", 
+			"UNICODE_CLASS_LATIN", "UNICODE_CLASS_GREEK", "UNICODE_CLASS_UC", "UNICODE_CLASS_ALPHA", 
+			"UNICODE_CLASS_CURR", "UNICODE_CLASS_NOT_GREEK", "UNICODE_CLASS_NOT_UC"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -481,19 +497,19 @@ public class regex2englishParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3.\63\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3G\63\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2"+
 		"\5\2\30\n\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\7\2\"\n\2\f\2\16\2%\13\2\3"+
 		"\3\3\3\3\4\3\4\5\4+\n\4\3\5\3\5\3\6\3\6\3\7\3\7\3\7\2\3\2\b\2\4\6\b\n"+
 		"\f\2\4\4\2\3\3\f\f\4\2\6\7\n\n\2\62\2\27\3\2\2\2\4&\3\2\2\2\6*\3\2\2\2"+
 		"\b,\3\2\2\2\n.\3\2\2\2\f\60\3\2\2\2\16\17\b\2\1\2\17\20\7\3\2\2\20\30"+
 		"\5\2\2\b\21\22\7\4\2\2\22\23\5\2\2\2\23\24\7\5\2\2\24\30\3\2\2\2\25\30"+
-		"\7-\2\2\26\30\5\f\7\2\27\16\3\2\2\2\27\21\3\2\2\2\27\25\3\2\2\2\27\26"+
+		"\7.\2\2\26\30\5\f\7\2\27\16\3\2\2\2\27\21\3\2\2\2\27\25\3\2\2\2\27\26"+
 		"\3\2\2\2\30#\3\2\2\2\31\32\f\7\2\2\32\33\5\b\5\2\33\34\5\2\2\b\34\"\3"+
 		"\2\2\2\35\36\f\6\2\2\36\37\5\n\6\2\37 \5\2\2\7 \"\3\2\2\2!\31\3\2\2\2"+
 		"!\35\3\2\2\2\"%\3\2\2\2#!\3\2\2\2#$\3\2\2\2$\3\3\2\2\2%#\3\2\2\2&\'\7"+
 		"\24\2\2\'\5\3\2\2\2(+\5\4\3\2)+\3\2\2\2*(\3\2\2\2*)\3\2\2\2+\7\3\2\2\2"+
-		",-\t\2\2\2-\t\3\2\2\2./\t\3\2\2/\13\3\2\2\2\60\61\7\32\2\2\61\r\3\2\2"+
+		",-\t\2\2\2-\t\3\2\2\2./\t\3\2\2/\13\3\2\2\2\60\61\7\33\2\2\61\r\3\2\2"+
 		"\2\6\27!#*";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
