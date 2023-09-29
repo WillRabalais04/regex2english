@@ -4,32 +4,41 @@ grammar regex2english;
 
 //start : expr | test | <EOF> ;
  
-expr : stringOfCharacters;
+expr : LPAREN expr RPAREN | expr ASTERISK | expr PIPE expr | expr PLUS | expr QMARK | characterSequence;
  
-test : range;
-
-start : test | <EOF> ;
+start : notCharacterSequence | <EOF> ;
 
 
-quantifier : PIPE
-| CAPTURE_GROUP 
-| ASTERISK 
-| QMARK
-| PLUS
+notCharacterSequence : quantifier
+| range | characterClass
+;
+
+
+
+rectangularBrackets : LBRACKET range RBRACKET
+| characterClass
+;
+
+
+// deal with capture groups
+
+//https://stackoverflow.com/questions/36870168/operator-precedence-in-regular-expressions
+
+quantifier : 
 | MIN_QUANTIFIER
 | RANGE_QUANTIFIER 
 ;
 
-/* expressions:
-characters
-quantifiers
-*/
+range : letterRange
+| NUMBER_RANGE
+;
 
-
-characterSequence: character 
-| predefinedCharacterClass ;
-
-range : LETTER_RANGE? LETTER_RANGE | NUMBER_RANGE;
+letterRange: LETTER_RANGE LETTER_RANGE
+| LETTER_RANGE LBRACKET LETTER_RANGE RBRACKET
+| LETTER_RANGE DOUBLE_AMPERSAND LBRACKET LETTER_RANGE RBRACKET
+| LETTER_RANGE DOUBLE_AMPERSAND LBRACKET characterSequence RBRACKET
+| LETTER_RANGE DOUBLE_AMPERSAND LBRACKET CARET LETTER_RANGE RBRACKET
+;
 
 character: NUMBER
 | LETTER
@@ -45,14 +54,15 @@ character: NUMBER
 | FORM_FEED
 | ALERT
 | ESC
+| predefinedCharacterClass
 ;
 
-characterClass: LBRACKET expr RBRACKET 
-| LBRACKET CARET expr RBRACKET
-| LBRACKET range
+characterClass: LBRACKET characterSequence RBRACKET 
+| LBRACKET CARET characterSequence RBRACKET
+| LBRACKET range RBRACKET
 ;
 
-stringOfCharacters : character | character character;
+characterSequence : character | character character;
 
 predefinedCharacterClass : WILDCARD
 | DIGIT
@@ -67,8 +77,11 @@ predefinedCharacterClass : WILDCARD
 ;
 
 // LEXER:
+LPAREN : '(' ;
+RPAREN : ')' ;
 LBRACKET : '[';
 RBRACKET : ']';
+DOUBLE_AMPERSAND : '&&';
 
 // Logical Operators
 PIPE : '|' ;
@@ -126,7 +139,7 @@ INPUT_END_INC_NEWLINE : '\\Z';
 LINEBREAK_MATCHER : '\\R' ;
 
 NUMBER : ('0' .. '9') + ('.' ('0' .. '9') +)? ;
-LETTER : [a-z];
+LETTER : [a-zA-Z];
 
 // POSIX character classes (US-ASCII only)
 LOWERCASE_PO6 : '\\p{Lower}'; //[a-z]
