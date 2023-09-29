@@ -4,27 +4,25 @@ grammar regex2english;
 
 //start : expr | test | <EOF> ;
  
-expr : LPAREN expr RPAREN | expr ASTERISK | expr PIPE expr | expr PLUS | expr QMARK | characterSequence;
- 
-start : notCharacterSequence | <EOF> ;
+
+start : expr |<EOF> ;
 
 
 notCharacterSequence : quantifier
 | range | characterClass
 ;
 
-
-
 rectangularBrackets : LBRACKET range RBRACKET
 | characterClass
 ;
-
 
 // deal with capture groups
 
 //https://stackoverflow.com/questions/36870168/operator-precedence-in-regular-expressions
 
-quantifier : 
+quantifier : ASTERISK
+| QMARK
+| PLUS
 | MIN_QUANTIFIER
 | RANGE_QUANTIFIER 
 ;
@@ -33,7 +31,25 @@ range : letterRange
 | NUMBER_RANGE
 ;
 
-letterRange: LETTER_RANGE LETTER_RANGE
+
+expr : '[' expr ']' 
+| '(' expr ')' 
+| expr quantifier 
+| CARET expr 
+| expr DOLLAR_SIGN 
+| expr PIPE expr 
+| characterClass | expr expr;
+
+
+characterClass : escapedLiteral | range | characterSequence;
+
+
+/* for this one: [a-z&&[def]]	d, e, or f (intersection) 
+
+make sure def are unique
+*/
+
+letterRange: LETTER_RANGE
 | LETTER_RANGE LBRACKET LETTER_RANGE RBRACKET
 | LETTER_RANGE DOUBLE_AMPERSAND LBRACKET LETTER_RANGE RBRACKET
 | LETTER_RANGE DOUBLE_AMPERSAND LBRACKET characterSequence RBRACKET
@@ -43,26 +59,9 @@ letterRange: LETTER_RANGE LETTER_RANGE
 character: NUMBER
 | LETTER
 | BACKSLASH
-| OCTAL_1
-| OCTAL_2
-| OCTAL_3
-| HEXA_2
-| HEXA_4
-| CODE_POINT
-| CARRIAGE_RETURN
-| TAB
-| FORM_FEED
-| ALERT
-| ESC
-| predefinedCharacterClass
 ;
 
-characterClass: LBRACKET characterSequence RBRACKET 
-| LBRACKET CARET characterSequence RBRACKET
-| LBRACKET range RBRACKET
-;
-
-characterSequence : character | character character;
+characterSequence : ALPHANUM ;
 
 predefinedCharacterClass : WILDCARD
 | DIGIT
@@ -94,22 +93,53 @@ PLUS : '+';
 MIN_QUANTIFIER : '{'[0-9]?'}' ;
 RANGE_QUANTIFIER :'{'[0-9]? ','[0-9]?'}' ;
 
+escapedLiteral : predefinedCharacterClass 
+|'\\.' 
+| BACKSLASH 
+( OCTAL_1 
+| OCTAL_2 
+| OCTAL_3 
+| HEXA_2 
+| HEXA_4 
+| CODE_POINT
+| CARRIAGE_RETURN
+| TAB 
+| FORM_FEED
+| ALERT
+| ESC
+| CARET
+| DOLLAR_SIGN
+| WORD_BOUNDARY
+| NON_WORD_BOUNDARY
+| INPUT_START
+| END_OF_MATCH
+| INPUT_END
+| INPUT_END_INC_NEWLINE
+| LINEBREAK_MATCHER
+)? ;
+
 // Characters
 BACKSLASH : '\\' ;
-OCTAL_1 : '\\0'[0-7];
-OCTAL_2 : '\\0'[0-7][0-7];
-OCTAL_3 : '\\0'[0-3][0-7][0-7];
-HEXA_2 : '\\x'[a-fA-F0-9];
-HEXA_4 : '\\x'[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9];
+OCTAL_1 : '0'[0-7];
+OCTAL_2 : '0'[0-7][0-7];
+OCTAL_3 : '0'[0-3][0-7][0-7];
+HEXA_2 : 'x'[a-fA-F0-9];
+HEXA_4 : 'x'[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9];
 CODE_POINT : 'U\\+'[1]?[a-fA-F0-9]{4,5};
-CARRIAGE_RETURN : '\\r' ;
-TAB : '\\t' ;
-FORM_FEED : '\\f' ;
-ALERT : '\\a' ;
-ESC : '\\e' ;
+CARRIAGE_RETURN : 'r' ;
+TAB : 't' ;
+FORM_FEED : 'f' ;
+ALERT : 'a' ;
+ESC : 'e' ;
+
+ALPHANUM : [a-zA-Z0-9]+ ;
+
+
+// figure out a way to verify the lower bound > upper bound
+// make sure cases are matched - don't allow eg. [a-Z]
 
 //ranges:
-LETTER_RANGE : [a-zA-Z]'-'[a-zA-Z];
+LETTER_RANGE : [a-zA-Z]'-'[a-zA-Z]([a-zA-Z]'-'[a-zA-Z])?;
 NUMBER_RANGE : [0-9]'-'[0-9];
 
 // Predefined Character Classes 
@@ -128,15 +158,15 @@ NON_WORD : '\\W';
 // Boundary Matchers
 CARET : '^';
 DOLLAR_SIGN : '$';
-WORD_BOUNDARY : '\\b';
-NON_WORD_BOUNDARY : '\\B';
-INPUT_START : '\\A';
-END_OF_MATCH : '\\G';
-INPUT_END : '\\z';
-INPUT_END_INC_NEWLINE : '\\Z';
+WORD_BOUNDARY : 'b';
+NON_WORD_BOUNDARY : 'B';
+INPUT_START : 'A';
+END_OF_MATCH : 'G';
+INPUT_END : 'z';
+INPUT_END_INC_NEWLINE : 'Z';
 
 //Linebreak Matcher
-LINEBREAK_MATCHER : '\\R' ;
+LINEBREAK_MATCHER : 'R' ;
 
 NUMBER : ('0' .. '9') + ('.' ('0' .. '9') +)? ;
 LETTER : [a-zA-Z];
@@ -172,6 +202,16 @@ UNICODE_CLASS_NOT_GREEK :'\\P{InGreek}';	//Any character except one in the Greek
 UNICODE_CLASS_NOT_UC : '[\\p{L}&&[^\\p{Lu}]]'; //Any letter except an uppercase letter (subtraction)
 
 
+
+/*
+//Quotation
+SINGLE_BAC\	Nothing, but quotes the following character
+\Q	Nothing, but quotes all characters until \E
+\E	Nothing, but ends quoting started by \Q
+*/
+
+
+
 /*
 Special constructs (named-capturing and non-capturing)
 (?<name>X)	X, as a named-capturing group
@@ -192,3 +232,51 @@ Back references
 
 
  */
+ 
+ 
+ /* 
+ 
+ capture groups
+ quantifier
+ escaped characters
+ character class
+    - escaped characters
+       - predefined character class
+    - ranges
+    - literals
+ 
+ rectangular bracket groups:
+ - character class
+ 
+ boundary matchers
+ 
+ literals
+ 
+ 
+ Predefined character classes
+
+ 
+ 
+ 
+ 
+ */
+ 
+ 
+ // add escape sequence for quantifiers
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ // add regex flags: 
