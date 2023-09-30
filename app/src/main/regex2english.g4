@@ -7,15 +7,7 @@ grammar regex2english;
 
 start : expr |<EOF> ;
 
-
-notCharacterSequence : quantifier
-| range | characterClass
-;
-
-rectangularBrackets : LBRACKET range RBRACKET
-| characterClass
-;
-
+test : CARET LETTERS ;
 // deal with capture groups
 
 //https://stackoverflow.com/questions/36870168/operator-precedence-in-regular-expressions
@@ -49,17 +41,12 @@ characterClass : escapedLiteral | range | characterSequence;
 make sure def are unique
 */
 
-letterRange: LETTER_RANGE
-| LETTER_RANGE LBRACKET LETTER_RANGE RBRACKET
-| LETTER_RANGE DOUBLE_AMPERSAND LBRACKET LETTER_RANGE RBRACKET
-| LETTER_RANGE DOUBLE_AMPERSAND LBRACKET characterSequence RBRACKET
-| LETTER_RANGE DOUBLE_AMPERSAND LBRACKET CARET LETTER_RANGE RBRACKET
-;
-
-character: NUMBER
-| LETTER
-| BACKSLASH
-;
+letterRange: LBRACKET letterRange RBRACKET
+| CARET letterRange
+| CARET LETTERS
+| letterRange letterRange
+| letterRange DOUBLE_AMPERSAND letterRange 
+| LETTER_RANGE;
 
 characterSequence : ALPHANUM ;
 
@@ -76,6 +63,7 @@ predefinedCharacterClass : WILDCARD
 ;
 
 // LEXER:
+LETTERS : [a-zA-Z]+ ;
 LPAREN : '(' ;
 RPAREN : ')' ;
 LBRACKET : '[';
@@ -93,10 +81,9 @@ PLUS : '+';
 MIN_QUANTIFIER : '{'[0-9]?'}' ;
 RANGE_QUANTIFIER :'{'[0-9]? ','[0-9]?'}' ;
 
-escapedLiteral : predefinedCharacterClass 
-|'\\.' 
-| BACKSLASH 
-( OCTAL_1 
+escapedLiteral : predefinedCharacterClass
+| ESCAPED_BACKSLASH
+| OCTAL_1 
 | OCTAL_2 
 | OCTAL_3 
 | HEXA_2 
@@ -116,24 +103,24 @@ escapedLiteral : predefinedCharacterClass
 | INPUT_END
 | INPUT_END_INC_NEWLINE
 | LINEBREAK_MATCHER
-)? ;
+;
 
 // Characters
 BACKSLASH : '\\' ;
-OCTAL_1 : '0'[0-7];
-OCTAL_2 : '0'[0-7][0-7];
-OCTAL_3 : '0'[0-3][0-7][0-7];
-HEXA_2 : 'x'[a-fA-F0-9];
-HEXA_4 : 'x'[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9];
+OCTAL_1 : '\\0'[0-7];
+OCTAL_2 : '\\0'[0-7][0-7];
+OCTAL_3 : '\\0'[0-3][0-7][0-7];
+HEXA_2 : '\\x'[a-fA-F0-9];
+HEXA_4 : '\\x'[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9];
 CODE_POINT : 'U\\+'[1]?[a-fA-F0-9]{4,5};
-CARRIAGE_RETURN : 'r' ;
-TAB : 't' ;
-FORM_FEED : 'f' ;
-ALERT : 'a' ;
-ESC : 'e' ;
+CARRIAGE_RETURN : '\\r' ;
+TAB : '\\t' ;
+FORM_FEED : '\\f' ;
+ALERT : '\\a' ;
+ESC : '\\e' ;
 
-ALPHANUM : [a-zA-Z0-9]+ ;
 
+ALPHANUM : [a-zA-Z0-9/!,#&]+ ;
 
 // figure out a way to verify the lower bound > upper bound
 // make sure cases are matched - don't allow eg. [a-Z]
@@ -154,22 +141,22 @@ VERTICAL_WS : '\\v';
 NON_VERTICAL_WS : '\\V';
 WORD : '\\w';
 NON_WORD : '\\W';
+ESCAPED_BACKSLASH : '\\\\';
+
+
 
 // Boundary Matchers
 CARET : '^';
 DOLLAR_SIGN : '$';
-WORD_BOUNDARY : 'b';
-NON_WORD_BOUNDARY : 'B';
-INPUT_START : 'A';
-END_OF_MATCH : 'G';
-INPUT_END : 'z';
-INPUT_END_INC_NEWLINE : 'Z';
+WORD_BOUNDARY : '\\b';
+NON_WORD_BOUNDARY : '\\B';
+INPUT_START : '\\A';
+END_OF_MATCH : '\\G';
+INPUT_END : '\\z';
+INPUT_END_INC_NEWLINE : '\\Z';
 
 //Linebreak Matcher
 LINEBREAK_MATCHER : 'R' ;
-
-NUMBER : ('0' .. '9') + ('.' ('0' .. '9') +)? ;
-LETTER : [a-zA-Z];
 
 // POSIX character classes (US-ASCII only)
 LOWERCASE_PO6 : '\\p{Lower}'; //[a-z]
