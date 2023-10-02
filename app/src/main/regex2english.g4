@@ -5,9 +5,9 @@ grammar regex2english;
 //start : expr | test | <EOF> ;
  
 
-start : expr |<EOF> ;
+//start : expr |<EOF> ;
 
-test : CARET LETTERS ;
+test : letterRange ;
 // deal with capture groups
 
 //https://stackoverflow.com/questions/36870168/operator-precedence-in-regular-expressions
@@ -24,16 +24,33 @@ range : letterRange
 ;
 
 
-expr : '[' expr ']' 
-| '(' expr ')' 
-| expr quantifier 
+
+charClass : 
+| '^' charClass
+| range
+| characterSequence
+;
+
+//[a-z&&[def]]	d, e, or f (intersection)
+//| [a-z&&[^bc]]	a through z, except for b and c: [ad-z] (subtraction)
+//| [a-z&&[^m-p]]
+
+
+/*
+expr : '[' charClass ']'
+| '(' charClass ')' 
+| characterClass quantifier
 | CARET expr 
 | expr DOLLAR_SIGN 
 | expr PIPE expr 
-| characterClass | expr expr;
+| charClass
+| expr expr
+;
+*/
 
+// fix escaped bracket \(
 
-characterClass : escapedLiteral | range | characterSequence;
+characterClass : escapedFromLiteral | range | characterSequence;
 
 
 /* for this one: [a-z&&[def]]	d, e, or f (intersection) 
@@ -41,14 +58,15 @@ characterClass : escapedLiteral | range | characterSequence;
 make sure def are unique
 */
 
-letterRange: LBRACKET letterRange RBRACKET
+letterRange: letterRange '&&'? '[' letterRange  ']'
 | CARET letterRange
-| CARET LETTERS
+| ( LETTERS | LETTER_RANGE)
 | letterRange letterRange
-| letterRange DOUBLE_AMPERSAND letterRange 
-| LETTER_RANGE;
+;
 
-characterSequence : ALPHANUM ;
+characterSequence : ALPHANUM 
+| escapedToLiteralOutsideCharClass
+;
 
 predefinedCharacterClass : WILDCARD
 | DIGIT
@@ -64,15 +82,9 @@ predefinedCharacterClass : WILDCARD
 
 // LEXER:
 LETTERS : [a-zA-Z]+ ;
-LPAREN : '(' ;
-RPAREN : ')' ;
-LBRACKET : '[';
-RBRACKET : ']';
-DOUBLE_AMPERSAND : '&&';
 
 // Logical Operators
 PIPE : '|' ;
-CAPTURE_GROUP : '('~[)]*')';
 
 // Quantifiers
 ASTERISK : '*' ;
@@ -81,8 +93,7 @@ PLUS : '+';
 MIN_QUANTIFIER : '{'[0-9]?'}' ;
 RANGE_QUANTIFIER :'{'[0-9]? ','[0-9]?'}' ;
 
-escapedLiteral : predefinedCharacterClass
-| ESCAPED_BACKSLASH
+escapedFromLiteral : predefinedCharacterClass
 | OCTAL_1 
 | OCTAL_2 
 | OCTAL_3 
@@ -105,6 +116,44 @@ escapedLiteral : predefinedCharacterClass
 | LINEBREAK_MATCHER
 ;
 
+escapedToLiteralOutsideCharClass: PIPE_ESCAPED
+| BACKSLASH_ESCAPED
+| LPAREN_ESCAPED
+| RPAREN_ESCAPED
+| LBRACKET_ESCAPED
+| RBRACKET_ESCAPED
+| DOT_ESCAPED
+| CARET_ESCAPED
+| QMARK_ESCAPED
+| ASTERISK_ESCAPED
+| DOLLAR_SIGN_ESCAPED
+;
+
+escapedToLiteralInsideCharClass:
+| BACKSLASH_ESCAPED
+| LPAREN_ESCAPED
+| RPAREN_ESCAPED
+| LBRACKET_ESCAPED
+| DOLLAR_SIGN_ESCAPED
+| HYPHEN_ESCAPED
+;
+
+
+//escapedChars (should be read as characters not as metacharacters):
+PIPE_ESCAPED : '\\|' ;
+BACKSLASH_ESCAPED : '\\\\' ;
+LPAREN_ESCAPED: '\\(' ;
+RPAREN_ESCAPED: '\\)' ;
+LBRACKET_ESCAPED: '\\]' ;
+RBRACKET_ESCAPED: '\\[' ;
+DOT_ESCAPED: '\\.' ;
+CARET_ESCAPED: '\\^' ;
+QMARK_ESCAPED: '\\?' ;
+ASTERISK_ESCAPED : '\\*' ;
+DOLLAR_SIGN_ESCAPED : '\\$';
+HYPHEN_ESCAPED : '\\-' ;
+
+
 // Characters
 BACKSLASH : '\\' ;
 OCTAL_1 : '\\0'[0-7];
@@ -120,13 +169,19 @@ ALERT : '\\a' ;
 ESC : '\\e' ;
 
 
-ALPHANUM : [a-zA-Z0-9/!,#&]+ ;
+acceptedCharacters : acceptedCharacters acceptedCharacters 
+| ALPHANUM 
+| LPAREN_ESCAPED ;
+
+
+
+ALPHANUM : [a-zA-Z0-9/!,#&]+;
 
 // figure out a way to verify the lower bound > upper bound
 // make sure cases are matched - don't allow eg. [a-Z]
 
 //ranges:
-LETTER_RANGE : [a-zA-Z]'-'[a-zA-Z]([a-zA-Z]'-'[a-zA-Z])?;
+LETTER_RANGE : [a-zA-Z]'-'[a-zA-Z];
 NUMBER_RANGE : [0-9]'-'[0-9];
 
 // Predefined Character Classes 
@@ -141,9 +196,6 @@ VERTICAL_WS : '\\v';
 NON_VERTICAL_WS : '\\V';
 WORD : '\\w';
 NON_WORD : '\\W';
-ESCAPED_BACKSLASH : '\\\\';
-
-
 
 // Boundary Matchers
 CARET : '^';
