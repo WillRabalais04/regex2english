@@ -29,6 +29,7 @@ charClass :
 | '^' charClass
 | range
 | characterSequence
+| 'letterRa'
 ;
 
 //[a-z&&[def]]	d, e, or f (intersection)
@@ -60,7 +61,7 @@ make sure def are unique
 
 letterRange: letterRange '&&'? '[' letterRange  ']'
 | CARET letterRange
-| ( LETTERS | LETTER_RANGE)
+| ( LETTERS | LETTER_RANGE | escapedToLiteralInsideCharClass+ )
 | letterRange letterRange
 ;
 
@@ -129,8 +130,7 @@ escapedToLiteralOutsideCharClass: PIPE_ESCAPED
 | DOLLAR_SIGN_ESCAPED
 ;
 
-escapedToLiteralInsideCharClass:
-| BACKSLASH_ESCAPED
+escapedToLiteralInsideCharClass: BACKSLASH_ESCAPED
 | LPAREN_ESCAPED
 | RPAREN_ESCAPED
 | LBRACKET_ESCAPED
