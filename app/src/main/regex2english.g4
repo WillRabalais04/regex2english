@@ -2,14 +2,11 @@ grammar regex2english;
 
 // PARSER:
 
-//start : expr | test | <EOF> ;
- 
+start : expr |<EOF> ;
 
-//start : expr |<EOF> ;
+test : range ;
 
-test : letterRange ;
 // deal with capture groups
-
 //https://stackoverflow.com/questions/36870168/operator-precedence-in-regular-expressions
 
 quantifier : ASTERISK
@@ -19,53 +16,33 @@ quantifier : ASTERISK
 | RANGE_QUANTIFIER 
 ;
 
-range : letterRange
-| NUMBER_RANGE
-;
-
-
-
-charClass : 
-| '^' charClass
-| range
-| characterSequence
-| 'letterRa'
-;
-
-//[a-z&&[def]]	d, e, or f (intersection)
-//| [a-z&&[^bc]]	a through z, except for b and c: [ad-z] (subtraction)
-//| [a-z&&[^m-p]]
-
-
-/*
-expr : '[' charClass ']'
-| '(' charClass ')' 
-| characterClass quantifier
+expr : '[' expr ']'
+| '(' expr ')' 
+| expr quantifier
 | CARET expr 
 | expr DOLLAR_SIGN 
 | expr PIPE expr 
-| charClass
+| DIGIT
 | expr expr
 ;
-*/
 
 // fix escaped bracket \(
 
-characterClass : escapedFromLiteral | range | characterSequence;
-
-
-/* for this one: [a-z&&[def]]	d, e, or f (intersection) 
-
-make sure def are unique
-*/
-
-letterRange: letterRange '&&'? '[' letterRange  ']'
-| CARET letterRange
-| ( LETTERS | LETTER_RANGE | escapedToLiteralInsideCharClass+ )
-| letterRange letterRange
+/*
+range: (LBRACKET CARET_ESCAPED? range RBRACKET (DOUBLE_AMPERSAND range)?
+| (LETTER_RANGE | NUMBER_RANGE | escapedToLiteralInsideCharClass | LETTERS_INSIDE_CHAR_CLASS)+ ) L
 ;
 
-characterSequence : ALPHANUM 
+L : range L |  ;
+
+*/
+
+range: LBRACKET CARET_ESCAPED? range RBRACKET (DOUBLE_AMPERSAND range)? (aRule | <EOF>)
+| (LETTER_RANGE | NUMBER_RANGE | escapedToLiteralInsideCharClass | LETTERS_INSIDE_CHAR_CLASS)+ (aRule | <EOF>);
+
+aRule : range (aRule | <EOF>);
+
+characterSequence : LETTERS_INSIDE_CHAR_CLASS 
 | escapedToLiteralOutsideCharClass
 ;
 
@@ -82,7 +59,16 @@ predefinedCharacterClass : WILDCARD
 ;
 
 // LEXER:
-LETTERS : [a-zA-Z]+ ;
+// caret should not be esceped
+
+
+DOUBLE_AMPERSAND : '&&' ;
+LBRACKET : '[' ; 
+RBRACKET : ']' ; 
+
+
+LETTERS_INSIDE_CHAR_CLASS : [a-zA-Z0-9/!,#&|^*\\?.$-];
+LETTERS_OUTSIDE_CHAR_CLASS : [a-zA-Z0-9/!,#&]+;
 
 // Logical Operators
 PIPE : '|' ;
@@ -167,15 +153,6 @@ TAB : '\\t' ;
 FORM_FEED : '\\f' ;
 ALERT : '\\a' ;
 ESC : '\\e' ;
-
-
-acceptedCharacters : acceptedCharacters acceptedCharacters 
-| ALPHANUM 
-| LPAREN_ESCAPED ;
-
-
-
-ALPHANUM : [a-zA-Z0-9/!,#&]+;
 
 // figure out a way to verify the lower bound > upper bound
 // make sure cases are matched - don't allow eg. [a-Z]
