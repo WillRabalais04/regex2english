@@ -1,50 +1,45 @@
 grammar regex2english;
 
-// PARSER:
+start: characterClass;
 
-start : expr |<EOF> ;
-
-test : range ;
-
-// deal with capture groups
-//https://stackoverflow.com/questions/36870168/operator-precedence-in-regular-expressions
-
-quantifier : ASTERISK
-| QMARK
-| PLUS
-| MIN_QUANTIFIER
-| RANGE_QUANTIFIER 
+characterClass: CARET characterClass (characterClassHelper | <EOF>)
+| LBRACKET characterClass RBRACKET (characterClassHelper | <EOF>)
+| escapedToLiteralInsideCharClass (characterClassHelper | <EOF>)
+| (LETTER_RANGE | NUMBER_RANGE | (LETTERS_INSIDE_CHAR_CLASS | CARET))+ (characterClassHelper | <EOF>)
 ;
 
-expr : '[' expr ']'
-| '(' expr ')' 
-| expr quantifier
-| CARET expr 
-| expr DOLLAR_SIGN 
-| expr PIPE expr 
-| DIGIT
-| expr expr
+characterClassHelper: characterClass (characterClassHelper | <EOF>) 
+| DOUBLE_AMPERSAND characterClass (characterClassHelper | <EOF>)
 ;
 
-// fix escaped bracket \(
+CARET : '^';
+LETTERS_INSIDE_CHAR_CLASS : [a-zA-Z0-9/!,#&|*\\?.$-];
 
-/*
-range: (LBRACKET CARET_ESCAPED? range RBRACKET (DOUBLE_AMPERSAND range)?
-| (LETTER_RANGE | NUMBER_RANGE | escapedToLiteralInsideCharClass | LETTERS_INSIDE_CHAR_CLASS)+ ) L
+
+escapedToLiteralInsideCharClass: BACKSLASH_ESCAPED
+| LPAREN_ESCAPED
+| RBRACKET_ESCAPED
+| LBRACKET_ESCAPED
+| DOLLAR_SIGN_ESCAPED
+| HYPHEN_ESCAPED
 ;
 
-L : range L |  ;
+LETTER_RANGE : [a-zA-Z]'-'[a-zA-Z];
+NUMBER_RANGE : [0-9]'-'[0-9];
+DOUBLE_AMPERSAND : '&&' ;
 
-*/
-
-range: LBRACKET CARET_ESCAPED? range RBRACKET (DOUBLE_AMPERSAND range)? (aRule | <EOF>)
-| (LETTER_RANGE | NUMBER_RANGE | escapedToLiteralInsideCharClass | LETTERS_INSIDE_CHAR_CLASS)+ (aRule | <EOF>);
-
-aRule : range (aRule | <EOF>);
-
-characterSequence : LETTERS_INSIDE_CHAR_CLASS 
-| escapedToLiteralOutsideCharClass
-;
+PIPE_ESCAPED : '\\|' ;
+BACKSLASH_ESCAPED : '\\\\' ;
+LPAREN_ESCAPED: '\\(' ;
+RPAREN_ESCAPED: '\\)' ;
+LBRACKET_ESCAPED: '\\]' ;
+RBRACKET_ESCAPED: '\\[' ;
+DOT_ESCAPED: '\\.' ;
+CARET_ESCAPED: '\\^' ;
+QMARK_ESCAPED: '\\?' ;
+ASTERISK_ESCAPED : '\\*' ;
+DOLLAR_SIGN_ESCAPED : '\\$';
+HYPHEN_ESCAPED : '\\-' ;
 
 predefinedCharacterClass : WILDCARD
 | DIGIT
@@ -61,14 +56,12 @@ predefinedCharacterClass : WILDCARD
 // LEXER:
 // caret should not be esceped
 
-
-DOUBLE_AMPERSAND : '&&' ;
 LBRACKET : '[' ; 
 RBRACKET : ']' ; 
+LPAREN : '(' ;
+RPAREN : ')';
 
-
-LETTERS_INSIDE_CHAR_CLASS : [a-zA-Z0-9/!,#&|^*\\?.$-];
-LETTERS_OUTSIDE_CHAR_CLASS : [a-zA-Z0-9/!,#&]+;
+LETTERS_OUTSIDE_CHAR_CLASS : [a-zA-Z0-9/!,#&];
 
 // Logical Operators
 PIPE : '|' ;
@@ -116,30 +109,6 @@ escapedToLiteralOutsideCharClass: PIPE_ESCAPED
 | DOLLAR_SIGN_ESCAPED
 ;
 
-escapedToLiteralInsideCharClass: BACKSLASH_ESCAPED
-| LPAREN_ESCAPED
-| RPAREN_ESCAPED
-| LBRACKET_ESCAPED
-| DOLLAR_SIGN_ESCAPED
-| HYPHEN_ESCAPED
-;
-
-
-//escapedChars (should be read as characters not as metacharacters):
-PIPE_ESCAPED : '\\|' ;
-BACKSLASH_ESCAPED : '\\\\' ;
-LPAREN_ESCAPED: '\\(' ;
-RPAREN_ESCAPED: '\\)' ;
-LBRACKET_ESCAPED: '\\]' ;
-RBRACKET_ESCAPED: '\\[' ;
-DOT_ESCAPED: '\\.' ;
-CARET_ESCAPED: '\\^' ;
-QMARK_ESCAPED: '\\?' ;
-ASTERISK_ESCAPED : '\\*' ;
-DOLLAR_SIGN_ESCAPED : '\\$';
-HYPHEN_ESCAPED : '\\-' ;
-
-
 // Characters
 BACKSLASH : '\\' ;
 OCTAL_1 : '\\0'[0-7];
@@ -157,10 +126,6 @@ ESC : '\\e' ;
 // figure out a way to verify the lower bound > upper bound
 // make sure cases are matched - don't allow eg. [a-Z]
 
-//ranges:
-LETTER_RANGE : [a-zA-Z]'-'[a-zA-Z];
-NUMBER_RANGE : [0-9]'-'[0-9];
-
 // Predefined Character Classes 
 WILDCARD : '.';
 DIGIT : '\\d';
@@ -175,7 +140,6 @@ WORD : '\\w';
 NON_WORD : '\\W';
 
 // Boundary Matchers
-CARET : '^';
 DOLLAR_SIGN : '$';
 WORD_BOUNDARY : '\\b';
 NON_WORD_BOUNDARY : '\\B';
@@ -279,20 +243,13 @@ Back references
  
  
  // add escape sequence for quantifiers
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- // add regex flags: 
+
+
+//  characterClass: escapedToLiteralInsideCharClass 
+// | LBRACKET characterClass RBRACKET
+// | (LETTER_RANGE | NUMBER_RANGE | (escapedToLiteralInsideCharClass | LETTERS_INSIDE_CHAR_CLASS)+)
+// | CARET characterClass
+// | characterClass characterClass
+// | characterClass DOUBLE_AMPERSAND characterClass
+// ;
+
