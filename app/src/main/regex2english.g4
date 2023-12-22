@@ -1,11 +1,27 @@
 grammar regex2english;
 
-start: characterClass;
+start: quantifier;
+
+expr: escapedToLiteralOutsideCharClass (exprHelper | <EOF>) 
+| LETTER+ (exprHelper | <EOF>)
+| LBRACKET characterClass RBRACKET (exprHelper | <EOF>)
+| group (exprHelper | <EOF>)
+| back_reference (exprHelper | <EOF>)
+| boundary_matcher expr (exprHelper | <EOF>)
+;
+
+exprHelper: quantifier (exprHelper | <EOF>)
+| expr (exprHelper | <EOF>)
+| boundary_matcher (exprHelper | <EOF>)
+;
+
+group: DOLLAR_SIGN;
 
 characterClass: CARET characterClass (characterClassHelper | <EOF>)
 | LBRACKET characterClass RBRACKET (characterClassHelper | <EOF>)
 | escapedToLiteralInsideCharClass (characterClassHelper | <EOF>)
-| (LETTER_RANGE | NUMBER_RANGE | (LETTERS_INSIDE_CHAR_CLASS | CARET))+ (characterClassHelper | <EOF>)
+| predefinedCharacterClass (characterClassHelper | <EOF>)
+| (LETTER_RANGE | NUMBER_RANGE | ((LETTER | EXTRA_LETTER_ALLOWED_INSIDE) | CARET))+ (characterClassHelper | <EOF>)
 ;
 
 characterClassHelper: characterClass (characterClassHelper | <EOF>) 
@@ -13,8 +29,10 @@ characterClassHelper: characterClass (characterClassHelper | <EOF>)
 ;
 
 CARET : '^';
-LETTERS_INSIDE_CHAR_CLASS : [a-zA-Z0-9/!,#&|*\\?.$-];
 
+
+LETTER : [a-zA-Z0-9/!,#&];
+EXTRA_LETTER_ALLOWED_INSIDE:  [|*\\?.$-];
 
 escapedToLiteralInsideCharClass: BACKSLASH_ESCAPED
 | LPAREN_ESCAPED
@@ -22,6 +40,26 @@ escapedToLiteralInsideCharClass: BACKSLASH_ESCAPED
 | LBRACKET_ESCAPED
 | DOLLAR_SIGN_ESCAPED
 | HYPHEN_ESCAPED
+;
+
+// PIPE_ESCAPED
+// RPAREN_ESCAPED
+// DOT_ESCAPED
+// CARET_ESCAPED
+// QMARK_ESCAPED
+// ASTERISK_ESCAPED
+
+escapedToLiteralOutsideCharClass: PIPE_ESCAPED
+| BACKSLASH_ESCAPED
+| LPAREN_ESCAPED
+| RPAREN_ESCAPED
+| LBRACKET_ESCAPED
+| RBRACKET_ESCAPED
+| DOT_ESCAPED
+| CARET_ESCAPED
+| QMARK_ESCAPED
+| ASTERISK_ESCAPED
+| DOLLAR_SIGN_ESCAPED
 ;
 
 LETTER_RANGE : [a-zA-Z]'-'[a-zA-Z];
@@ -41,16 +79,44 @@ ASTERISK_ESCAPED : '\\*' ;
 DOLLAR_SIGN_ESCAPED : '\\$';
 HYPHEN_ESCAPED : '\\-' ;
 
-predefinedCharacterClass : WILDCARD
-| DIGIT
-| NON_DIGIT
-| HORIZONTAL_WS
-| NON_HORIZONTAL_WS
-| WS
-| NON_WS
-| VERTICAL_WS
-| WORD
-| NON_WORD
+predefinedCharacterClass : '.' # Wildcard
+| '\\d' # digit
+| '\\D' # non_digit
+| '\\h' # horizontal_whitespace
+| '\\H' # non_horizontal_whitespace
+| '\\s' # whitespace
+| '\\S' # non_whitespace
+| '\\v' # vertical_whitespace
+| '\\V' # non_vertical_whitespace
+| '\\w' # word
+| '\\W' # non_word
+;
+
+DIGIT: '\\d';
+
+// Quantifiers
+
+quantifier: '\\{'[0-9]?','[0-9]?'\\}' #RANGE_QUANTIFIER
+| '\\{'[0-9]?'\\}' #MIN_QUANTIFIER
+|  '+' #PLUS
+| '*'#ASTERISK
+| '?' #QMARK
+;
+
+
+
+back_reference: NEWLINE_REF
+| NAMED_CAPTURE_GROUP_MATCH 
+;
+
+boundary_matcher: CARET
+| DOLLAR_SIGN
+| WORD_BOUNDARY 
+| NON_WORD_BOUNDARY
+| INPUT_START 
+| END_OF_MATCH
+| INPUT_END
+| INPUT_END_INC_NEWLINE 
 ;
 
 // LEXER:
@@ -61,17 +127,8 @@ RBRACKET : ']' ;
 LPAREN : '(' ;
 RPAREN : ')';
 
-LETTERS_OUTSIDE_CHAR_CLASS : [a-zA-Z0-9/!,#&];
-
-// Logical Operators
+// Alternation operator
 PIPE : '|' ;
-
-// Quantifiers
-ASTERISK : '*' ;
-QMARK : '?';
-PLUS : '+';
-MIN_QUANTIFIER : '{'[0-9]?'}' ;
-RANGE_QUANTIFIER :'{'[0-9]? ','[0-9]?'}' ;
 
 escapedFromLiteral : predefinedCharacterClass
 | OCTAL_1 
@@ -96,18 +153,7 @@ escapedFromLiteral : predefinedCharacterClass
 | LINEBREAK_MATCHER
 ;
 
-escapedToLiteralOutsideCharClass: PIPE_ESCAPED
-| BACKSLASH_ESCAPED
-| LPAREN_ESCAPED
-| RPAREN_ESCAPED
-| LBRACKET_ESCAPED
-| RBRACKET_ESCAPED
-| DOT_ESCAPED
-| CARET_ESCAPED
-| QMARK_ESCAPED
-| ASTERISK_ESCAPED
-| DOLLAR_SIGN_ESCAPED
-;
+
 
 // Characters
 BACKSLASH : '\\' ;
@@ -126,18 +172,7 @@ ESC : '\\e' ;
 // figure out a way to verify the lower bound > upper bound
 // make sure cases are matched - don't allow eg. [a-Z]
 
-// Predefined Character Classes 
-WILDCARD : '.';
-DIGIT : '\\d';
-NON_DIGIT : '\\D';
-HORIZONTAL_WS : '\\h';
-NON_HORIZONTAL_WS : '\\H';
-WS : '\\s';
-NON_WS : '\\S';
-VERTICAL_WS : '\\v';
-NON_VERTICAL_WS : '\\V';
-WORD : '\\w';
-NON_WORD : '\\W';
+
 
 // Boundary Matchers
 DOLLAR_SIGN : '$';
@@ -149,37 +184,41 @@ INPUT_END : '\\z';
 INPUT_END_INC_NEWLINE : '\\Z';
 
 //Linebreak Matcher
-LINEBREAK_MATCHER : 'R' ;
+LINEBREAK_MATCHER : '\\R' ;
+
 
 // POSIX character classes (US-ASCII only)
-LOWERCASE_PO6 : '\\p{Lower}'; //[a-z]
-UPPERCASE_PO6 : '\\p{Upper}'; //[A-Z]
-ASCII_PO6 : '\\p{ASCII}'; //[\x00-\x7F]
-ALPHA_PO6 : '\\p{Alpha}';
-NUM_PO6 : '\\p{Digit}'; // [0-9]
-ALNUM_PO6 : '\\p{Alnum}'; // Any alphanumeric character
-PUNCT_PO6 : '\\p{Punct}'; // [!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]
-GLYPH_PO6 : '\\p{Graph}'; // 	Any alphanumeric or punctuation character [\p{Alnum}\p{Punct}]
-PRINTABLE_PO6 : '\\p{Print}'; // any glyph or whitespace
-BLANK_PO6 : '\\p{Blank}' ; // space or tab: [ \t]
-CTRL_PO6 : '\\p{Cntrl}'; // control characters [\x00-\x1F\x7F]
-HEXADECIMAL_PO6 : '\\p{XDigit}'; // [0-9a-fA-F]
-WS_PO6 : '\\p{Space}'; // whitespace character: [ \t\n\x0B\f\r]
+POSIX :  '\\p{Lower}' //[a-z] 
+| '\\p{Upper}' //[A-Z]
+| '\\p{ASCII}' //[\x00-\x7F]
+| '\\p{Alpha}'
+| '\\p{Digit}' // [0-9]
+| '\\p{Alnum}' // Any alphanumeric character
+| '\\p{Punct}' // [!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]
+| '\\p{Graph}' // 	Any alphanumeric or punctuation character [\p{Alnum}\p{Punct}]
+| '\\p{Print}' // any glyph or whitespace
+| '\\p{Blank}'  // space or tab: [ \t]
+| '\\p{Cntrl}' // control characters [\x00-\x1F\x7F]
+| '\\p{XDigit}' // [0-9a-fA-F]
+| '\\p{Space}' // whitespace character: [ \t\n\x0B\f\r]
+;
 
 // java.lang.Character classes (simple java character type)
-CHAR_CLASS_LC : '\\p{javaLowerCase}'; // Equivalent to java.lang.Character.isLowerCase()
-CHAR_CLASS_UC :'\\p{javaUpperCase}';	// Equivalent to java.lang.Character.isUpperCase()
-CHAR_CLASS_WS : '\\p{javaWhitespace}'; //Equivalent to java.lang.Character.isWhitespace()
-CHAR_CLASS_MIRRORED : '\\p{javaMirrored}'; //Equivalent to java.lang.Character.isMirrored()
+javalangCharacterClass : '\\p{javaLowerCase}' // Equivalent to java.lang.Character.isLowerCase()
+| '\\p{javaUpperCase}'	// Equivalent to java.lang.Character.isUpperCase()
+| '\\p{javaWhitespace}' //Equivalent to java.lang.Character.isWhitespace()
+| '\\p{javaMirrored}' //Equivalent to java.lang.Character.isMirrored()
+;
 
 //Classes for Unicode scripts, blocks, categories and binary properties
-UNICODE_CLASS_LATIN : '\\p{IsLatin}';	//A Latin script character (script)
-UNICODE_CLASS_GREEK : '\\p{InGreek}';	//A character in the Greek block (block)
-UNICODE_CLASS_UC : '\\p{Lu}'; //An uppercase letter (category)
-UNICODE_CLASS_ALPHA : '\\p{IsAlphabetic}'; //An alphabetic character (binary property)
-UNICODE_CLASS_CURR : '\\p{Sc}'; //A currency symbol
-UNICODE_CLASS_NOT_GREEK :'\\P{InGreek}';	//Any character except one in the Greek block (negation)
-UNICODE_CLASS_NOT_UC : '[\\p{L}&&[^\\p{Lu}]]'; //Any letter except an uppercase letter (subtraction)
+unicodeScriptClass : '\\p{IsLatin}'	//A Latin script character (script)
+| '\\p{InGreek}'	//A character in the Greek block (block)
+|  '\\p{Lu}' //An uppercase letter (category)
+| '\\p{IsAlphabetic}' //An alphabetic character (binary property)
+| '\\p{Sc}' //A currency symbol
+| '\\P{InGreek}'	//Any character except one in the Greek block (negation)
+| '[\\p{L}&&[^\\p{Lu}]]' //Any letter except an uppercase letter (subtraction)
+;
 
 
 
@@ -191,8 +230,8 @@ SINGLE_BAC\	Nothing, but quotes the following character
 */
 
 
+/* 
 
-/*
 Special constructs (named-capturing and non-capturing)
 (?<name>X)	X, as a named-capturing group
 (?:X)	X, as a non-capturing group
@@ -204,14 +243,15 @@ Special constructs (named-capturing and non-capturing)
 (?<!X)	X, via zero-width negative lookbehind
 (?>X)	X, as an independent, non-capturing group
 
+*/
 
+// Back references
 
-Back references
-\n	Whatever the nth capturing group matched
-\k<name>	Whatever the named-capturing group "name" matched
+NEWLINE_REF: '\\n';	//Whatever the nth capturing group matched
+NAMED_CAPTURE_GROUP_MATCH: '\\k<' [a-zA-Z]+ '>'; //	Whatever the named-capturing group "name" matched
+// ^ probably name the name part between the chevrons -- this project is so meta
 
-
- */
+ 
  
  
  /* 
