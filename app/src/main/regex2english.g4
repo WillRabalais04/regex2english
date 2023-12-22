@@ -1,14 +1,15 @@
 grammar regex2english;
 
-start: quantifier;
+start: expr;
 
-expr: escapedToLiteralOutsideCharClass (exprHelper | <EOF>) 
-| LETTER+ (exprHelper | <EOF>)
-| LBRACKET characterClass RBRACKET (exprHelper | <EOF>)
-| group (exprHelper | <EOF>)
-| back_reference (exprHelper | <EOF>)
-| boundary_matcher expr (exprHelper | <EOF>)
+expr: escapedToLiteralOutsideCharClass (exprHelper | <EOF>) # LITERAL
+| LETTER+ (exprHelper | <EOF>) # LETTER
+|  characterClass (exprHelper | <EOF>) # CHARACTER_CLASS
+| group (exprHelper | <EOF>) #CAPTURE_GROUP
+| back_reference (exprHelper | <EOF>) #BACK_REFERENCE
+| boundary_matcher expr (exprHelper | <EOF>) #BOUNDARY_MATCHER
 ;
+// add edge cases LBRACKET hyphen RBRACKET, LBRACKET hyphen characterClass RBRACKET, LBRACKET characterClass hyphen RBRACKET
 
 exprHelper: quantifier (exprHelper | <EOF>)
 | expr (exprHelper | <EOF>)
@@ -34,38 +35,33 @@ CARET : '^';
 LETTER : [a-zA-Z0-9/!,#&];
 EXTRA_LETTER_ALLOWED_INSIDE:  [|*\\?.$-];
 
+//following: https://www.abareplace.com/blog/escape-regexp/
+
 escapedToLiteralInsideCharClass: BACKSLASH_ESCAPED
-| LPAREN_ESCAPED
 | RBRACKET_ESCAPED
-| LBRACKET_ESCAPED
-| DOLLAR_SIGN_ESCAPED
 | HYPHEN_ESCAPED
 ;
 
-// PIPE_ESCAPED
-// RPAREN_ESCAPED
-// DOT_ESCAPED
-// CARET_ESCAPED
-// QMARK_ESCAPED
-// ASTERISK_ESCAPED
-
-escapedToLiteralOutsideCharClass: PIPE_ESCAPED
-| BACKSLASH_ESCAPED
+escapedToLiteralOutsideCharClass: LBRACKET_ESCAPED
+| ASTERISK_ESCAPED
+| PLUS_ESCAPED
+| QMARK_ESCAPED
+| LBRACE_ESCAPED
+| DOT_ESCAPED
 | LPAREN_ESCAPED
 | RPAREN_ESCAPED
-| LBRACKET_ESCAPED
-| RBRACKET_ESCAPED
-| DOT_ESCAPED
 | CARET_ESCAPED
-| QMARK_ESCAPED
-| ASTERISK_ESCAPED
 | DOLLAR_SIGN_ESCAPED
+| PIPE_ESCAPED
+| BACKSLASH_ESCAPED
 ;
 
 LETTER_RANGE : [a-zA-Z]'-'[a-zA-Z];
 NUMBER_RANGE : [0-9]'-'[0-9];
 DOUBLE_AMPERSAND : '&&' ;
 
+PLUS_ESCAPED : '\\+' ;
+LBRACE_ESCAPED : '\\{' ;
 PIPE_ESCAPED : '\\|' ;
 BACKSLASH_ESCAPED : '\\\\' ;
 LPAREN_ESCAPED: '\\(' ;
@@ -96,14 +92,19 @@ DIGIT: '\\d';
 
 // Quantifiers
 
-quantifier: '\\{'[0-9]?','[0-9]?'\\}' #RANGE_QUANTIFIER
-| '\\{'[0-9]?'\\}' #MIN_QUANTIFIER
+N_OCCURRANCES : '{' [0-9] '}';
+MAX_QUANTIFIER : '{,' [0-9]? '}';
+MIN_QUANTIFIER : '{' [0-9]? ',}';
+RANGE_QUANTIFIER : '{' [0-9]? ',' [0-9]? '}' ;
+
+
+quantifier:   MAX_QUANTIFIER 
+|  MIN_QUANTIFIER
+| RANGE_QUANTIFIER
 |  '+' #PLUS
 | '*'#ASTERISK
 | '?' #QMARK
 ;
-
-
 
 back_reference: NEWLINE_REF
 | NAMED_CAPTURE_GROUP_MATCH 
