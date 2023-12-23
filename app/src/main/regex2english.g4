@@ -4,29 +4,55 @@ start: expr;
 
 expr: escapedToLiteralOutsideCharClass (exprHelper | <EOF>) # LITERAL
 | LETTER+ (exprHelper | <EOF>) # LETTER
-|  characterClass (exprHelper | <EOF>) # CHARACTER_CLASS
+| characterClass (exprHelper | <EOF>) # CHARACTER_CLASS
 | group (exprHelper | <EOF>) #CAPTURE_GROUP
 | back_reference (exprHelper | <EOF>) #BACK_REFERENCE
 | boundary_matcher expr (exprHelper | <EOF>) #BOUNDARY_MATCHER
 ;
-// add edge cases LBRACKET hyphen RBRACKET, LBRACKET hyphen characterClass RBRACKET, LBRACKET characterClass hyphen RBRACKET
+// add edge cases LBRACKET hyphen RBRACKET, LBRACKET hyphen characterClassContent RBRACKET, LBRACKET characterClassContent hyphen RBRACKET
 
 exprHelper: quantifier (exprHelper | <EOF>)
 | expr (exprHelper | <EOF>)
 | boundary_matcher (exprHelper | <EOF>)
 ;
 
-group: DOLLAR_SIGN;
+expr2: '\\Q' expr2 '\\E' # QUOTATION
+| escapedToLiteralOutsideCharClass # ESCAPE_SEQUENCE
+| characterClass # CHARACTER_CLASS
+| LPAREN expr2 LPAREN # GROUP
+| back_reference # BACK_REFERENCE
+| expr2 quantifier # QUANTIFIER
+| expr expr # CONCATENATION
+| CARET expr2 # PRE_ANCHOR
+| expr2 DOLLAR_SIGN # POST_ANCHOR
+| (expr | expr) # OR
+;
 
-characterClass: CARET characterClass (characterClassHelper | <EOF>)
-| LBRACKET characterClass RBRACKET (characterClassHelper | <EOF>)
-| escapedToLiteralInsideCharClass (characterClassHelper | <EOF>)
-| predefinedCharacterClass (characterClassHelper | <EOF>)
+characterClassContent2 : CARET characterClassContent2
+| escapedToLiteralInsideCharClass
+| predefinedCharacterClass
+| characterClassContent2 // add && and concatenation
+| posix
+| javalangCharacterClass
+| unicodeScriptClass
+| (LETTER_RANGE | NUMBER_RANGE | ((LETTER | EXTRA_LETTER_ALLOWED_INSIDE) | CARET))+
+;
+
+line_anchor : 
+;
+
+group: LPAREN characterClass RPAREN ;
+
+characterClass: LBRACKET characterClassContent RBRACKET;
+
+characterClassContent: CARET characterClassContent (characterClassHelper | <EOF>)
+|  (characterClassHelper | <EOF>)
+|  (characterClassHelper | <EOF>)
 | (LETTER_RANGE | NUMBER_RANGE | ((LETTER | EXTRA_LETTER_ALLOWED_INSIDE) | CARET))+ (characterClassHelper | <EOF>)
 ;
 
-characterClassHelper: characterClass (characterClassHelper | <EOF>) 
-| DOUBLE_AMPERSAND characterClass (characterClassHelper | <EOF>)
+characterClassHelper: DOUBLE_AMPERSAND characterClassContent (characterClassHelper | <EOF>)
+|characterClassContent (characterClassHelper | <EOF>) 
 ;
 
 CARET : '^';
@@ -189,7 +215,7 @@ LINEBREAK_MATCHER : '\\R' ;
 
 
 // POSIX character classes (US-ASCII only)
-POSIX :  '\\p{Lower}' //[a-z] 
+posix :  '\\p{Lower}' //[a-z] 
 | '\\p{Upper}' //[A-Z]
 | '\\p{ASCII}' //[\x00-\x7F]
 | '\\p{Alpha}'
@@ -283,14 +309,5 @@ NAMED_CAPTURE_GROUP_MATCH: '\\k<' [a-zA-Z]+ '>'; //	Whatever the named-capturing
  */
  
  
- // add escape sequence for quantifiers
-
-
-//  characterClass: escapedToLiteralInsideCharClass 
-// | LBRACKET characterClass RBRACKET
-// | (LETTER_RANGE | NUMBER_RANGE | (escapedToLiteralInsideCharClass | LETTERS_INSIDE_CHAR_CLASS)+)
-// | CARET characterClass
-// | characterClass characterClass
-// | characterClass DOUBLE_AMPERSAND characterClass
-// ;
+ // add escape sequence for quantifiers;
 
