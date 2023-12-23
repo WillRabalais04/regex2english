@@ -18,20 +18,42 @@ exprHelper: quantifier (exprHelper | <EOF>)
 
 expr2: '\\Q' expr2 '\\E' # QUOTATION
 | escapedToLiteralOutsideCharClass # ESCAPE_SEQUENCE
+| LETTER+ # LETTER
 | characterClass # CHARACTER_CLASS
 | LPAREN expr2 LPAREN # GROUP
 | back_reference # BACK_REFERENCE
 | expr2 quantifier # QUANTIFIER
 | expr expr # CONCATENATION
-| CARET expr2 # PRE_ANCHOR
-| expr2 DOLLAR_SIGN # POST_ANCHOR
-| (expr | expr) # OR
+| boundary_matcher # BOUNDARY_MATCHER
+| (expr2 | expr2) # OR
 ;
+
+boundary_matcher: CARET expr2
+| expr2 DOLLAR_SIGN
+| '\\b'expr2'\\b' 
+| '\\B'expr2'\\B' 
+| '\\A'expr2 
+| '\\G' expr2
+| expr'\\z'
+| expr'\\Z' 
+;
+
+
+// E = expr2
+// a = //Q and //E
+// b = escapedToLiteralOutsideCharClass
+// c = LETTER
+// d = characterClass
+// e = RPAREN and LPAREN
+// f = back_reference
+// g = quantifier
+// h = CARET
+// i = boundary matcher
 
 characterClassContent2 : CARET characterClassContent2
 | escapedToLiteralInsideCharClass
 | predefinedCharacterClass
-| characterClassContent2 // add && and concatenation
+| characterClassContent2 DOUBLE_AMPERSAND (characterClass | characterClassContent2)  // add && and concatenation
 | posix
 | javalangCharacterClass
 | unicodeScriptClass
@@ -43,7 +65,7 @@ line_anchor :
 
 group: LPAREN characterClass RPAREN ;
 
-characterClass: LBRACKET characterClassContent RBRACKET;
+characterClass: LBRACKET characterClassContent2 RBRACKET;
 
 characterClassContent: CARET characterClassContent (characterClassHelper | <EOF>)
 |  (characterClassHelper | <EOF>)
@@ -132,19 +154,11 @@ quantifier:   MAX_QUANTIFIER
 | '?' #QMARK
 ;
 
-back_reference: NEWLINE_REF
+back_reference: N_TH_CAPTURE_GROUP
 | NAMED_CAPTURE_GROUP_MATCH 
 ;
 
-boundary_matcher: CARET
-| DOLLAR_SIGN
-| WORD_BOUNDARY 
-| NON_WORD_BOUNDARY
-| INPUT_START 
-| END_OF_MATCH
-| INPUT_END
-| INPUT_END_INC_NEWLINE 
-;
+
 
 // LEXER:
 // caret should not be esceped
@@ -274,7 +288,7 @@ Special constructs (named-capturing and non-capturing)
 
 // Back references
 
-NEWLINE_REF: '\\n';	//Whatever the nth capturing group matched
+N_TH_CAPTURE_GROUP: '\\[0-9]+' ;	//Whatever the nth capturing group matched
 NAMED_CAPTURE_GROUP_MATCH: '\\k<' [a-zA-Z]+ '>'; //	Whatever the named-capturing group "name" matched
 // ^ probably name the name part between the chevrons -- this project is so meta
 
