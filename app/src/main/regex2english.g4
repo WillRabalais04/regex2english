@@ -20,10 +20,10 @@ expr2: '\\Q' expr2 '\\E' # QUOTATION
 | escapedToLiteralOutsideCharClass # ESCAPE_SEQUENCE
 | LETTER+ # LETTER
 | characterClass # CHARACTER_CLASS
-| LPAREN expr2 LPAREN # GROUP
+| LPAREN expr2 RPAREN # GROUP
 | back_reference # BACK_REFERENCE
 | expr2 quantifier # QUANTIFIER
-| expr expr # CONCATENATION
+| expr2 expr2 # CONCATENATION
 | boundary_matcher # BOUNDARY_MATCHER
 | (expr2 | expr2) # OR
 ;
@@ -40,15 +40,26 @@ boundary_matcher: CARET expr2
 
 
 // E = expr2
-// a = //Q and //E
+// F = boundary matcher
+
+// a = //Q
 // b = escapedToLiteralOutsideCharClass
 // c = LETTER
 // d = characterClass
-// e = RPAREN and LPAREN
+// e = LPAREN
 // f = back_reference
 // g = quantifier
 // h = CARET
-// i = boundary matcher
+// i = DOLLAR_SIGN
+// j = '\\b'
+// k = '\\B'
+// l = '\\A'
+// m = '\\G'
+// n = '\\z'
+// o = '\\Z'
+// p = '\\E'
+// q = RPAREN
+
 
 characterClassContent2 : CARET characterClassContent2
 | escapedToLiteralInsideCharClass
