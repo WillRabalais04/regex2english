@@ -8,7 +8,7 @@ expr : escapedToLiteralOutsideCharClass (exprHelper | <EOF>) # ESCAPE_SEQUENCE
 | predefinedCharacterClass (exprHelper | <EOF>) # PREDEFINED_CHARACTERCLASS
 | characterClass (exprHelper | <EOF>) # CHARACTERCLASS
 | group (exprHelper | <EOF>) # GROUP
-| back_reference (exprHelper | <EOF>) # BACKREFERENCE
+| backReference (exprHelper | <EOF>) # BACKREFERENCE
 | CARET expr (exprHelper | <EOF>) # BOUNDARY_MATCHER_START
 | '\\b'expr'\\b' (exprHelper | <EOF>) # WORD_BOUNDARY
 | '\\B'expr'\\B' (exprHelper | <EOF>) # NON_WORD_BOUNDARY
@@ -84,7 +84,7 @@ quantifier:  N_OCCURRANCES
 | '?' # QMARK
 ;
 
-back_reference: N_TH_CAPTURE_GROUP
+backReference: N_TH_CAPTURE_GROUP
 | NAMED_CAPTURE_GROUP_MATCH 
 ;
 
@@ -113,7 +113,23 @@ escapedFromLiteral : predefinedCharacterClass
 | LINEBREAK_MATCHER
 ;
 
-// POSIX character classes (US-ASCII only)
+// move named_capture_group above other lexer tokesns
+// Capture Groups
+namedCaptureGroup : LPAREN '<?'NAMED_CAPTURE_GROUP_NAME'>' expr RPAREN;
+nonCaptureGroup: LPAREN '?:' expr RPAREN;
+independentNonCapturingGroup: LPAREN '?>' expr RPAREN;
+
+// Look Aheads
+zeroWidthPositiveLookAhead: LPAREN '?=' expr RPAREN;
+zeroWidthNegativeLookAhead: LPAREN '?!' expr RPAREN;
+zeroWidthPositiveLookBehind: LPAREN '?<=' expr RPAREN;
+zeroWidthNegativeLookBehind: LPAREN '?<!' expr RPAREN;
+
+// add:
+// - (?idmsuxU-idmsuxU) 	Nothing, but turns match flags i d m s u x U on - off
+// - (?idmsux-idmsux:X)  	X, as a non-capturing group with the given flags i d m s u x on - off
+
+// POSIX Character Classes (US-ASCII only)
 posix :  '\\p{Lower}' # POSIX_LOWERCASE //[a-z] 
 | '\\p{Upper}' # POSIX_UPPERCASE //[A-Z]
 | '\\p{ASCII}' # POSIX_ASCII //[\x00-\x7F]
@@ -129,14 +145,14 @@ posix :  '\\p{Lower}' # POSIX_LOWERCASE //[a-z]
 | '\\p{Space}' # POSIX_WHITESPACE // whitespace character: [ \t\n\x0B\f\r]
 ;
 
-// java.lang.Character classes (simple java character type)
+// java.lang.Character Classes 
 javalangCharacterClass : '\\p{javaLowerCase}' # JAVALANG_CC_LOWERCASE // Equivalent to java.lang.Character.isLowerCase()
 | '\\p{javaUpperCase}' # JAVALANG_CC_UPPERCASE	// Equivalent to java.lang.Character.isUpperCase()
 | '\\p{javaWhitespace}' # JAVALANG_CC_WHITESPACE //Equivalent to java.lang.Character.isWhitespace()
 | '\\p{javaMirrored}' # JAVALANG_CC_MIRRORED //Equivalent to java.lang.Character.isMirrored()
 ;
 
-//Classes for Unicode scripts, blocks, categories and binary properties
+//Classes for Unicode Scripts
 unicodeScriptClass : '\\p{IsLatin}' # LATIN //A Latin script character (script)
 | '\\p{InGreek}'# GREEK //A character in the Greek block (block)
 |  '\\p{Lu}' # UPPERCASE //An uppercase letter (category)
@@ -148,6 +164,8 @@ unicodeScriptClass : '\\p{IsLatin}' # LATIN //A Latin script character (script)
 
 // Lexer:
 CARET : '^';
+DIGIT: '\\d';
+
 LETTER : [a-zA-Z0-9/!,#&];
 EXTRA_LETTER_ALLOWED_INSIDE:  [|*\\?.$-]; //following: https://www.abareplace.com/blog/escape-regexp/
 
@@ -179,8 +197,6 @@ ASTERISK_ESCAPED : '\\*' ;
 DOLLAR_SIGN_ESCAPED : '\\$';
 HYPHEN_ESCAPED : '\\-' ;
 
-DIGIT: '\\d';
-
 // Quantifiers
 N_OCCURRANCES : '{' [0-9] '}';
 MAX_QUANTIFIER : '{,' [0-9]? '}';
@@ -194,14 +210,14 @@ LPAREN : '(' ;
 RPAREN : ')';
 
 // Characters
-BACKSLASH : '\\' ;
+BACKSLASH : '\\';
 OCTAL_1 : '\\0'[0-7];
 OCTAL_2 : '\\0'[0-7][0-7];
 OCTAL_3 : '\\0'[0-3][0-7][0-7];
 HEXA_2 : '\\x'[a-fA-F0-9];
 HEXA_4 : '\\x'[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9];
 CODE_POINT : 'U\\+'[1]?[a-fA-F0-9]{4,5};
-CARRIAGE_RETURN : '\\r' ;
+CARRIAGE_RETURN : '\\r';
 TAB : '\\t' ;
 FORM_FEED : '\\f' ;
 ALERT : '\\a' ;
@@ -220,6 +236,6 @@ INPUT_END_INC_NEWLINE : '\\Z';
 LINEBREAK_MATCHER : '\\R' ;
 
 // Back references
-N_TH_CAPTURE_GROUP: '\\[0-9]+' ;	//Whatever the nth capturing group matched
-NAMED_CAPTURE_GROUP_MATCH: '\\k<' [a-zA-Z]+ '>'; //	Whatever the named-capturing group "name" matched
-// ^ probably name the name part between the chevrons -- this project is so meta
+N_TH_CAPTURE_GROUP: '\\[0-9]+' ;	// Whatever the nth capturing group matched
+NAMED_CAPTURE_GROUP_MATCH: '\\k<'[a-zA-Z]+'>'; //	Whatever the named-capturing group "name" matched
+NAMED_CAPTURE_GROUP_NAME : [a-zA-Z_];
