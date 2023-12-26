@@ -3,44 +3,46 @@ grammar regex2english;
 // Parser:
 start: expr;
 
-expr : escapedToLiteralOutsideCharClass (exprHelper | <EOF>) # ESCAPE_SEQUENCE
-| quote (exprHelper | <EOF>) # QUOTE
-| predefinedCharacterClass (exprHelper | <EOF>) # PREDEFINED_CHARACTERCLASS
-| characterClass (exprHelper | <EOF>) # CHARACTERCLASS
-| group (exprHelper | <EOF>) # GROUP
-| backReference (exprHelper | <EOF>) # BACKREFERENCE
-| CARET expr (exprHelper | <EOF>) # BOUNDARY_MATCHER_START
-| '\\b'expr'\\b' (exprHelper | <EOF>) # WORD_BOUNDARY
-| '\\B'expr'\\B' (exprHelper | <EOF>) # NON_WORD_BOUNDARY
-| '\\A'expr (exprHelper | <EOF>) # INPUT_START
-| '\\G' expr (exprHelper | <EOF>) #END_OF_MATCH
-| LETTER+ (exprHelper | <EOF>) # LETTER
+expr : (escapedToLiteralOutsideCharClass 
+| quote
+| zeroWidthAssertions
+| inlineModifier
+| captureGroup 
+| group
+| predefinedCharacterClass 
+| characterClass 
+| backReference 
+| boundaryMatcherStart 
+| wordBoundary
+| nonWordBoundary 
+| inputStart 
+| endOfMatch 
+| letter) 
+(exprHelper | <EOF>) 
 ;
 
-exprHelper :  PIPE expr (exprHelper | <EOF>) #OR
-|quantifier (exprHelper | <EOF>) # QUANTIFIER
-| expr (exprHelper | <EOF>) # CONCATENATION
-| DOLLAR_SIGN (exprHelper | <EOF>) # BOUNDARY_MATCHER_END
-| '\\Z' (exprHelper | <EOF>) # END_OF_INPUT_EXCEPT_FINAL_TERMINATOR
-| '\\z' (exprHelper | <EOF>) # END_OF_INPUT
+exprHelper : (concatenation
+| quantifier 
+| boundaryMatcherEnd
+| endOfInputExceptFinalTerminator
+| endOfOnput
+| or ) 
+(exprHelper | <EOF>) 
 ;
 
-characterClass: LBRACKET characterClassContent RBRACKET;
-
-characterClassContent: CARET characterClassContent (characterClassContentHelper | <EOF>)
-| escapedToLiteralInsideCharClass (characterClassContentHelper | <EOF>)
-| predefinedCharacterClass (characterClassContentHelper | <EOF>)
-| posix (characterClassContentHelper | <EOF>)
-| javalangCharacterClass (characterClassContentHelper | <EOF>)
-| unicodeScriptClass (characterClassContentHelper | <EOF>)
-| (LETTER_RANGE | NUMBER_RANGE | ((LETTER | EXTRA_LETTER_ALLOWED_INSIDE) | CARET))+ (characterClassContentHelper | <EOF>)
+characterClassContent: (CARET characterClassContent
+| escapedToLiteralInsideCharClass
+| predefinedCharacterClass 
+| posix 
+| javalangCharacterClass 
+| unicodeScriptClass
+| (LETTER_RANGE | NUMBER_RANGE | ((LETTER | EXTRA_LETTER_ALLOWED_INSIDE) | CARET))+) 
+(characterClassContentHelper | <EOF>)
 ;
 
 characterClassContentHelper: DOUBLE_AMPERSAND  (characterClass | characterClassContent) (characterClassContentHelper | <EOF>) 
 | characterClass (characterClassContentHelper | <EOF>)
 ;
-
-group: LPAREN expr RPAREN ;
 
 escapedToLiteralInsideCharClass: BACKSLASH_ESCAPED
 | RBRACKET_ESCAPED
@@ -62,33 +64,70 @@ escapedToLiteralOutsideCharClass: LBRACKET_ESCAPED
 | BACKSLASH_ESCAPED
 ;
 
-predefinedCharacterClass : '.' # WILDCARD
-| '\\d' # DIGIT
-| '\\D' # NON_DIGIT
-| '\\h' # HORIZONTAL_WHITESPACE
-| '\\H' # NON_HORIZONTAL_WHITESPACE
-| '\\s' # WHITESPACE
-| '\\S' # NON_WHITESPACE
-| '\\v' # VERTICAL_WHITESPACE
-| '\\V' # NON_VERTICAL_WHITESPACE
-| '\\w' # WORD
-| '\\W' # NON_WORD
+quote: LEFT_QUOTE expr RIGHT_QUOTE ;
+
+zeroWidthAssertions: zeroWidthPositiveLookAhead
+| zeroWidthNegativeLookAhead
+| zeroWidthPositiveLookBehind
+| zeroWidthNegativeLookBehind
 ;
 
-quantifier:  N_OCCURRANCES
-| MAX_QUANTIFIER 
-|  MIN_QUANTIFIER
-| RANGE_QUANTIFIER
-| '+' #PLUS
-| '*' # ASTERISK
-| '?' # QMARK
+captureGroup: namedCaptureGroup
+| nonCaptureGroup
+| independentNonCapturingGroup
 ;
+
+group: LPAREN expr RPAREN;
+
+predefinedCharacterClass : WILDCARD
+| DIGIT
+| NON_DIGIT
+| HORIZONTAL_WHITESPACE
+| NON_HORIZONTAL_WHITESPACE
+| WHITESPACE
+| NON_WHITESPACE
+| VERTICAL_WHITESPACE
+| NON_VERTICAL_WHITESPACE
+| WORD
+| NON_WORD 
+;
+
+characterClass: LBRACKET characterClassContent RBRACKET ;
 
 backReference: N_TH_CAPTURE_GROUP
 | NAMED_CAPTURE_GROUP_MATCH 
 ;
 
-quote: LEFT_QUOTE expr RIGHT_QUOTE;
+boundaryMatcherStart: CARET expr ;
+
+wordBoundary: WORD_BOUNDARY expr WORD_BOUNDARY ;
+
+nonWordBoundary: NON_WORD_BOUNDARY expr NON_WORD_BOUNDARY;
+
+inputStart: INPUT_START expr;
+
+endOfMatch: END_OF_MATCH expr;
+
+letter: LETTER+;
+
+concatenation: expr;
+
+quantifier: N_OCCURRANCES
+| MAX_QUANTIFIER 
+|  MIN_QUANTIFIER
+| RANGE_QUANTIFIER
+| PLUS
+| ASTERISK
+| QMARK
+;
+
+boundaryMatcherEnd: DOLLAR_SIGN ;
+
+endOfInputExceptFinalTerminator: INPUT_END_INC_NEWLINE ;
+
+endOfOnput: INPUT_END ;
+
+or: PIPE expr ;
 
 escapedFromLiteral : predefinedCharacterClass
 | OCTAL_1 
@@ -113,7 +152,9 @@ escapedFromLiteral : predefinedCharacterClass
 | LINEBREAK_MATCHER
 ;
 
-// move named_capture_group above other lexer tokesns
+// Inline Modifiers
+inlineModifier: INLINEMODIFIER | (LOCAL_INLINE_MODIFIER_TEMPLATE expr RPAREN) ;
+
 // Capture Groups
 namedCaptureGroup : LPAREN '<?'NAMED_CAPTURE_GROUP_NAME'>' expr RPAREN;
 nonCaptureGroup: LPAREN '?:' expr RPAREN;
@@ -124,10 +165,6 @@ zeroWidthPositiveLookAhead: LPAREN '?=' expr RPAREN;
 zeroWidthNegativeLookAhead: LPAREN '?!' expr RPAREN;
 zeroWidthPositiveLookBehind: LPAREN '?<=' expr RPAREN;
 zeroWidthNegativeLookBehind: LPAREN '?<!' expr RPAREN;
-
-// add:
-// - (?idmsuxU-idmsuxU) 	Nothing, but turns match flags i d m s u x U on - off
-// - (?idmsux-idmsux:X)  	X, as a non-capturing group with the given flags i d m s u x on - off
 
 // POSIX Character Classes (US-ASCII only)
 posix :  '\\p{Lower}' # POSIX_LOWERCASE //[a-z] 
@@ -163,11 +200,19 @@ unicodeScriptClass : '\\p{IsLatin}' # LATIN //A Latin script character (script)
 ;
 
 // Lexer:
+
+WILDCARD: '.';
 CARET : '^';
 DIGIT: '\\d';
-
-LETTER : [a-zA-Z0-9/!,#&];
-EXTRA_LETTER_ALLOWED_INSIDE:  [|*\\?.$-]; //following: https://www.abareplace.com/blog/escape-regexp/
+NON_DIGIT: '\\D';
+HORIZONTAL_WHITESPACE: '\\h' ;
+NON_HORIZONTAL_WHITESPACE: '\\H';
+WHITESPACE: '\\s' ;
+NON_WHITESPACE: '\\S' ;
+VERTICAL_WHITESPACE: '\\v' ;
+NON_VERTICAL_WHITESPACE: '\\V';
+WORD: '\\w' ;
+NON_WORD: '\\W' ;
 
 // Quotes
 LEFT_QUOTE: '\\Q';
@@ -202,6 +247,9 @@ N_OCCURRANCES : '{' [0-9] '}';
 MAX_QUANTIFIER : '{,' [0-9]? '}';
 MIN_QUANTIFIER : '{' [0-9]? ',}';
 RANGE_QUANTIFIER : '{' [0-9]? ',' [0-9]? '}' ;
+PLUS: '+';
+ASTERISK: '*' ;
+QMARK: '?' ;
 
 // Brackets
 LBRACKET : '[' ; 
@@ -235,7 +283,21 @@ INPUT_END_INC_NEWLINE : '\\Z';
 //Linebreak Matcher
 LINEBREAK_MATCHER : '\\R' ;
 
-// Back references
-N_TH_CAPTURE_GROUP: '\\[0-9]+' ;	// Whatever the nth capturing group matched
+// Letters
+LETTER : [a-zA-Z0-9/!,#&];
+EXTRA_LETTER_ALLOWED_INSIDE:  [|*\\?.$-]; //following: https://www.abareplace.com/blog/escape-regexp/
+
+//Inline Modifier
+/* 
+- must be checked in the listener whether modifiers are being repeatedly 
+because ANTLR regex does not support lookaheads and back references so 
+it cannot be verified here
+- also check if it contains the minus sign which negates the toggle
+*/
+INLINEMODIFIER: LPAREN QMARK [-?][imsx]+ RPAREN;
+LOCAL_INLINE_MODIFIER_TEMPLATE: LPAREN QMARK [-]?[:][imsx]+ ;
+
+// Back References
+N_TH_CAPTURE_GROUP: '\\'[0-9]+ ;	// Whatever the nth capturing group matched
 NAMED_CAPTURE_GROUP_MATCH: '\\k<'[a-zA-Z]+'>'; //	Whatever the named-capturing group "name" matched
 NAMED_CAPTURE_GROUP_NAME : [a-zA-Z_];
