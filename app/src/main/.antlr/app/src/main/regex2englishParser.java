@@ -1,4 +1,4 @@
-// Generated from /Users/willrabalais/Code/Projects/regex2english/app/src/main/regex2english.g4 by ANTLR 4.9.2
+// Generated from app/src/main/regex2english.g4 by ANTLR 4.13.1
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
+@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class regex2englishParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.9.2", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.13.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -158,6 +158,7 @@ public class regex2englishParser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class StartContext extends ParserRuleContext {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
@@ -166,6 +167,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_start; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitStart(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final StartContext start() throws RecognitionException {
@@ -189,6 +195,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ExprContext extends ParserRuleContext {
 		public EscapedToLiteralOutsideCharClassContext escapedToLiteralOutsideCharClass() {
 			return getRuleContext(EscapedToLiteralOutsideCharClassContext.class,0);
@@ -242,6 +249,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_expr; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitExpr(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ExprContext expr() throws RecognitionException {
@@ -371,6 +383,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ExprHelperContext extends ParserRuleContext {
 		public ConcatenationContext concatenation() {
 			return getRuleContext(ConcatenationContext.class,0);
@@ -397,6 +410,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_exprHelper; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitExprHelper(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ExprHelperContext exprHelper() throws RecognitionException {
@@ -515,6 +533,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class CharacterClassContentContext extends ParserRuleContext {
 		public List<TerminalNode> CARET() { return getTokens(regex2englishParser.CARET); }
 		public TerminalNode CARET(int i) {
@@ -561,6 +580,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_characterClassContent; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitCharacterClassContent(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final CharacterClassContentContext characterClassContent() throws RecognitionException {
@@ -673,7 +697,7 @@ public class regex2englishParser extends Parser {
 					setState(126); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-				} while ( ((((_la - 34)) & ~0x3f) == 0 && ((1L << (_la - 34)) & ((1L << (CARET - 34)) | (1L << (LETTER_RANGE - 34)) | (1L << (NUMBER_RANGE - 34)) | (1L << (LETTER - 34)) | (1L << (EXTRA_LETTER_ALLOWED_INSIDE - 34)))) != 0) );
+				} while ( ((((_la - 34)) & ~0x3f) == 0 && ((1L << (_la - 34)) & -4611686018427363327L) != 0) );
 				}
 				break;
 			}
@@ -704,6 +728,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class CharacterClassContentHelperContext extends ParserRuleContext {
 		public TerminalNode DOUBLE_AMPERSAND() { return getToken(regex2englishParser.DOUBLE_AMPERSAND, 0); }
 		public CharacterClassContext characterClass() {
@@ -719,6 +744,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_characterClassContentHelper; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitCharacterClassContentHelper(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final CharacterClassContentHelperContext characterClassContentHelper() throws RecognitionException {
@@ -846,6 +876,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class EscapedToLiteralInsideCharClassContext extends ParserRuleContext {
 		public TerminalNode BACKSLASH_ESCAPED() { return getToken(regex2englishParser.BACKSLASH_ESCAPED, 0); }
 		public TerminalNode RBRACKET_ESCAPED() { return getToken(regex2englishParser.RBRACKET_ESCAPED, 0); }
@@ -855,6 +886,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_escapedToLiteralInsideCharClass; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitEscapedToLiteralInsideCharClass(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final EscapedToLiteralInsideCharClassContext escapedToLiteralInsideCharClass() throws RecognitionException {
@@ -866,7 +902,7 @@ public class regex2englishParser extends Parser {
 			{
 			setState(150);
 			_la = _input.LA(1);
-			if ( !(((((_la - 54)) & ~0x3f) == 0 && ((1L << (_la - 54)) & ((1L << (BACKSLASH_ESCAPED - 54)) | (1L << (LBRACKET_ESCAPED - 54)) | (1L << (RBRACKET_ESCAPED - 54)) | (1L << (HYPHEN_ESCAPED - 54)))) != 0)) ) {
+			if ( !(((((_la - 54)) & ~0x3f) == 0 && ((1L << (_la - 54)) & 1049L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -887,6 +923,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class EscapedToLiteralOutsideCharClassContext extends ParserRuleContext {
 		public TerminalNode LBRACKET_ESCAPED() { return getToken(regex2englishParser.LBRACKET_ESCAPED, 0); }
 		public TerminalNode ASTERISK_ESCAPED() { return getToken(regex2englishParser.ASTERISK_ESCAPED, 0); }
@@ -904,6 +941,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_escapedToLiteralOutsideCharClass; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitEscapedToLiteralOutsideCharClass(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final EscapedToLiteralOutsideCharClassContext escapedToLiteralOutsideCharClass() throws RecognitionException {
@@ -915,7 +957,7 @@ public class regex2englishParser extends Parser {
 			{
 			setState(152);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << PLUS_ESCAPED) | (1L << LBRACE_ESCAPED) | (1L << PIPE_ESCAPED) | (1L << BACKSLASH_ESCAPED) | (1L << LPAREN_ESCAPED) | (1L << RPAREN_ESCAPED) | (1L << LBRACKET_ESCAPED) | (1L << DOT_ESCAPED) | (1L << CARET_ESCAPED) | (1L << QMARK_ESCAPED) | (1L << ASTERISK_ESCAPED) | (1L << DOLLAR_SIGN_ESCAPED))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & -290482175965396992L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -936,6 +978,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class QuoteContext extends ParserRuleContext {
 		public TerminalNode LEFT_QUOTE() { return getToken(regex2englishParser.LEFT_QUOTE, 0); }
 		public ExprContext expr() {
@@ -946,6 +989,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_quote; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitQuote(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final QuoteContext quote() throws RecognitionException {
@@ -973,6 +1021,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ZeroWidthAssertionsContext extends ParserRuleContext {
 		public ZeroWidthPositiveLookAheadContext zeroWidthPositiveLookAhead() {
 			return getRuleContext(ZeroWidthPositiveLookAheadContext.class,0);
@@ -990,6 +1039,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_zeroWidthAssertions; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitZeroWidthAssertions(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ZeroWidthAssertionsContext zeroWidthAssertions() throws RecognitionException {
@@ -1040,6 +1094,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class CaptureGroupContext extends ParserRuleContext {
 		public NamedCaptureGroupContext namedCaptureGroup() {
 			return getRuleContext(NamedCaptureGroupContext.class,0);
@@ -1054,6 +1109,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_captureGroup; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitCaptureGroup(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final CaptureGroupContext captureGroup() throws RecognitionException {
@@ -1097,6 +1157,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class GroupContext extends ParserRuleContext {
 		public TerminalNode LPAREN() { return getToken(regex2englishParser.LPAREN, 0); }
 		public ExprContext expr() {
@@ -1107,6 +1168,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_group; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitGroup(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final GroupContext group() throws RecognitionException {
@@ -1134,6 +1200,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class PredefinedCharacterClassContext extends ParserRuleContext {
 		public TerminalNode WILDCARD() { return getToken(regex2englishParser.WILDCARD, 0); }
 		public TerminalNode DIGIT() { return getToken(regex2englishParser.DIGIT, 0); }
@@ -1150,6 +1217,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_predefinedCharacterClass; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitPredefinedCharacterClass(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final PredefinedCharacterClassContext predefinedCharacterClass() throws RecognitionException {
@@ -1161,7 +1233,7 @@ public class regex2englishParser extends Parser {
 			{
 			setState(173);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << WILDCARD) | (1L << DIGIT) | (1L << NON_DIGIT) | (1L << HORIZONTAL_WHITESPACE) | (1L << NON_HORIZONTAL_WHITESPACE) | (1L << WHITESPACE) | (1L << NON_WHITESPACE) | (1L << VERTICAL_WHITESPACE) | (1L << NON_VERTICAL_WHITESPACE) | (1L << WORD) | (1L << NON_WORD))) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 35158602285056L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -1182,6 +1254,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class CharacterClassContext extends ParserRuleContext {
 		public TerminalNode LBRACKET() { return getToken(regex2englishParser.LBRACKET, 0); }
 		public CharacterClassContentContext characterClassContent() {
@@ -1192,6 +1265,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_characterClass; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitCharacterClass(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final CharacterClassContext characterClass() throws RecognitionException {
@@ -1219,6 +1297,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class BackReferenceContext extends ParserRuleContext {
 		public TerminalNode N_TH_CAPTURE_GROUP() { return getToken(regex2englishParser.N_TH_CAPTURE_GROUP, 0); }
 		public TerminalNode NAMED_CAPTURE_GROUP_MATCH() { return getToken(regex2englishParser.NAMED_CAPTURE_GROUP_MATCH, 0); }
@@ -1226,6 +1305,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_backReference; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitBackReference(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final BackReferenceContext backReference() throws RecognitionException {
@@ -1258,6 +1342,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class BoundaryMatcherStartContext extends ParserRuleContext {
 		public TerminalNode CARET() { return getToken(regex2englishParser.CARET, 0); }
 		public ExprContext expr() {
@@ -1267,6 +1352,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_boundaryMatcherStart; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitBoundaryMatcherStart(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final BoundaryMatcherStartContext boundaryMatcherStart() throws RecognitionException {
@@ -1292,6 +1382,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class WordBoundaryContext extends ParserRuleContext {
 		public List<TerminalNode> WORD_BOUNDARY() { return getTokens(regex2englishParser.WORD_BOUNDARY); }
 		public TerminalNode WORD_BOUNDARY(int i) {
@@ -1304,6 +1395,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_wordBoundary; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitWordBoundary(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final WordBoundaryContext wordBoundary() throws RecognitionException {
@@ -1331,6 +1427,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class NonWordBoundaryContext extends ParserRuleContext {
 		public List<TerminalNode> NON_WORD_BOUNDARY() { return getTokens(regex2englishParser.NON_WORD_BOUNDARY); }
 		public TerminalNode NON_WORD_BOUNDARY(int i) {
@@ -1343,6 +1440,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_nonWordBoundary; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitNonWordBoundary(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final NonWordBoundaryContext nonWordBoundary() throws RecognitionException {
@@ -1370,6 +1472,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class InputStartContext extends ParserRuleContext {
 		public TerminalNode INPUT_START() { return getToken(regex2englishParser.INPUT_START, 0); }
 		public ExprContext expr() {
@@ -1379,6 +1482,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_inputStart; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitInputStart(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final InputStartContext inputStart() throws RecognitionException {
@@ -1404,6 +1512,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class EndOfMatchContext extends ParserRuleContext {
 		public TerminalNode END_OF_MATCH() { return getToken(regex2englishParser.END_OF_MATCH, 0); }
 		public ExprContext expr() {
@@ -1413,6 +1522,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_endOfMatch; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitEndOfMatch(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final EndOfMatchContext endOfMatch() throws RecognitionException {
@@ -1438,6 +1552,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class LetterContext extends ParserRuleContext {
 		public List<TerminalNode> LETTER() { return getTokens(regex2englishParser.LETTER); }
 		public TerminalNode LETTER(int i) {
@@ -1447,6 +1562,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_letter; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitLetter(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final LetterContext letter() throws RecognitionException {
@@ -1489,6 +1609,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ConcatenationContext extends ParserRuleContext {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
@@ -1497,6 +1618,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_concatenation; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitConcatenation(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ConcatenationContext concatenation() throws RecognitionException {
@@ -1520,6 +1646,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class QuantifierContext extends ParserRuleContext {
 		public TerminalNode N_OCCURRANCES() { return getToken(regex2englishParser.N_OCCURRANCES, 0); }
 		public TerminalNode MAX_QUANTIFIER() { return getToken(regex2englishParser.MAX_QUANTIFIER, 0); }
@@ -1532,6 +1659,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_quantifier; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitQuantifier(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final QuantifierContext quantifier() throws RecognitionException {
@@ -1543,7 +1675,7 @@ public class regex2englishParser extends Parser {
 			{
 			setState(205);
 			_la = _input.LA(1);
-			if ( !(((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & ((1L << (N_OCCURRANCES - 65)) | (1L << (MAX_QUANTIFIER - 65)) | (1L << (MIN_QUANTIFIER - 65)) | (1L << (RANGE_QUANTIFIER - 65)) | (1L << (PLUS - 65)) | (1L << (ASTERISK - 65)) | (1L << (QMARK - 65)))) != 0)) ) {
+			if ( !(((((_la - 65)) & ~0x3f) == 0 && ((1L << (_la - 65)) & 127L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -1564,12 +1696,18 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class BoundaryMatcherEndContext extends ParserRuleContext {
 		public TerminalNode DOLLAR_SIGN() { return getToken(regex2englishParser.DOLLAR_SIGN, 0); }
 		public BoundaryMatcherEndContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_boundaryMatcherEnd; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitBoundaryMatcherEnd(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final BoundaryMatcherEndContext boundaryMatcherEnd() throws RecognitionException {
@@ -1593,12 +1731,18 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class EndOfInputExceptFinalTerminatorContext extends ParserRuleContext {
 		public TerminalNode INPUT_END_INC_NEWLINE() { return getToken(regex2englishParser.INPUT_END_INC_NEWLINE, 0); }
 		public EndOfInputExceptFinalTerminatorContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_endOfInputExceptFinalTerminator; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitEndOfInputExceptFinalTerminator(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final EndOfInputExceptFinalTerminatorContext endOfInputExceptFinalTerminator() throws RecognitionException {
@@ -1622,12 +1766,18 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class EndOfOnputContext extends ParserRuleContext {
 		public TerminalNode INPUT_END() { return getToken(regex2englishParser.INPUT_END, 0); }
 		public EndOfOnputContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_endOfOnput; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitEndOfOnput(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final EndOfOnputContext endOfOnput() throws RecognitionException {
@@ -1651,6 +1801,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class OrContext extends ParserRuleContext {
 		public TerminalNode PIPE() { return getToken(regex2englishParser.PIPE, 0); }
 		public ExprContext expr() {
@@ -1660,6 +1811,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_or; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitOr(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final OrContext or() throws RecognitionException {
@@ -1685,6 +1841,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class EscapedFromLiteralContext extends ParserRuleContext {
 		public PredefinedCharacterClassContext predefinedCharacterClass() {
 			return getRuleContext(PredefinedCharacterClassContext.class,0);
@@ -1713,6 +1870,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_escapedFromLiteral; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitEscapedFromLiteral(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final EscapedFromLiteralContext escapedFromLiteral() throws RecognitionException {
@@ -1894,6 +2056,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class InlineModifierContext extends ParserRuleContext {
 		public TerminalNode INLINEMODIFIER() { return getToken(regex2englishParser.INLINEMODIFIER, 0); }
 		public TerminalNode LOCAL_INLINE_MODIFIER_TEMPLATE() { return getToken(regex2englishParser.LOCAL_INLINE_MODIFIER_TEMPLATE, 0); }
@@ -1905,6 +2068,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_inlineModifier; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitInlineModifier(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final InlineModifierContext inlineModifier() throws RecognitionException {
@@ -1949,6 +2117,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class NamedCaptureGroupContext extends ParserRuleContext {
 		public TerminalNode LPAREN() { return getToken(regex2englishParser.LPAREN, 0); }
 		public TerminalNode NAMED_CAPTURE_GROUP_NAME() { return getToken(regex2englishParser.NAMED_CAPTURE_GROUP_NAME, 0); }
@@ -1960,6 +2129,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_namedCaptureGroup; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitNamedCaptureGroup(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final NamedCaptureGroupContext namedCaptureGroup() throws RecognitionException {
@@ -1993,6 +2167,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class NonCaptureGroupContext extends ParserRuleContext {
 		public TerminalNode LPAREN() { return getToken(regex2englishParser.LPAREN, 0); }
 		public ExprContext expr() {
@@ -2003,6 +2178,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_nonCaptureGroup; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitNonCaptureGroup(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final NonCaptureGroupContext nonCaptureGroup() throws RecognitionException {
@@ -2032,6 +2212,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class IndependentNonCapturingGroupContext extends ParserRuleContext {
 		public TerminalNode LPAREN() { return getToken(regex2englishParser.LPAREN, 0); }
 		public ExprContext expr() {
@@ -2042,6 +2223,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_independentNonCapturingGroup; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitIndependentNonCapturingGroup(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final IndependentNonCapturingGroupContext independentNonCapturingGroup() throws RecognitionException {
@@ -2071,6 +2257,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ZeroWidthPositiveLookAheadContext extends ParserRuleContext {
 		public TerminalNode LPAREN() { return getToken(regex2englishParser.LPAREN, 0); }
 		public ExprContext expr() {
@@ -2081,6 +2268,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_zeroWidthPositiveLookAhead; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitZeroWidthPositiveLookAhead(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ZeroWidthPositiveLookAheadContext zeroWidthPositiveLookAhead() throws RecognitionException {
@@ -2110,6 +2302,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ZeroWidthNegativeLookAheadContext extends ParserRuleContext {
 		public TerminalNode LPAREN() { return getToken(regex2englishParser.LPAREN, 0); }
 		public ExprContext expr() {
@@ -2120,6 +2313,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_zeroWidthNegativeLookAhead; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitZeroWidthNegativeLookAhead(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ZeroWidthNegativeLookAheadContext zeroWidthNegativeLookAhead() throws RecognitionException {
@@ -2149,6 +2347,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ZeroWidthPositiveLookBehindContext extends ParserRuleContext {
 		public TerminalNode LPAREN() { return getToken(regex2englishParser.LPAREN, 0); }
 		public ExprContext expr() {
@@ -2159,6 +2358,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_zeroWidthPositiveLookBehind; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitZeroWidthPositiveLookBehind(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ZeroWidthPositiveLookBehindContext zeroWidthPositiveLookBehind() throws RecognitionException {
@@ -2188,6 +2392,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ZeroWidthNegativeLookBehindContext extends ParserRuleContext {
 		public TerminalNode LPAREN() { return getToken(regex2englishParser.LPAREN, 0); }
 		public ExprContext expr() {
@@ -2198,6 +2403,11 @@ public class regex2englishParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_zeroWidthNegativeLookBehind; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitZeroWidthNegativeLookBehind(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ZeroWidthNegativeLookBehindContext zeroWidthNegativeLookBehind() throws RecognitionException {
@@ -2227,6 +2437,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class PosixContext extends ParserRuleContext {
 		public PosixContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2238,44 +2449,122 @@ public class regex2englishParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class POSIX_LETTERSContext extends PosixContext {
 		public POSIX_LETTERSContext(PosixContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitPOSIX_LETTERS(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class POSIX_ALPHANUMERICContext extends PosixContext {
 		public POSIX_ALPHANUMERICContext(PosixContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitPOSIX_ALPHANUMERIC(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class POSIX_LOWERCASEContext extends PosixContext {
 		public POSIX_LOWERCASEContext(PosixContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitPOSIX_LOWERCASE(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class POSIX_WHITESPACE_OR_GLYPHContext extends PosixContext {
 		public POSIX_WHITESPACE_OR_GLYPHContext(PosixContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitPOSIX_WHITESPACE_OR_GLYPH(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class POSIX_CONTROL_CHARACTERSContext extends PosixContext {
 		public POSIX_CONTROL_CHARACTERSContext(PosixContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitPOSIX_CONTROL_CHARACTERS(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class POSIX_ALPHANUM_PUNCTUATIONContext extends PosixContext {
 		public POSIX_ALPHANUM_PUNCTUATIONContext(PosixContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitPOSIX_ALPHANUM_PUNCTUATION(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class POSIX_DIGITSContext extends PosixContext {
 		public POSIX_DIGITSContext(PosixContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitPOSIX_DIGITS(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class POSIX_WHITESPACEContext extends PosixContext {
 		public POSIX_WHITESPACEContext(PosixContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitPOSIX_WHITESPACE(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class POSIX_SPACE_OR_TABContext extends PosixContext {
 		public POSIX_SPACE_OR_TABContext(PosixContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitPOSIX_SPACE_OR_TAB(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class POSIX_ASCIIContext extends PosixContext {
 		public POSIX_ASCIIContext(PosixContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitPOSIX_ASCII(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class POSIX_UPPERCASEContext extends PosixContext {
 		public POSIX_UPPERCASEContext(PosixContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitPOSIX_UPPERCASE(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class POSIX_X_DIGITContext extends PosixContext {
 		public POSIX_X_DIGITContext(PosixContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitPOSIX_X_DIGIT(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class POSIX_PUNCTUATIONContext extends PosixContext {
 		public POSIX_PUNCTUATIONContext(PosixContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitPOSIX_PUNCTUATION(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final PosixContext posix() throws RecognitionException {
@@ -2404,6 +2693,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class JavalangCharacterClassContext extends ParserRuleContext {
 		public JavalangCharacterClassContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2415,17 +2705,41 @@ public class regex2englishParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class JAVALANG_CC_LOWERCASEContext extends JavalangCharacterClassContext {
 		public JAVALANG_CC_LOWERCASEContext(JavalangCharacterClassContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitJAVALANG_CC_LOWERCASE(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class JAVALANG_CC_WHITESPACEContext extends JavalangCharacterClassContext {
 		public JAVALANG_CC_WHITESPACEContext(JavalangCharacterClassContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitJAVALANG_CC_WHITESPACE(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class JAVALANG_CC_MIRROREDContext extends JavalangCharacterClassContext {
 		public JAVALANG_CC_MIRROREDContext(JavalangCharacterClassContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitJAVALANG_CC_MIRRORED(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class JAVALANG_CC_UPPERCASEContext extends JavalangCharacterClassContext {
 		public JAVALANG_CC_UPPERCASEContext(JavalangCharacterClassContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitJAVALANG_CC_UPPERCASE(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final JavalangCharacterClassContext javalangCharacterClass() throws RecognitionException {
@@ -2482,6 +2796,7 @@ public class regex2englishParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class UnicodeScriptClassContext extends ParserRuleContext {
 		public UnicodeScriptClassContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2493,26 +2808,68 @@ public class regex2englishParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class NOT_UPPERCASEContext extends UnicodeScriptClassContext {
 		public NOT_UPPERCASEContext(UnicodeScriptClassContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitNOT_UPPERCASE(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class IS_ALPHABETICContext extends UnicodeScriptClassContext {
 		public IS_ALPHABETICContext(UnicodeScriptClassContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitIS_ALPHABETIC(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class CURRENCY_SYMBOLContext extends UnicodeScriptClassContext {
 		public CURRENCY_SYMBOLContext(UnicodeScriptClassContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitCURRENCY_SYMBOL(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class UPPERCASEContext extends UnicodeScriptClassContext {
 		public UPPERCASEContext(UnicodeScriptClassContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitUPPERCASE(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class LATINContext extends UnicodeScriptClassContext {
 		public LATINContext(UnicodeScriptClassContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitLATIN(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class NOT_GREEKContext extends UnicodeScriptClassContext {
 		public NOT_GREEKContext(UnicodeScriptClassContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitNOT_GREEK(this);
+			else return visitor.visitChildren(this);
+		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class GREEKContext extends UnicodeScriptClassContext {
 		public GREEKContext(UnicodeScriptClassContext ctx) { copyFrom(ctx); }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof regex2englishVisitor ) return ((regex2englishVisitor<? extends T>)visitor).visitGREEK(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final UnicodeScriptClassContext unicodeScriptClass() throws RecognitionException {
@@ -2594,118 +2951,216 @@ public class regex2englishParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3h\u013c\4\2\t\2\4"+
-		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
-		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
-		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
-		"\4\32\t\32\4\33\t\33\4\34\t\34\4\35\t\35\4\36\t\36\4\37\t\37\4 \t \4!"+
-		"\t!\4\"\t\"\4#\t#\4$\t$\4%\t%\4&\t&\4\'\t\'\3\2\3\2\3\3\3\3\3\3\3\3\3"+
-		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3`\n\3\3\3\3\3\5\3d\n\3\3"+
-		"\4\3\4\3\4\3\4\3\4\3\4\5\4l\n\4\3\4\3\4\5\4p\n\4\3\5\3\5\3\5\3\5\3\5\3"+
-		"\5\3\5\3\5\3\5\3\5\3\5\5\5}\n\5\6\5\177\n\5\r\5\16\5\u0080\5\5\u0083\n"+
-		"\5\3\5\3\5\5\5\u0087\n\5\3\6\3\6\3\6\5\6\u008c\n\6\3\6\3\6\5\6\u0090\n"+
-		"\6\3\6\3\6\3\6\5\6\u0095\n\6\5\6\u0097\n\6\3\7\3\7\3\b\3\b\3\t\3\t\3\t"+
-		"\3\t\3\n\3\n\3\n\3\n\5\n\u00a5\n\n\3\13\3\13\3\13\5\13\u00aa\n\13\3\f"+
-		"\3\f\3\f\3\f\3\r\3\r\3\16\3\16\3\16\3\16\3\17\3\17\3\20\3\20\3\20\3\21"+
-		"\3\21\3\21\3\21\3\22\3\22\3\22\3\22\3\23\3\23\3\23\3\24\3\24\3\24\3\25"+
-		"\6\25\u00ca\n\25\r\25\16\25\u00cb\3\26\3\26\3\27\3\27\3\30\3\30\3\31\3"+
-		"\31\3\32\3\32\3\33\3\33\3\33\3\34\3\34\3\34\3\34\3\34\3\34\3\34\3\34\3"+
-		"\34\3\34\3\34\3\34\3\34\3\34\3\34\3\34\3\34\3\34\3\34\3\34\3\34\5\34\u00f0"+
-		"\n\34\3\35\3\35\3\35\3\35\3\35\5\35\u00f7\n\35\3\36\3\36\3\36\3\36\3\36"+
-		"\3\36\3\36\3\37\3\37\3\37\3\37\3\37\3 \3 \3 \3 \3 \3!\3!\3!\3!\3!\3\""+
-		"\3\"\3\"\3\"\3\"\3#\3#\3#\3#\3#\3$\3$\3$\3$\3$\3%\3%\3%\3%\3%\3%\3%\3"+
-		"%\3%\3%\3%\3%\3%\5%\u012b\n%\3&\3&\3&\3&\5&\u0131\n&\3\'\3\'\3\'\3\'\3"+
-		"\'\3\'\3\'\5\'\u013a\n\'\3\'\2\2(\2\4\6\b\n\f\16\20\22\24\26\30\32\34"+
-		"\36 \"$&(*,.\60\62\64\668:<>@BDFHJL\2\b\3\2bc\5\288;<BB\4\2\65;=A\4\2"+
-		"##%.\3\2fg\3\2CI\2\u0169\2N\3\2\2\2\4_\3\2\2\2\6k\3\2\2\2\b\u0082\3\2"+
-		"\2\2\n\u0096\3\2\2\2\f\u0098\3\2\2\2\16\u009a\3\2\2\2\20\u009c\3\2\2\2"+
-		"\22\u00a4\3\2\2\2\24\u00a9\3\2\2\2\26\u00ab\3\2\2\2\30\u00af\3\2\2\2\32"+
-		"\u00b1\3\2\2\2\34\u00b5\3\2\2\2\36\u00b7\3\2\2\2 \u00ba\3\2\2\2\"\u00be"+
-		"\3\2\2\2$\u00c2\3\2\2\2&\u00c5\3\2\2\2(\u00c9\3\2\2\2*\u00cd\3\2\2\2,"+
-		"\u00cf\3\2\2\2.\u00d1\3\2\2\2\60\u00d3\3\2\2\2\62\u00d5\3\2\2\2\64\u00d7"+
-		"\3\2\2\2\66\u00ef\3\2\2\28\u00f6\3\2\2\2:\u00f8\3\2\2\2<\u00ff\3\2\2\2"+
-		">\u0104\3\2\2\2@\u0109\3\2\2\2B\u010e\3\2\2\2D\u0113\3\2\2\2F\u0118\3"+
-		"\2\2\2H\u012a\3\2\2\2J\u0130\3\2\2\2L\u0139\3\2\2\2NO\5\4\3\2O\3\3\2\2"+
-		"\2P`\5\16\b\2Q`\5\20\t\2R`\5\22\n\2S`\58\35\2T`\5\24\13\2U`\5\26\f\2V"+
-		"`\5\30\r\2W`\5\32\16\2X`\5\34\17\2Y`\5\36\20\2Z`\5 \21\2[`\5\"\22\2\\"+
-		"`\5$\23\2]`\5&\24\2^`\5(\25\2_P\3\2\2\2_Q\3\2\2\2_R\3\2\2\2_S\3\2\2\2"+
-		"_T\3\2\2\2_U\3\2\2\2_V\3\2\2\2_W\3\2\2\2_X\3\2\2\2_Y\3\2\2\2_Z\3\2\2\2"+
-		"_[\3\2\2\2_\\\3\2\2\2_]\3\2\2\2_^\3\2\2\2`c\3\2\2\2ad\5\6\4\2bd\3\2\2"+
-		"\2ca\3\2\2\2cb\3\2\2\2d\5\3\2\2\2el\5*\26\2fl\5,\27\2gl\5.\30\2hl\5\60"+
-		"\31\2il\5\62\32\2jl\5\64\33\2ke\3\2\2\2kf\3\2\2\2kg\3\2\2\2kh\3\2\2\2"+
-		"ki\3\2\2\2kj\3\2\2\2lo\3\2\2\2mp\5\6\4\2np\3\2\2\2om\3\2\2\2on\3\2\2\2"+
-		"p\7\3\2\2\2qr\7$\2\2r\u0083\5\b\5\2s\u0083\5\f\7\2t\u0083\5\30\r\2u\u0083"+
-		"\5H%\2v\u0083\5J&\2w\u0083\5L\'\2x\177\7\61\2\2y\177\7\62\2\2z}\t\2\2"+
-		"\2{}\7$\2\2|z\3\2\2\2|{\3\2\2\2}\177\3\2\2\2~x\3\2\2\2~y\3\2\2\2~|\3\2"+
-		"\2\2\177\u0080\3\2\2\2\u0080~\3\2\2\2\u0080\u0081\3\2\2\2\u0081\u0083"+
-		"\3\2\2\2\u0082q\3\2\2\2\u0082s\3\2\2\2\u0082t\3\2\2\2\u0082u\3\2\2\2\u0082"+
-		"v\3\2\2\2\u0082w\3\2\2\2\u0082~\3\2\2\2\u0083\u0086\3\2\2\2\u0084\u0087"+
-		"\5\n\6\2\u0085\u0087\3\2\2\2\u0086\u0084\3\2\2\2\u0086\u0085\3\2\2\2\u0087"+
-		"\t\3\2\2\2\u0088\u008b\7\63\2\2\u0089\u008c\5\32\16\2\u008a\u008c\5\b"+
-		"\5\2\u008b\u0089\3\2\2\2\u008b\u008a\3\2\2\2\u008c\u008f\3\2\2\2\u008d"+
-		"\u0090\5\n\6\2\u008e\u0090\3\2\2\2\u008f\u008d\3\2\2\2\u008f\u008e\3\2"+
-		"\2\2\u0090\u0097\3\2\2\2\u0091\u0094\5\32\16\2\u0092\u0095\5\n\6\2\u0093"+
-		"\u0095\3\2\2\2\u0094\u0092\3\2\2\2\u0094\u0093\3\2\2\2\u0095\u0097\3\2"+
-		"\2\2\u0096\u0088\3\2\2\2\u0096\u0091\3\2\2\2\u0097\13\3\2\2\2\u0098\u0099"+
-		"\t\3\2\2\u0099\r\3\2\2\2\u009a\u009b\t\4\2\2\u009b\17\3\2\2\2\u009c\u009d"+
-		"\7/\2\2\u009d\u009e\5\4\3\2\u009e\u009f\7\60\2\2\u009f\21\3\2\2\2\u00a0"+
-		"\u00a5\5@!\2\u00a1\u00a5\5B\"\2\u00a2\u00a5\5D#\2\u00a3\u00a5\5F$\2\u00a4"+
-		"\u00a0\3\2\2\2\u00a4\u00a1\3\2\2\2\u00a4\u00a2\3\2\2\2\u00a4\u00a3\3\2"+
-		"\2\2\u00a5\23\3\2\2\2\u00a6\u00aa\5:\36\2\u00a7\u00aa\5<\37\2\u00a8\u00aa"+
-		"\5> \2\u00a9\u00a6\3\2\2\2\u00a9\u00a7\3\2\2\2\u00a9\u00a8\3\2\2\2\u00aa"+
-		"\25\3\2\2\2\u00ab\u00ac\7L\2\2\u00ac\u00ad\5\4\3\2\u00ad\u00ae\7M\2\2"+
-		"\u00ae\27\3\2\2\2\u00af\u00b0\t\5\2\2\u00b0\31\3\2\2\2\u00b1\u00b2\7J"+
-		"\2\2\u00b2\u00b3\5\b\5\2\u00b3\u00b4\7K\2\2\u00b4\33\3\2\2\2\u00b5\u00b6"+
-		"\t\6\2\2\u00b6\35\3\2\2\2\u00b7\u00b8\7$\2\2\u00b8\u00b9\5\4\3\2\u00b9"+
-		"\37\3\2\2\2\u00ba\u00bb\7[\2\2\u00bb\u00bc\5\4\3\2\u00bc\u00bd\7[\2\2"+
-		"\u00bd!\3\2\2\2\u00be\u00bf\7\\\2\2\u00bf\u00c0\5\4\3\2\u00c0\u00c1\7"+
-		"\\\2\2\u00c1#\3\2\2\2\u00c2\u00c3\7]\2\2\u00c3\u00c4\5\4\3\2\u00c4%\3"+
-		"\2\2\2\u00c5\u00c6\7^\2\2\u00c6\u00c7\5\4\3\2\u00c7\'\3\2\2\2\u00c8\u00ca"+
-		"\7b\2\2\u00c9\u00c8\3\2\2\2\u00ca\u00cb\3\2\2\2\u00cb\u00c9\3\2\2\2\u00cb"+
-		"\u00cc\3\2\2\2\u00cc)\3\2\2\2\u00cd\u00ce\5\4\3\2\u00ce+\3\2\2\2\u00cf"+
-		"\u00d0\t\7\2\2\u00d0-\3\2\2\2\u00d1\u00d2\7Z\2\2\u00d2/\3\2\2\2\u00d3"+
-		"\u00d4\7`\2\2\u00d4\61\3\2\2\2\u00d5\u00d6\7_\2\2\u00d6\63\3\2\2\2\u00d7"+
-		"\u00d8\7\64\2\2\u00d8\u00d9\5\4\3\2\u00d9\65\3\2\2\2\u00da\u00f0\5\30"+
-		"\r\2\u00db\u00f0\7O\2\2\u00dc\u00f0\7P\2\2\u00dd\u00f0\7Q\2\2\u00de\u00f0"+
-		"\7R\2\2\u00df\u00f0\7S\2\2\u00e0\u00f0\7T\2\2\u00e1\u00f0\7U\2\2\u00e2"+
-		"\u00f0\7V\2\2\u00e3\u00f0\7W\2\2\u00e4\u00f0\7X\2\2\u00e5\u00f0\7Y\2\2"+
-		"\u00e6\u00f0\7$\2\2\u00e7\u00f0\7Z\2\2\u00e8\u00f0\7[\2\2\u00e9\u00f0"+
-		"\7\\\2\2\u00ea\u00f0\7]\2\2\u00eb\u00f0\7^\2\2\u00ec\u00f0\7_\2\2\u00ed"+
-		"\u00f0\7`\2\2\u00ee\u00f0\7a\2\2\u00ef\u00da\3\2\2\2\u00ef\u00db\3\2\2"+
-		"\2\u00ef\u00dc\3\2\2\2\u00ef\u00dd\3\2\2\2\u00ef\u00de\3\2\2\2\u00ef\u00df"+
-		"\3\2\2\2\u00ef\u00e0\3\2\2\2\u00ef\u00e1\3\2\2\2\u00ef\u00e2\3\2\2\2\u00ef"+
-		"\u00e3\3\2\2\2\u00ef\u00e4\3\2\2\2\u00ef\u00e5\3\2\2\2\u00ef\u00e6\3\2"+
-		"\2\2\u00ef\u00e7\3\2\2\2\u00ef\u00e8\3\2\2\2\u00ef\u00e9\3\2\2\2\u00ef"+
-		"\u00ea\3\2\2\2\u00ef\u00eb\3\2\2\2\u00ef\u00ec\3\2\2\2\u00ef\u00ed\3\2"+
-		"\2\2\u00ef\u00ee\3\2\2\2\u00f0\67\3\2\2\2\u00f1\u00f7\7d\2\2\u00f2\u00f3"+
-		"\7e\2\2\u00f3\u00f4\5\4\3\2\u00f4\u00f5\7M\2\2\u00f5\u00f7\3\2\2\2\u00f6"+
-		"\u00f1\3\2\2\2\u00f6\u00f2\3\2\2\2\u00f79\3\2\2\2\u00f8\u00f9\7L\2\2\u00f9"+
-		"\u00fa\7\3\2\2\u00fa\u00fb\7h\2\2\u00fb\u00fc\7\4\2\2\u00fc\u00fd\5\4"+
-		"\3\2\u00fd\u00fe\7M\2\2\u00fe;\3\2\2\2\u00ff\u0100\7L\2\2\u0100\u0101"+
-		"\7\5\2\2\u0101\u0102\5\4\3\2\u0102\u0103\7M\2\2\u0103=\3\2\2\2\u0104\u0105"+
-		"\7L\2\2\u0105\u0106\7\6\2\2\u0106\u0107\5\4\3\2\u0107\u0108\7M\2\2\u0108"+
-		"?\3\2\2\2\u0109\u010a\7L\2\2\u010a\u010b\7\7\2\2\u010b\u010c\5\4\3\2\u010c"+
-		"\u010d\7M\2\2\u010dA\3\2\2\2\u010e\u010f\7L\2\2\u010f\u0110\7\b\2\2\u0110"+
-		"\u0111\5\4\3\2\u0111\u0112\7M\2\2\u0112C\3\2\2\2\u0113\u0114\7L\2\2\u0114"+
-		"\u0115\7\t\2\2\u0115\u0116\5\4\3\2\u0116\u0117\7M\2\2\u0117E\3\2\2\2\u0118"+
-		"\u0119\7L\2\2\u0119\u011a\7\n\2\2\u011a\u011b\5\4\3\2\u011b\u011c\7M\2"+
-		"\2\u011cG\3\2\2\2\u011d\u012b\7\13\2\2\u011e\u012b\7\f\2\2\u011f\u012b"+
-		"\7\r\2\2\u0120\u012b\7\16\2\2\u0121\u012b\7\17\2\2\u0122\u012b\7\20\2"+
-		"\2\u0123\u012b\7\21\2\2\u0124\u012b\7\22\2\2\u0125\u012b\7\23\2\2\u0126"+
-		"\u012b\7\24\2\2\u0127\u012b\7\25\2\2\u0128\u012b\7\26\2\2\u0129\u012b"+
-		"\7\27\2\2\u012a\u011d\3\2\2\2\u012a\u011e\3\2\2\2\u012a\u011f\3\2\2\2"+
-		"\u012a\u0120\3\2\2\2\u012a\u0121\3\2\2\2\u012a\u0122\3\2\2\2\u012a\u0123"+
-		"\3\2\2\2\u012a\u0124\3\2\2\2\u012a\u0125\3\2\2\2\u012a\u0126\3\2\2\2\u012a"+
-		"\u0127\3\2\2\2\u012a\u0128\3\2\2\2\u012a\u0129\3\2\2\2\u012bI\3\2\2\2"+
-		"\u012c\u0131\7\30\2\2\u012d\u0131\7\31\2\2\u012e\u0131\7\32\2\2\u012f"+
-		"\u0131\7\33\2\2\u0130\u012c\3\2\2\2\u0130\u012d\3\2\2\2\u0130\u012e\3"+
-		"\2\2\2\u0130\u012f\3\2\2\2\u0131K\3\2\2\2\u0132\u013a\7\34\2\2\u0133\u013a"+
-		"\7\35\2\2\u0134\u013a\7\36\2\2\u0135\u013a\7\37\2\2\u0136\u013a\7 \2\2"+
-		"\u0137\u013a\7!\2\2\u0138\u013a\7\"\2\2\u0139\u0132\3\2\2\2\u0139\u0133"+
-		"\3\2\2\2\u0139\u0134\3\2\2\2\u0139\u0135\3\2\2\2\u0139\u0136\3\2\2\2\u0139"+
-		"\u0137\3\2\2\2\u0139\u0138\3\2\2\2\u013aM\3\2\2\2\27_cko|~\u0080\u0082"+
-		"\u0086\u008b\u008f\u0094\u0096\u00a4\u00a9\u00cb\u00ef\u00f6\u012a\u0130"+
-		"\u0139";
+		"\u0004\u0001f\u013a\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
+		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002"+
+		"\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0002\u000b\u0007\u000b\u0002"+
+		"\f\u0007\f\u0002\r\u0007\r\u0002\u000e\u0007\u000e\u0002\u000f\u0007\u000f"+
+		"\u0002\u0010\u0007\u0010\u0002\u0011\u0007\u0011\u0002\u0012\u0007\u0012"+
+		"\u0002\u0013\u0007\u0013\u0002\u0014\u0007\u0014\u0002\u0015\u0007\u0015"+
+		"\u0002\u0016\u0007\u0016\u0002\u0017\u0007\u0017\u0002\u0018\u0007\u0018"+
+		"\u0002\u0019\u0007\u0019\u0002\u001a\u0007\u001a\u0002\u001b\u0007\u001b"+
+		"\u0002\u001c\u0007\u001c\u0002\u001d\u0007\u001d\u0002\u001e\u0007\u001e"+
+		"\u0002\u001f\u0007\u001f\u0002 \u0007 \u0002!\u0007!\u0002\"\u0007\"\u0002"+
+		"#\u0007#\u0002$\u0007$\u0002%\u0007%\u0001\u0000\u0001\u0000\u0001\u0001"+
+		"\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001"+
+		"\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001"+
+		"\u0001\u0001\u0001\u0001\u0003\u0001^\b\u0001\u0001\u0001\u0001\u0001"+
+		"\u0003\u0001b\b\u0001\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002"+
+		"\u0001\u0002\u0001\u0002\u0003\u0002j\b\u0002\u0001\u0002\u0001\u0002"+
+		"\u0003\u0002n\b\u0002\u0001\u0003\u0001\u0003\u0001\u0003\u0001\u0003"+
+		"\u0001\u0003\u0001\u0003\u0001\u0003\u0001\u0003\u0001\u0003\u0001\u0003"+
+		"\u0001\u0003\u0003\u0003{\b\u0003\u0004\u0003}\b\u0003\u000b\u0003\f\u0003"+
+		"~\u0003\u0003\u0081\b\u0003\u0001\u0003\u0001\u0003\u0003\u0003\u0085"+
+		"\b\u0003\u0001\u0004\u0001\u0004\u0001\u0004\u0003\u0004\u008a\b\u0004"+
+		"\u0001\u0004\u0001\u0004\u0003\u0004\u008e\b\u0004\u0001\u0004\u0001\u0004"+
+		"\u0001\u0004\u0003\u0004\u0093\b\u0004\u0003\u0004\u0095\b\u0004\u0001"+
+		"\u0005\u0001\u0005\u0001\u0006\u0001\u0006\u0001\u0007\u0001\u0007\u0001"+
+		"\u0007\u0001\u0007\u0001\b\u0001\b\u0001\b\u0001\b\u0003\b\u00a3\b\b\u0001"+
+		"\t\u0001\t\u0001\t\u0003\t\u00a8\b\t\u0001\n\u0001\n\u0001\n\u0001\n\u0001"+
+		"\u000b\u0001\u000b\u0001\f\u0001\f\u0001\f\u0001\f\u0001\r\u0001\r\u0001"+
+		"\u000e\u0001\u000e\u0001\u000e\u0001\u000f\u0001\u000f\u0001\u000f\u0001"+
+		"\u000f\u0001\u0010\u0001\u0010\u0001\u0010\u0001\u0010\u0001\u0011\u0001"+
+		"\u0011\u0001\u0011\u0001\u0012\u0001\u0012\u0001\u0012\u0001\u0013\u0004"+
+		"\u0013\u00c8\b\u0013\u000b\u0013\f\u0013\u00c9\u0001\u0014\u0001\u0014"+
+		"\u0001\u0015\u0001\u0015\u0001\u0016\u0001\u0016\u0001\u0017\u0001\u0017"+
+		"\u0001\u0018\u0001\u0018\u0001\u0019\u0001\u0019\u0001\u0019\u0001\u001a"+
+		"\u0001\u001a\u0001\u001a\u0001\u001a\u0001\u001a\u0001\u001a\u0001\u001a"+
+		"\u0001\u001a\u0001\u001a\u0001\u001a\u0001\u001a\u0001\u001a\u0001\u001a"+
+		"\u0001\u001a\u0001\u001a\u0001\u001a\u0001\u001a\u0001\u001a\u0001\u001a"+
+		"\u0001\u001a\u0001\u001a\u0003\u001a\u00ee\b\u001a\u0001\u001b\u0001\u001b"+
+		"\u0001\u001b\u0001\u001b\u0001\u001b\u0003\u001b\u00f5\b\u001b\u0001\u001c"+
+		"\u0001\u001c\u0001\u001c\u0001\u001c\u0001\u001c\u0001\u001c\u0001\u001c"+
+		"\u0001\u001d\u0001\u001d\u0001\u001d\u0001\u001d\u0001\u001d\u0001\u001e"+
+		"\u0001\u001e\u0001\u001e\u0001\u001e\u0001\u001e\u0001\u001f\u0001\u001f"+
+		"\u0001\u001f\u0001\u001f\u0001\u001f\u0001 \u0001 \u0001 \u0001 \u0001"+
+		" \u0001!\u0001!\u0001!\u0001!\u0001!\u0001\"\u0001\"\u0001\"\u0001\"\u0001"+
+		"\"\u0001#\u0001#\u0001#\u0001#\u0001#\u0001#\u0001#\u0001#\u0001#\u0001"+
+		"#\u0001#\u0001#\u0001#\u0003#\u0129\b#\u0001$\u0001$\u0001$\u0001$\u0003"+
+		"$\u012f\b$\u0001%\u0001%\u0001%\u0001%\u0001%\u0001%\u0001%\u0003%\u0138"+
+		"\b%\u0001%\u0000\u0000&\u0000\u0002\u0004\u0006\b\n\f\u000e\u0010\u0012"+
+		"\u0014\u0016\u0018\u001a\u001c\u001e \"$&(*,.02468:<>@BDFHJ\u0000\u0006"+
+		"\u0001\u0000`a\u0003\u0000669:@@\u0002\u000039;?\u0002\u0000!!#,\u0001"+
+		"\u0000de\u0001\u0000AG\u0167\u0000L\u0001\u0000\u0000\u0000\u0002]\u0001"+
+		"\u0000\u0000\u0000\u0004i\u0001\u0000\u0000\u0000\u0006\u0080\u0001\u0000"+
+		"\u0000\u0000\b\u0094\u0001\u0000\u0000\u0000\n\u0096\u0001\u0000\u0000"+
+		"\u0000\f\u0098\u0001\u0000\u0000\u0000\u000e\u009a\u0001\u0000\u0000\u0000"+
+		"\u0010\u00a2\u0001\u0000\u0000\u0000\u0012\u00a7\u0001\u0000\u0000\u0000"+
+		"\u0014\u00a9\u0001\u0000\u0000\u0000\u0016\u00ad\u0001\u0000\u0000\u0000"+
+		"\u0018\u00af\u0001\u0000\u0000\u0000\u001a\u00b3\u0001\u0000\u0000\u0000"+
+		"\u001c\u00b5\u0001\u0000\u0000\u0000\u001e\u00b8\u0001\u0000\u0000\u0000"+
+		" \u00bc\u0001\u0000\u0000\u0000\"\u00c0\u0001\u0000\u0000\u0000$\u00c3"+
+		"\u0001\u0000\u0000\u0000&\u00c7\u0001\u0000\u0000\u0000(\u00cb\u0001\u0000"+
+		"\u0000\u0000*\u00cd\u0001\u0000\u0000\u0000,\u00cf\u0001\u0000\u0000\u0000"+
+		".\u00d1\u0001\u0000\u0000\u00000\u00d3\u0001\u0000\u0000\u00002\u00d5"+
+		"\u0001\u0000\u0000\u00004\u00ed\u0001\u0000\u0000\u00006\u00f4\u0001\u0000"+
+		"\u0000\u00008\u00f6\u0001\u0000\u0000\u0000:\u00fd\u0001\u0000\u0000\u0000"+
+		"<\u0102\u0001\u0000\u0000\u0000>\u0107\u0001\u0000\u0000\u0000@\u010c"+
+		"\u0001\u0000\u0000\u0000B\u0111\u0001\u0000\u0000\u0000D\u0116\u0001\u0000"+
+		"\u0000\u0000F\u0128\u0001\u0000\u0000\u0000H\u012e\u0001\u0000\u0000\u0000"+
+		"J\u0137\u0001\u0000\u0000\u0000LM\u0003\u0002\u0001\u0000M\u0001\u0001"+
+		"\u0000\u0000\u0000N^\u0003\f\u0006\u0000O^\u0003\u000e\u0007\u0000P^\u0003"+
+		"\u0010\b\u0000Q^\u00036\u001b\u0000R^\u0003\u0012\t\u0000S^\u0003\u0014"+
+		"\n\u0000T^\u0003\u0016\u000b\u0000U^\u0003\u0018\f\u0000V^\u0003\u001a"+
+		"\r\u0000W^\u0003\u001c\u000e\u0000X^\u0003\u001e\u000f\u0000Y^\u0003 "+
+		"\u0010\u0000Z^\u0003\"\u0011\u0000[^\u0003$\u0012\u0000\\^\u0003&\u0013"+
+		"\u0000]N\u0001\u0000\u0000\u0000]O\u0001\u0000\u0000\u0000]P\u0001\u0000"+
+		"\u0000\u0000]Q\u0001\u0000\u0000\u0000]R\u0001\u0000\u0000\u0000]S\u0001"+
+		"\u0000\u0000\u0000]T\u0001\u0000\u0000\u0000]U\u0001\u0000\u0000\u0000"+
+		"]V\u0001\u0000\u0000\u0000]W\u0001\u0000\u0000\u0000]X\u0001\u0000\u0000"+
+		"\u0000]Y\u0001\u0000\u0000\u0000]Z\u0001\u0000\u0000\u0000][\u0001\u0000"+
+		"\u0000\u0000]\\\u0001\u0000\u0000\u0000^a\u0001\u0000\u0000\u0000_b\u0003"+
+		"\u0004\u0002\u0000`b\u0001\u0000\u0000\u0000a_\u0001\u0000\u0000\u0000"+
+		"a`\u0001\u0000\u0000\u0000b\u0003\u0001\u0000\u0000\u0000cj\u0003(\u0014"+
+		"\u0000dj\u0003*\u0015\u0000ej\u0003,\u0016\u0000fj\u0003.\u0017\u0000"+
+		"gj\u00030\u0018\u0000hj\u00032\u0019\u0000ic\u0001\u0000\u0000\u0000i"+
+		"d\u0001\u0000\u0000\u0000ie\u0001\u0000\u0000\u0000if\u0001\u0000\u0000"+
+		"\u0000ig\u0001\u0000\u0000\u0000ih\u0001\u0000\u0000\u0000jm\u0001\u0000"+
+		"\u0000\u0000kn\u0003\u0004\u0002\u0000ln\u0001\u0000\u0000\u0000mk\u0001"+
+		"\u0000\u0000\u0000ml\u0001\u0000\u0000\u0000n\u0005\u0001\u0000\u0000"+
+		"\u0000op\u0005\"\u0000\u0000p\u0081\u0003\u0006\u0003\u0000q\u0081\u0003"+
+		"\n\u0005\u0000r\u0081\u0003\u0016\u000b\u0000s\u0081\u0003F#\u0000t\u0081"+
+		"\u0003H$\u0000u\u0081\u0003J%\u0000v}\u0005/\u0000\u0000w}\u00050\u0000"+
+		"\u0000x{\u0007\u0000\u0000\u0000y{\u0005\"\u0000\u0000zx\u0001\u0000\u0000"+
+		"\u0000zy\u0001\u0000\u0000\u0000{}\u0001\u0000\u0000\u0000|v\u0001\u0000"+
+		"\u0000\u0000|w\u0001\u0000\u0000\u0000|z\u0001\u0000\u0000\u0000}~\u0001"+
+		"\u0000\u0000\u0000~|\u0001\u0000\u0000\u0000~\u007f\u0001\u0000\u0000"+
+		"\u0000\u007f\u0081\u0001\u0000\u0000\u0000\u0080o\u0001\u0000\u0000\u0000"+
+		"\u0080q\u0001\u0000\u0000\u0000\u0080r\u0001\u0000\u0000\u0000\u0080s"+
+		"\u0001\u0000\u0000\u0000\u0080t\u0001\u0000\u0000\u0000\u0080u\u0001\u0000"+
+		"\u0000\u0000\u0080|\u0001\u0000\u0000\u0000\u0081\u0084\u0001\u0000\u0000"+
+		"\u0000\u0082\u0085\u0003\b\u0004\u0000\u0083\u0085\u0001\u0000\u0000\u0000"+
+		"\u0084\u0082\u0001\u0000\u0000\u0000\u0084\u0083\u0001\u0000\u0000\u0000"+
+		"\u0085\u0007\u0001\u0000\u0000\u0000\u0086\u0089\u00051\u0000\u0000\u0087"+
+		"\u008a\u0003\u0018\f\u0000\u0088\u008a\u0003\u0006\u0003\u0000\u0089\u0087"+
+		"\u0001\u0000\u0000\u0000\u0089\u0088\u0001\u0000\u0000\u0000\u008a\u008d"+
+		"\u0001\u0000\u0000\u0000\u008b\u008e\u0003\b\u0004\u0000\u008c\u008e\u0001"+
+		"\u0000\u0000\u0000\u008d\u008b\u0001\u0000\u0000\u0000\u008d\u008c\u0001"+
+		"\u0000\u0000\u0000\u008e\u0095\u0001\u0000\u0000\u0000\u008f\u0092\u0003"+
+		"\u0018\f\u0000\u0090\u0093\u0003\b\u0004\u0000\u0091\u0093\u0001\u0000"+
+		"\u0000\u0000\u0092\u0090\u0001\u0000\u0000\u0000\u0092\u0091\u0001\u0000"+
+		"\u0000\u0000\u0093\u0095\u0001\u0000\u0000\u0000\u0094\u0086\u0001\u0000"+
+		"\u0000\u0000\u0094\u008f\u0001\u0000\u0000\u0000\u0095\t\u0001\u0000\u0000"+
+		"\u0000\u0096\u0097\u0007\u0001\u0000\u0000\u0097\u000b\u0001\u0000\u0000"+
+		"\u0000\u0098\u0099\u0007\u0002\u0000\u0000\u0099\r\u0001\u0000\u0000\u0000"+
+		"\u009a\u009b\u0005-\u0000\u0000\u009b\u009c\u0003\u0002\u0001\u0000\u009c"+
+		"\u009d\u0005.\u0000\u0000\u009d\u000f\u0001\u0000\u0000\u0000\u009e\u00a3"+
+		"\u0003>\u001f\u0000\u009f\u00a3\u0003@ \u0000\u00a0\u00a3\u0003B!\u0000"+
+		"\u00a1\u00a3\u0003D\"\u0000\u00a2\u009e\u0001\u0000\u0000\u0000\u00a2"+
+		"\u009f\u0001\u0000\u0000\u0000\u00a2\u00a0\u0001\u0000\u0000\u0000\u00a2"+
+		"\u00a1\u0001\u0000\u0000\u0000\u00a3\u0011\u0001\u0000\u0000\u0000\u00a4"+
+		"\u00a8\u00038\u001c\u0000\u00a5\u00a8\u0003:\u001d\u0000\u00a6\u00a8\u0003"+
+		"<\u001e\u0000\u00a7\u00a4\u0001\u0000\u0000\u0000\u00a7\u00a5\u0001\u0000"+
+		"\u0000\u0000\u00a7\u00a6\u0001\u0000\u0000\u0000\u00a8\u0013\u0001\u0000"+
+		"\u0000\u0000\u00a9\u00aa\u0005J\u0000\u0000\u00aa\u00ab\u0003\u0002\u0001"+
+		"\u0000\u00ab\u00ac\u0005K\u0000\u0000\u00ac\u0015\u0001\u0000\u0000\u0000"+
+		"\u00ad\u00ae\u0007\u0003\u0000\u0000\u00ae\u0017\u0001\u0000\u0000\u0000"+
+		"\u00af\u00b0\u0005H\u0000\u0000\u00b0\u00b1\u0003\u0006\u0003\u0000\u00b1"+
+		"\u00b2\u0005I\u0000\u0000\u00b2\u0019\u0001\u0000\u0000\u0000\u00b3\u00b4"+
+		"\u0007\u0004\u0000\u0000\u00b4\u001b\u0001\u0000\u0000\u0000\u00b5\u00b6"+
+		"\u0005\"\u0000\u0000\u00b6\u00b7\u0003\u0002\u0001\u0000\u00b7\u001d\u0001"+
+		"\u0000\u0000\u0000\u00b8\u00b9\u0005Y\u0000\u0000\u00b9\u00ba\u0003\u0002"+
+		"\u0001\u0000\u00ba\u00bb\u0005Y\u0000\u0000\u00bb\u001f\u0001\u0000\u0000"+
+		"\u0000\u00bc\u00bd\u0005Z\u0000\u0000\u00bd\u00be\u0003\u0002\u0001\u0000"+
+		"\u00be\u00bf\u0005Z\u0000\u0000\u00bf!\u0001\u0000\u0000\u0000\u00c0\u00c1"+
+		"\u0005[\u0000\u0000\u00c1\u00c2\u0003\u0002\u0001\u0000\u00c2#\u0001\u0000"+
+		"\u0000\u0000\u00c3\u00c4\u0005\\\u0000\u0000\u00c4\u00c5\u0003\u0002\u0001"+
+		"\u0000\u00c5%\u0001\u0000\u0000\u0000\u00c6\u00c8\u0005`\u0000\u0000\u00c7"+
+		"\u00c6\u0001\u0000\u0000\u0000\u00c8\u00c9\u0001\u0000\u0000\u0000\u00c9"+
+		"\u00c7\u0001\u0000\u0000\u0000\u00c9\u00ca\u0001\u0000\u0000\u0000\u00ca"+
+		"\'\u0001\u0000\u0000\u0000\u00cb\u00cc\u0003\u0002\u0001\u0000\u00cc)"+
+		"\u0001\u0000\u0000\u0000\u00cd\u00ce\u0007\u0005\u0000\u0000\u00ce+\u0001"+
+		"\u0000\u0000\u0000\u00cf\u00d0\u0005X\u0000\u0000\u00d0-\u0001\u0000\u0000"+
+		"\u0000\u00d1\u00d2\u0005^\u0000\u0000\u00d2/\u0001\u0000\u0000\u0000\u00d3"+
+		"\u00d4\u0005]\u0000\u0000\u00d41\u0001\u0000\u0000\u0000\u00d5\u00d6\u0005"+
+		"2\u0000\u0000\u00d6\u00d7\u0003\u0002\u0001\u0000\u00d73\u0001\u0000\u0000"+
+		"\u0000\u00d8\u00ee\u0003\u0016\u000b\u0000\u00d9\u00ee\u0005M\u0000\u0000"+
+		"\u00da\u00ee\u0005N\u0000\u0000\u00db\u00ee\u0005O\u0000\u0000\u00dc\u00ee"+
+		"\u0005P\u0000\u0000\u00dd\u00ee\u0005Q\u0000\u0000\u00de\u00ee\u0005R"+
+		"\u0000\u0000\u00df\u00ee\u0005S\u0000\u0000\u00e0\u00ee\u0005T\u0000\u0000"+
+		"\u00e1\u00ee\u0005U\u0000\u0000\u00e2\u00ee\u0005V\u0000\u0000\u00e3\u00ee"+
+		"\u0005W\u0000\u0000\u00e4\u00ee\u0005\"\u0000\u0000\u00e5\u00ee\u0005"+
+		"X\u0000\u0000\u00e6\u00ee\u0005Y\u0000\u0000\u00e7\u00ee\u0005Z\u0000"+
+		"\u0000\u00e8\u00ee\u0005[\u0000\u0000\u00e9\u00ee\u0005\\\u0000\u0000"+
+		"\u00ea\u00ee\u0005]\u0000\u0000\u00eb\u00ee\u0005^\u0000\u0000\u00ec\u00ee"+
+		"\u0005_\u0000\u0000\u00ed\u00d8\u0001\u0000\u0000\u0000\u00ed\u00d9\u0001"+
+		"\u0000\u0000\u0000\u00ed\u00da\u0001\u0000\u0000\u0000\u00ed\u00db\u0001"+
+		"\u0000\u0000\u0000\u00ed\u00dc\u0001\u0000\u0000\u0000\u00ed\u00dd\u0001"+
+		"\u0000\u0000\u0000\u00ed\u00de\u0001\u0000\u0000\u0000\u00ed\u00df\u0001"+
+		"\u0000\u0000\u0000\u00ed\u00e0\u0001\u0000\u0000\u0000\u00ed\u00e1\u0001"+
+		"\u0000\u0000\u0000\u00ed\u00e2\u0001\u0000\u0000\u0000\u00ed\u00e3\u0001"+
+		"\u0000\u0000\u0000\u00ed\u00e4\u0001\u0000\u0000\u0000\u00ed\u00e5\u0001"+
+		"\u0000\u0000\u0000\u00ed\u00e6\u0001\u0000\u0000\u0000\u00ed\u00e7\u0001"+
+		"\u0000\u0000\u0000\u00ed\u00e8\u0001\u0000\u0000\u0000\u00ed\u00e9\u0001"+
+		"\u0000\u0000\u0000\u00ed\u00ea\u0001\u0000\u0000\u0000\u00ed\u00eb\u0001"+
+		"\u0000\u0000\u0000\u00ed\u00ec\u0001\u0000\u0000\u0000\u00ee5\u0001\u0000"+
+		"\u0000\u0000\u00ef\u00f5\u0005b\u0000\u0000\u00f0\u00f1\u0005c\u0000\u0000"+
+		"\u00f1\u00f2\u0003\u0002\u0001\u0000\u00f2\u00f3\u0005K\u0000\u0000\u00f3"+
+		"\u00f5\u0001\u0000\u0000\u0000\u00f4\u00ef\u0001\u0000\u0000\u0000\u00f4"+
+		"\u00f0\u0001\u0000\u0000\u0000\u00f57\u0001\u0000\u0000\u0000\u00f6\u00f7"+
+		"\u0005J\u0000\u0000\u00f7\u00f8\u0005\u0001\u0000\u0000\u00f8\u00f9\u0005"+
+		"f\u0000\u0000\u00f9\u00fa\u0005\u0002\u0000\u0000\u00fa\u00fb\u0003\u0002"+
+		"\u0001\u0000\u00fb\u00fc\u0005K\u0000\u0000\u00fc9\u0001\u0000\u0000\u0000"+
+		"\u00fd\u00fe\u0005J\u0000\u0000\u00fe\u00ff\u0005\u0003\u0000\u0000\u00ff"+
+		"\u0100\u0003\u0002\u0001\u0000\u0100\u0101\u0005K\u0000\u0000\u0101;\u0001"+
+		"\u0000\u0000\u0000\u0102\u0103\u0005J\u0000\u0000\u0103\u0104\u0005\u0004"+
+		"\u0000\u0000\u0104\u0105\u0003\u0002\u0001\u0000\u0105\u0106\u0005K\u0000"+
+		"\u0000\u0106=\u0001\u0000\u0000\u0000\u0107\u0108\u0005J\u0000\u0000\u0108"+
+		"\u0109\u0005\u0005\u0000\u0000\u0109\u010a\u0003\u0002\u0001\u0000\u010a"+
+		"\u010b\u0005K\u0000\u0000\u010b?\u0001\u0000\u0000\u0000\u010c\u010d\u0005"+
+		"J\u0000\u0000\u010d\u010e\u0005\u0006\u0000\u0000\u010e\u010f\u0003\u0002"+
+		"\u0001\u0000\u010f\u0110\u0005K\u0000\u0000\u0110A\u0001\u0000\u0000\u0000"+
+		"\u0111\u0112\u0005J\u0000\u0000\u0112\u0113\u0005\u0007\u0000\u0000\u0113"+
+		"\u0114\u0003\u0002\u0001\u0000\u0114\u0115\u0005K\u0000\u0000\u0115C\u0001"+
+		"\u0000\u0000\u0000\u0116\u0117\u0005J\u0000\u0000\u0117\u0118\u0005\b"+
+		"\u0000\u0000\u0118\u0119\u0003\u0002\u0001\u0000\u0119\u011a\u0005K\u0000"+
+		"\u0000\u011aE\u0001\u0000\u0000\u0000\u011b\u0129\u0005\t\u0000\u0000"+
+		"\u011c\u0129\u0005\n\u0000\u0000\u011d\u0129\u0005\u000b\u0000\u0000\u011e"+
+		"\u0129\u0005\f\u0000\u0000\u011f\u0129\u0005\r\u0000\u0000\u0120\u0129"+
+		"\u0005\u000e\u0000\u0000\u0121\u0129\u0005\u000f\u0000\u0000\u0122\u0129"+
+		"\u0005\u0010\u0000\u0000\u0123\u0129\u0005\u0011\u0000\u0000\u0124\u0129"+
+		"\u0005\u0012\u0000\u0000\u0125\u0129\u0005\u0013\u0000\u0000\u0126\u0129"+
+		"\u0005\u0014\u0000\u0000\u0127\u0129\u0005\u0015\u0000\u0000\u0128\u011b"+
+		"\u0001\u0000\u0000\u0000\u0128\u011c\u0001\u0000\u0000\u0000\u0128\u011d"+
+		"\u0001\u0000\u0000\u0000\u0128\u011e\u0001\u0000\u0000\u0000\u0128\u011f"+
+		"\u0001\u0000\u0000\u0000\u0128\u0120\u0001\u0000\u0000\u0000\u0128\u0121"+
+		"\u0001\u0000\u0000\u0000\u0128\u0122\u0001\u0000\u0000\u0000\u0128\u0123"+
+		"\u0001\u0000\u0000\u0000\u0128\u0124\u0001\u0000\u0000\u0000\u0128\u0125"+
+		"\u0001\u0000\u0000\u0000\u0128\u0126\u0001\u0000\u0000\u0000\u0128\u0127"+
+		"\u0001\u0000\u0000\u0000\u0129G\u0001\u0000\u0000\u0000\u012a\u012f\u0005"+
+		"\u0016\u0000\u0000\u012b\u012f\u0005\u0017\u0000\u0000\u012c\u012f\u0005"+
+		"\u0018\u0000\u0000\u012d\u012f\u0005\u0019\u0000\u0000\u012e\u012a\u0001"+
+		"\u0000\u0000\u0000\u012e\u012b\u0001\u0000\u0000\u0000\u012e\u012c\u0001"+
+		"\u0000\u0000\u0000\u012e\u012d\u0001\u0000\u0000\u0000\u012fI\u0001\u0000"+
+		"\u0000\u0000\u0130\u0138\u0005\u001a\u0000\u0000\u0131\u0138\u0005\u001b"+
+		"\u0000\u0000\u0132\u0138\u0005\u001c\u0000\u0000\u0133\u0138\u0005\u001d"+
+		"\u0000\u0000\u0134\u0138\u0005\u001e\u0000\u0000\u0135\u0138\u0005\u001f"+
+		"\u0000\u0000\u0136\u0138\u0005 \u0000\u0000\u0137\u0130\u0001\u0000\u0000"+
+		"\u0000\u0137\u0131\u0001\u0000\u0000\u0000\u0137\u0132\u0001\u0000\u0000"+
+		"\u0000\u0137\u0133\u0001\u0000\u0000\u0000\u0137\u0134\u0001\u0000\u0000"+
+		"\u0000\u0137\u0135\u0001\u0000\u0000\u0000\u0137\u0136\u0001\u0000\u0000"+
+		"\u0000\u0138K\u0001\u0000\u0000\u0000\u0015]aimz|~\u0080\u0084\u0089\u008d"+
+		"\u0092\u0094\u00a2\u00a7\u00c9\u00ed\u00f4\u0128\u012e\u0137";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
