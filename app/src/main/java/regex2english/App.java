@@ -8,9 +8,11 @@ public class App {
         return "Hello World!";
     }
 
+    public  regex2englishBaseVisitor<Integer> count;// = new ExpressionCountVisitor();
+
+
     public static void main(String[] args) {
 
-    Listener a  = new Listener();
 
 
 
