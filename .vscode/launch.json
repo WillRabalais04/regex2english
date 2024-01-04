@@ -5,11 +5,12 @@
             "name": "Debug ANTLR4 grammar",
             "type": "antlr-debug",
             "request": "launch",
-            "input": "app/src/main/input.txt",
-            "grammar": "app/src/main/regex2english.g4",
+            "input": "app/src/main/java/regex2english/input.txt",
+            "grammar": "app/src/main/java/regex2english/regex2english.g4",
             "startRule": "start",
             "printParseTree": true,
             "visualParseTree": true
         }
     ]
 }
+
