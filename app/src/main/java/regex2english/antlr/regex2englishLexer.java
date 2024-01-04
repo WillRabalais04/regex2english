@@ -179,7 +179,7 @@ public class regex2englishLexer extends Lexer {
 	private void CODE_POINT_action(RuleContext _localctx, int actionIndex) {
 		switch (actionIndex) {
 		case 0:
-			4,5
+			// 4,5
 			break;
 		}
 	}
