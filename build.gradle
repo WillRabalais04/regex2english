@@ -35,10 +35,10 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'app/src/main/java/regex2english/App.java'
+    mainClass = 'app/src/main/App.java'
 }
 
 generateGrammarSource {
     // maxHeapSize = "64m"
-    arguments += ["-visitor", "-no-listener", "-long-messages", "-o .antlr"]
+    arguments += ["-visitor", "-no-listener", "-long-messages", "-o antlr"]
 }
