@@ -23,7 +23,8 @@ dependencies {
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:31.1-jre'
-    antlr "org.antlr:antlr4:4.7.1"
+    antlr "org.antlr:antlr4:4.5"
+    // compile "org.antlr:antlr4-runtime:4.4.5"
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
