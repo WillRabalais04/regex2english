@@ -9,7 +9,7 @@ expr : (escapedToLiteralOutsideCharClass
 | inlineModifier
 | captureGroup 
 | group
-| predefinedCharacterClass 
+| escapedFromLiteral 
 | characterClass 
 | backReference 
 | boundaryMatcherStart 
@@ -30,7 +30,9 @@ exprHelper : (concatenation
 (exprHelper | <EOF>) 
 ;
 
+// add or
 characterClassContent: (CARET characterClassContent
+| group
 | escapedToLiteralInsideCharClass
 | predefinedCharacterClass 
 | posix 
@@ -77,7 +79,14 @@ captureGroup: namedCaptureGroup
 | independentNonCapturingGroup
 ;
 
-group: LPAREN expr RPAREN;
+// think of more things that aren't in character class but could go in group
+group: LPAREN expr RPAREN
+| LPAREN range RPAREN
+;
+
+range: LETTER_RANGE
+| NUMBER_RANGE
+| RANGE_QUANTIFIER;
 
 predefinedCharacterClass : WILDCARD
 | DIGIT
@@ -135,7 +144,7 @@ escapedFromLiteral : predefinedCharacterClass
 | OCTAL_3 
 | HEXA_2 
 | HEXA_4 
-| CODE_POINT
+| HEXA_6
 | CARRIAGE_RETURN
 | TAB 
 | FORM_FEED
@@ -263,8 +272,8 @@ OCTAL_1 : '\\0'[0-7];
 OCTAL_2 : '\\0'[0-7][0-7];
 OCTAL_3 : '\\0'[0-3][0-7][0-7];
 HEXA_2 : '\\x'[a-fA-F0-9];
-HEXA_4 : '\\x'[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9];
-CODE_POINT : 'U\\+'[1]?[a-fA-F0-9]{4,5};
+HEXA_4 : '\\u'[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9];
+HEXA_6 : 'x{U+'('10'|[0-9]|'00')?[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9]'}';
 CARRIAGE_RETURN : '\\r';
 TAB : '\\t' ;
 FORM_FEED : '\\f' ;
@@ -289,7 +298,7 @@ EXTRA_LETTER_ALLOWED_INSIDE:  [|*\\?.$-]; //following: https://www.abareplace.co
 
 //Inline Modifier
 /* 
-- must be checked in the listener whether modifiers are being repeatedly 
+- must be checked in the visitor whether modifiers are being repeatedly 
 because ANTLR regex does not support lookaheads and back references so 
 it cannot be verified here
 - also check if it contains the minus sign which negates the toggle

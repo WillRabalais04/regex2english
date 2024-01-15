@@ -1,4 +1,5 @@
-// Generated from app/src/main/java/regex2english/regex2english.g4 by ANTLR 4.13.1
+// Generated from regex2english.g4 by ANTLR 4.5
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
@@ -9,7 +10,6 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
  * @param <T> The return type of the visit operation. Use {@link Void} for
  * operations with no return type.
  */
-@SuppressWarnings("CheckReturnValue")
 public class regex2englishBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements regex2englishVisitor<T> {
 	/**
 	 * {@inheritDoc}
@@ -88,6 +88,13 @@ public class regex2englishBaseVisitor<T> extends AbstractParseTreeVisitor<T> imp
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitGroup(regex2englishParser.GroupContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitRange(regex2englishParser.RangeContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

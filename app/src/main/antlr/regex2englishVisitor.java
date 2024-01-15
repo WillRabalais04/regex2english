@@ -1,4 +1,5 @@
-// Generated from app/src/main/java/regex2english/regex2english.g4 by ANTLR 4.13.1
+// Generated from regex2english.g4 by ANTLR 4.5
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -75,6 +76,12 @@ public interface regex2englishVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitGroup(regex2englishParser.GroupContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link regex2englishParser#range}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRange(regex2englishParser.RangeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link regex2englishParser#predefinedCharacterClass}.
 	 * @param ctx the parse tree

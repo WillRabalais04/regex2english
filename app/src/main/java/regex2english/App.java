@@ -3,22 +3,12 @@
  */
 package regex2english;
 
-import  org.antlr.v4.runtime.*;
-
 public class App {
     public String getGreeting() {
         return "Hello World!";
     }
 
-    CharStream input = CharStreams.fromFileName("app/src/main/input.txt");
-    // Lexer lexer = regex2englishLexer(input);
-    // Parser parser = new regex2englishLexer(tokens);
-        
-
     public static void main(String[] args) {
-
-
-
-
+        System.out.println(new App().getGreeting());
     }
 }
