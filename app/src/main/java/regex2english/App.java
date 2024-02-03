@@ -3,12 +3,25 @@
  */
 package regex2english;
 
+import java.io.IOException;
+
+import org.antlr.v4.runtime.*;
+
+import build.generated_src.antlr.main.*;
+
 public class App {
     public String getGreeting() {
         return "Hello World!";
     }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
-    }
+    public static void main(String[] args) throws IOException{
+        CharStream input = CharStreams.fromFileName("app/src/main/input.txt");
+        Lexer lexer = new regex2englishLexer(input);
+        // CommonTokenStream tokens = new CommonTokenStream(lexer);
+        // Parser parser = new regex2englishParser(tokens);
+        // Driver test = new Driver();
+        App a = new App();
+        a.getGreeting();
+        System.out.println("test");
+     }
 }

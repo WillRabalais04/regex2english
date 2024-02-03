@@ -23,7 +23,7 @@ dependencies {
 
     // This dependency is used by the application.
     implementation libs.guava
-    antlr "org.antlr:antlr4:4.5"
+    antlr "org.antlr:antlr4:4.9.2"
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -45,10 +45,23 @@ generateGrammarSource {
     doLast {
         println "Deleting duplicate directory created on save in VSCode"
         delete 'src/main/antlr/.antlr'
-        println "Moving generated grammar files to directory outside the build folder."
-        copy {
-            from "build/generated-src/antlr/main"
-            into "src/main/antlr"
-        }
+        // println "Moving generated grammar files to directory outside the build folder."
+        // copy {
+        //     from "build/generated-src/antlr/main"
+        //     into "src/main/antlr"
+        // }
+        //   println "Moving generated grammar files to directory outside the build folder."
+        // copy {
+        //     from "build/generated-src/antlr/main"
+        //     into "src/main/java/regex2english/GeneratedClasses"
+        // }
+        println "Putting lexer and parser in main package."
+
+        
+
+        // def lineToAdd = 'package regex2english;'
+        // ant.replace(file: 'app/build/generated-src/antlr/main/regex2englishLexer.java', token: '// Generated from regex2english.g4 by ANTLR 4.9.2', value: lineToAdd + '\n', encoding: 'UTF-8')
+        // ant.replace(file: 'src/main/antlr/regex2englishParser.java', token: '// Generated from regex2english.g4 by ANTLR 4.9.2', value: lineToAdd + '\n', encoding: 'UTF-8')
+        // delete 'app/src/main/antlr/regex2englishLexer.java'
     }
 }  
