@@ -38,30 +38,68 @@ application {
     mainClass = 'regex2english.App'
 }
 
-generateGrammarSource {
+
+
+// task compileGeneratedClasses (type: compileJava) {
+//     source = app.src.main.java.regex2english.generatedClasses
+
+
+// }
+tasks{
+
+    generateGrammarSource {
     // maxHeapSize = "64m"
-    arguments += ["-visitor", "-no-listener"]
+    arguments += ["-visitor", "-no-listener", "-package", "rabalais.regex2english"]
+    outputDirectory = file("${projectDir}/src/generated/java/rabalais/regex2english")
+        
      
     doLast {
-        println "Deleting duplicate directory created on save in VSCode"
+        println "Deleting duplicate directory created on save in VSCode."
         delete 'src/main/antlr/.antlr'
         // println "Moving generated grammar files to directory outside the build folder."
         // copy {
         //     from "build/generated-src/antlr/main"
-        //     into "src/main/antlr"
+        //     into "src/main/java/regex2english/generatedClasses"
         // }
-        //   println "Moving generated grammar files to directory outside the build folder."
+        // delete 'build/generated-src/antlr/main'
+
+        // println "Moving generated grammar files to directory outside the build folder."
         // copy {
         //     from "build/generated-src/antlr/main"
         //     into "src/main/java/regex2english/GeneratedClasses"
         // }
-        println "Putting lexer and parser in main package."
+        // println "Putting lexer and parser in main package."
 
-        
-
-        // def lineToAdd = 'package regex2english;'
-        // ant.replace(file: 'app/build/generated-src/antlr/main/regex2englishLexer.java', token: '// Generated from regex2english.g4 by ANTLR 4.9.2', value: lineToAdd + '\n', encoding: 'UTF-8')
-        // ant.replace(file: 'src/main/antlr/regex2englishParser.java', token: '// Generated from regex2english.g4 by ANTLR 4.9.2', value: lineToAdd + '\n', encoding: 'UTF-8')
+        // def lineToAdd = 'package generatedClasses;'
+        // ant.replace(file: 'src/main/java/regex2english/generatedClasses/regex2englishLexer.java', token: '// Generated from regex2english.g4 by ANTLR 4.9.2', value: lineToAdd + '\n', encoding: 'UTF-8')
+        // ant.replace(file: 'src/main/java/regex2english/generatedClasses/regex2englishParser.java', token: '// Generated from regex2english.g4 by ANTLR 4.9.2', value: lineToAdd + '\n', encoding: 'UTF-8')
         // delete 'app/src/main/antlr/regex2englishLexer.java'
     }
-}  
+} 
+
+compileJava{
+    dependsOn(generateGrammarSource)
+}
+
+clean{
+    delete "${projectDir}/src/generated"
+}
+
+// referenced https://github.com/gregwhitaker/gradle-antlr-example when figuring out gradle source sets
+sourceSets {
+    generated{
+        java.srcDir "${projectDir}/src/generated/java/"
+    }
+
+    main {
+        java.srcDirs += "${projectDir}/src/generated/java/"
+    }
+}
+
+}
+
+
+
+
+
+ 
