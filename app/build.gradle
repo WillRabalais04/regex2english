@@ -50,7 +50,7 @@ tasks{
     generateGrammarSource {
     // maxHeapSize = "64m"
     arguments += ["-visitor", "-no-listener", "-package", "rabalais.regex2english"]
-    outputDirectory = file("${projectDir}/src/generated/java/rabalais/regex2english")
+    outputDirectory = file("${projectDir}/src/main/java/rabalais/regex2english/generated")
         
      
     doLast {
@@ -82,17 +82,17 @@ compileJava{
 }
 
 clean{
-    delete "${projectDir}/src/generated"
+    delete "${projectDir}/src/main/java/rabalais/regex2english/generated"
 }
 
 // referenced https://github.com/gregwhitaker/gradle-antlr-example when figuring out gradle source sets
 sourceSets {
     generated{
-        java.srcDir "${projectDir}/src/generated/java/"
+        java.srcDir "${projectDir}/src/main/java/rabalais/regex2english/generated"
     }
 
     main {
-        java.srcDirs += "${projectDir}/src/generated/java/rabalais/regex2english"
+        java.srcDirs += "${projectDir}/src/main/java/rabalais/regex2english/generated"
         java.srcDirs += "${projectDir}src/main/antlr/regex2english.g4"
 
       

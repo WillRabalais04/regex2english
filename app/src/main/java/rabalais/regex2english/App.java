@@ -24,7 +24,7 @@ public class App {
         regex2englishParser parser = new regex2englishParser(tokens);
 
 
-        // String str = new TestVisitor.visitStart(parser.list());
+        String str = new TestVisitor.
 
         System.out.println("?");
         
