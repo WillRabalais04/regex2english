@@ -49,7 +49,7 @@ tasks{
 
     generateGrammarSource {
     // maxHeapSize = "64m"
-    arguments += ["-visitor", "-no-listener", "-package", "rabalais.regex2english"]
+    arguments += ["-visitor", "-no-listener", "-package", "rabalais.regex2english.generated"]
     outputDirectory = file("${projectDir}/src/main/java/rabalais/regex2english/generated")
         
      
@@ -93,8 +93,6 @@ sourceSets {
 
     main {
         java.srcDirs += "${projectDir}/src/main/java/rabalais/regex2english/generated"
-        java.srcDirs += "${projectDir}src/main/antlr/regex2english.g4"
-
       
     }
 }

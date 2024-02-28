@@ -8,6 +8,8 @@ import java.io.IOException;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
+import rabalais.regex2english.generated.*;
+
 public class App {
    
     public String getGreeting() {
@@ -24,7 +26,9 @@ public class App {
         regex2englishParser parser = new regex2englishParser(tokens);
 
 
-        String str = new TestVisitor.
+        TestVisitor<String> visitor = new TestVisitor<String>();
+
+        String s = visitor.visitStart(parser.start());
 
         System.out.println("?");
         
