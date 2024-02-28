@@ -35,7 +35,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'regex2english.App'
+    mainClass = 'rabalais.regex2english.App'
 }
 
 
@@ -92,7 +92,10 @@ sourceSets {
     }
 
     main {
-        java.srcDirs += "${projectDir}/src/generated/java/"
+        java.srcDirs += "${projectDir}/src/generated/java/rabalais/regex2english"
+        java.srcDirs += "${projectDir}src/main/antlr/regex2english.g4"
+
+      
     }
 }
 

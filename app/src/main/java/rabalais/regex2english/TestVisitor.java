@@ -1,4 +1,4 @@
-package app.src.main;
+package rabalais.regex2english;
 
 public class TestVisitor extends regex2englishBaseVisitor<String>{
 

@@ -16,11 +16,17 @@ public class App {
 
     public static void main(String[] args) throws IOException{
         
-        CharStream input = CharStreams.fromFileName("app/src/main/input.txt");
+        CharStream input = CharStreams.fromString("[a-z]]");
+        // CharStream input = CharStreams.fromString("app/src/main/resources/input.txt");
          
         regex2englishLexer lexer = new regex2englishLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         regex2englishParser parser = new regex2englishParser(tokens);
+
+
+        // String str = new TestVisitor.visitStart(parser.list());
+
+        System.out.println("?");
         
      }
 }
