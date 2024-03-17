@@ -4,6 +4,8 @@
 package rabalais.regex2english;
 
 import java.io.IOException;
+import java.util.Queue;
+import java.util.Stack;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
@@ -18,19 +20,56 @@ public class App {
 
     public static void main(String[] args) throws IOException{
         
-        CharStream input = CharStreams.fromString("[a-z]]");
-        // CharStream input = CharStreams.fromString("app/src/main/resources/input.txt");
+        // CharStream input = CharStreams.fromString("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$");
+        CharStream input = CharStreams.fromFileName("src/main/resources/input.txt");
          
         regex2englishLexer lexer = new regex2englishLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         regex2englishParser parser = new regex2englishParser(tokens);
 
+        RegexVisitor visitor = new RegexVisitor();
 
-        TestVisitor<String> visitor = new TestVisitor<String>();
+        // String s = visitor.visitStart(parser.start());
+        
+        ParseTree tree = parser.start();
 
-        String s = visitor.visitStart(parser.start());
+        // System.out.println(tree.toStringTree(parser));
 
-        System.out.println("?");
+        treePrinter(tree, 1);
+
+
+
         
      }
-}
+
+     public static void treePrinter(ParseTree root, int line){ // in-order traversal
+
+        
+        if(root != null){
+
+            String payload = "empty";
+
+            int childCount = root.getChildCount();
+
+            if(childCount == 0){ 
+        
+                System.out.print("'" + ((CommonToken)root.getPayload()).getText() + "'  ");
+
+
+                // payload = ((CommonToken)root.getPayload()).getText();
+
+            }else{
+
+                payload = ((RuleContext)root.getPayload()).getText();
+
+            }
+
+            // System.out.println("Line#" + line + "| '" + payload + "'");
+            treePrinter(root.getChild(0), root.getChild(0) != null? ++line: line);
+            treePrinter(root.getChild(1), root.getChild(1) != null? ++line: line);
+
+        }
+
+     }
+
+    }
