@@ -12,31 +12,42 @@ public class RegexVisitor extends regex2englishBaseVisitor<String>{
     ArrayList<String> components = new ArrayList<>();
 
     @Override
-    public String visitStart(regex2englishParser.StartContext ctx){
-
-        System.out.println("visitExpr ctx.getText(): " + ctx.getText());
-        System.out.println("visitExpr ctx.toString(): " + ctx.toString());
-
+    public String visitExprHelper(regex2englishParser.ExprHelperContext ctx) {
+        
+        ParseTree child;
     
+        if(ctx.getChildCount() == 1 && ctx instanceof RuleNode && !(ctx.getChild(0) instanceof TerminalNode)){
+            child = ctx.getChild(0);
+            ctx.removeLastChild();
+        }else{
+            return visitChildren(ctx);
+        }
+            
+        while(child != null && child.getChildCount() == 1){
+            child = (ParseTree)child.getChild(0);
+        }
 
-        
-        
+        ctx.addAnyChild(child);
+
 
         return visitChildren(ctx);
+        
     }
 
+    
     @Override public String visitZeroWidthAssertions(regex2englishParser.ZeroWidthAssertionsContext ctx) { 
-        System.out.println("zerowidthassertion"); 
-        return visitChildren(ctx); 
+            
+        ParseTree child = ctx.getChild(0);
+        System.out.println("1");
+
+        return visitChildren((RuleNode)child); 
     }
 
-    @Override
-    public java.lang.String visitChildren(RuleNode node){
+    // @Override public String visitChildren(regex2englishParser.ZeroWidthAssertionsContext ctx) { 
+            
+    //     ParseTree child = ctx.getChild(0);
 
-        System.out.println(node.getText());
-
-        return "";
-
-    }
+    //     return visitChildren((RuleNode)child); 
+    // }
 
 }

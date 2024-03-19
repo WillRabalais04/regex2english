@@ -5,14 +5,13 @@ start: expr;
 
 expr : (escapedToLiteralOutsideCharClass 
 | quote
-| zeroWidthAssertions
 | inlineModifier
 | captureGroup 
 | group
+| boundaryMatcherStart
 | escapedFromLiteral 
 | characterClass 
-| backReference 
-| boundaryMatcherStart 
+| backReference  
 | wordBoundary
 | nonWordBoundary 
 | inputStart 
@@ -130,7 +129,7 @@ quantifier: N_OCCURRANCES
 | QMARK
 ;
 
-boundaryMatcherEnd: DOLLAR_SIGN ;
+boundaryMatcherEnd: expr DOLLAR_SIGN ;
 
 endOfInputExceptFinalTerminator: INPUT_END_INC_NEWLINE ;
 
@@ -170,10 +169,11 @@ nonCaptureGroup: LPAREN '?:' expr RPAREN;
 independentNonCapturingGroup: LPAREN '?>' expr RPAREN;
 
 // Look Aheads
-zeroWidthPositiveLookAhead: LPAREN '?=' expr RPAREN;
-zeroWidthNegativeLookAhead: LPAREN '?!' expr RPAREN;
-zeroWidthPositiveLookBehind: LPAREN '?<=' expr RPAREN;
-zeroWidthNegativeLookBehind: LPAREN '?<!' expr RPAREN;
+zeroWidthPositiveLookAhead: LPAREN POSITIVE_LA expr RPAREN;
+zeroWidthNegativeLookAhead: LPAREN NEGATIVE_LA expr RPAREN;
+zeroWidthPositiveLookBehind: LPAREN POSITIVE_LB expr RPAREN;
+zeroWidthNegativeLookBehind: LPAREN NEGATIVE_LB expr RPAREN;
+
 
 // POSIX Character Classes (US-ASCII only)
 posix :  '\\p{Lower}' # POSIX_LOWERCASE //[a-z] 
@@ -279,6 +279,12 @@ TAB : '\\t' ;
 FORM_FEED : '\\f' ;
 ALERT : '\\a' ;
 ESC : '\\e' ;
+
+//Lookaheads/behinds
+POSITIVE_LA: '?=';
+NEGATIVE_LA: '?!';
+POSITIVE_LB: '?<=';
+NEGATIVE_LB: '?<!';
 
 // Boundary Matchers
 DOLLAR_SIGN : '$';
