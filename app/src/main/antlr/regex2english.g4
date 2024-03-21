@@ -5,13 +5,14 @@ start: expr;
 
 expr : (escapedToLiteralOutsideCharClass 
 | quote
+| zeroWidthAssertions
 | inlineModifier
 | captureGroup 
 | group
 | boundaryMatcherStart
 | escapedFromLiteral 
 | characterClass 
-| backReference  
+| backReference 
 | wordBoundary
 | nonWordBoundary 
 | inputStart 
@@ -37,7 +38,7 @@ characterClassContent: (CARET characterClassContent
 | posix 
 | javalangCharacterClass 
 | unicodeScriptClass
-| (LETTER_RANGE | NUMBER_RANGE | ((LETTER | EXTRA_LETTER_ALLOWED_INSIDE) | CARET))+) 
+| (LETTER_RANGE | NUMBER_RANGE | ((LETTER | extra_letters_allowed_inside_CC) | CARET))+) 
 (characterClassContentHelper | <EOF>)
 ;
 
@@ -48,7 +49,7 @@ characterClassContentHelper: DOUBLE_AMPERSAND  (characterClass | characterClassC
 escapedToLiteralInsideCharClass: BACKSLASH_ESCAPED
 | RBRACKET_ESCAPED
 | HYPHEN_ESCAPED
-| LBRACKET_ESCAPED
+| LBRACKET_ESCAPED // sus
 ;
 
 escapedToLiteralOutsideCharClass: LBRACKET_ESCAPED
@@ -208,6 +209,15 @@ unicodeScriptClass : '\\p{IsLatin}' # LATIN //A Latin script character (script)
 | '[\\p{L}&&[^\\p{Lu}]]' # NOT_UPPERCASE//Any letter except an uppercase letter (subtraction)
 ;
 
+extra_letters_allowed_inside_CC:  PLUS 
+| PIPE
+| ASTERISK
+| QMARK
+| WILDCARD
+| DOLLAR_SIGN
+| '-'
+; //following: https://www.abareplace.com/blog/escape-regexp/
+
 // Lexer:
 
 WILDCARD: '.';
@@ -300,7 +310,6 @@ LINEBREAK_MATCHER : '\\R' ;
 
 // Letters
 LETTER : [a-zA-Z0-9/!,#&];
-EXTRA_LETTER_ALLOWED_INSIDE:  [|*\\?.$-]; //following: https://www.abareplace.com/blog/escape-regexp/
 
 //Inline Modifier
 /* 
