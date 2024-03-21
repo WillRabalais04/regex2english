@@ -262,10 +262,10 @@ DOLLAR_SIGN_ESCAPED : '\\$';
 HYPHEN_ESCAPED : '\\-' ;
 
 // Quantifiers
-N_OCCURRANCES : '{' [0-9] '}';
-MAX_QUANTIFIER : '{,' [0-9]? '}';
-MIN_QUANTIFIER : '{' [0-9]? ',}';
-RANGE_QUANTIFIER : '{' [0-9]? ',' [0-9]? '}' ;
+N_OCCURRANCES : '{'[0-9]'}';
+MAX_QUANTIFIER : '{,'[0-9]?'}';
+MIN_QUANTIFIER : '{'[0-9]?',}';
+RANGE_QUANTIFIER : '{'[0-9]*','[0-9]*'}' ;
 PLUS: '+';
 ASTERISK: '*' ;
 QMARK: '?' ;
@@ -309,7 +309,7 @@ INPUT_END_INC_NEWLINE : '\\Z';
 LINEBREAK_MATCHER : '\\R' ;
 
 // Letters
-LETTER : [a-zA-Z0-9/!,#&];
+LETTER : [a-zA-Z0-9/!,#&@%=];
 
 //Inline Modifier
 /* 
