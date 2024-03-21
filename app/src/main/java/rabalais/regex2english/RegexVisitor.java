@@ -43,6 +43,8 @@ public class RegexVisitor extends regex2englishBaseVisitor<String>{
         return visitChildren((RuleNode)child); 
     }
 
+    // Override characterclass to subsume character class content
+
     // @Override public String visitChildren(regex2englishParser.ZeroWidthAssertionsContext ctx) { 
             
     //     ParseTree child = ctx.getChild(0);

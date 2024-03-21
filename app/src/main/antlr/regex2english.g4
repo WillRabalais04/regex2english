@@ -25,7 +25,7 @@ exprHelper : (concatenation
 | quantifier 
 | boundaryMatcherEnd
 | endOfInputExceptFinalTerminator
-| endOfOnput
+| endOfInput
 | or ) 
 (exprHelper | <EOF>) 
 ;
@@ -134,7 +134,7 @@ boundaryMatcherEnd: expr DOLLAR_SIGN ;
 
 endOfInputExceptFinalTerminator: INPUT_END_INC_NEWLINE ;
 
-endOfOnput: INPUT_END ;
+endOfInput: INPUT_END ;
 
 or: PIPE expr ;
 

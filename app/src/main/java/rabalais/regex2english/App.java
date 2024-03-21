@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.HashMap;
+import java.util.Map;
+import static java.util.Map.entry;    
 
 
 import org.antlr.v4.runtime.*;
@@ -50,6 +52,80 @@ public class App {
 
     }
 
+    public static String getCleanClassName(String dirty){
+
+        Map<String, String> cleanClassNames = Map.ofEntries(
+            entry("StartContext", "Start"),
+            entry("ExprContext", "Expression"),
+            entry("ExprHelperContext", "Expression"),
+            entry("CharacterClassContentContext", "Character Class Context"),
+            entry("CharacterClassContentHelperContext", "Character Class Context"),
+            entry("EscapedToLiteralInsideCharClassContext", "Escape Sequence (inside character class)"),
+            entry("EscapedToLiteralOutsideCharClassContext", "Escape Sequences (outside character class)"),
+            entry("ZeroWidthAssertionsContext", "Zero Width Assertion"),
+            entry("CaptureGroupContext", "Capture Group"),
+            entry("GroupContext", "Group"),
+            entry("RangeContext", "Range"),
+            entry("PredefinedCharacterClassContext", "Predefined Character Class"),
+            entry("CharacterClassContext", "Character Class"),
+            entry("BackReferenceContext", "Back Reference"),
+            entry("BoundaryMatcherStartContext", "Boundary Matcher Start"),
+            entry("WordBoundaryContext", "Word Boundary"),
+            entry("NonWordBoundaryContext", "Non Word Boundary"),
+            entry("InputStartContext", "Input Start"),
+            entry("EndOfMatchContext", "End Of Match"),
+            entry("LetterContext", "Letter(s)"),
+            entry("QuantifierContext", "Quantifier"),
+            entry("BoundaryMatcherEndContext", "Boundary Matcher End"),
+            entry("EndOfInputExceptFinalTerminatorContext", "End Of Input (except terminator)"),
+            entry("EndOfInputContext", "End Of Input"),
+            entry("OrContext", "Or"),
+            entry("EscapedFromLiteralContext", "Escape Sequence"),
+            entry("InlineModifierContext", "Inline Modifier"),
+            entry("NamedCaptureGroupContext", "Named Capture Group")
+            entry("NonCaptureGroupContext", "Non Capture Group")
+            entry("IndependentNonCapturingGroupContext", "Independent Non Capturing Group")
+            entry("ZeroWidthPositiveLookAheadContext", "Zero Width Positive Look Ahead")
+            entry("ZeroWidthNegativeLookAheadContext", "Zero Width Negative Look Ahead")
+            entry("ZeroWidthPositiveLookBehindContext", "Zero Width Positive Look Behind")
+            entry("ZeroWidthNegativeLookBehindContext", "Zero Width Negative Look Behind")
+            entry("PosixContext", "POSIX")
+            entry("POSIX_LETTERSContext", "POSIX LETTERS")
+            entry("POSIX_ALPHANUMERICContext", "POSIX ALPHANUMERIC")
+            entry("POSIX_LOWERCASEContext", "POSIX Lowercase")
+            entry("POSIX_WHITESPACE_OR_GLYPHContext", "POSIX Whitespace or Glyph")
+            entry("POSIX_CONTROL_CHARACTERSContext", "POSIX Control Characters")
+            entry("POSIX_ALPHANUM_PUNCTUATIONContext", "POSIX Alphanumeric or Punctuation")
+            entry("POSIX_DIGITSContext", "POSIX Digits")
+            entry("POSIX_WHITESPACEContext", "POSIX Whitespace")
+            entry("POSIX_SPACE_OR_TABContext", "POSIX Space or Tab")
+            entry("POSIX_ASCIIContext", "POSIX ASCII")
+            entry("POSIX_UPPERCASEContext", "POSIX Uppercase")
+            entry("POSIX_X_DIGITContext", "POSIX HEX")
+            entry("POSIX_PUNCTUATIONContext", "POSIX Punctuation")
+            entry("JavalangCharacterClassContext", "java.lang.Character")
+            entry("JAVALANG_CC_LOWERCASEContext", "java.lang.Character Lowercase")
+            entry("JAVALANG_CC_WHITESPACEContext", "java.lang.Character Whitespace")
+            entry("JAVALANG_CC_UPPERCASEContext", "java.lang.Character Uppercase")
+            entry("JAVALANG_CC_LOWERCASEContext", "java.lang.Character lowercase")
+            entry("UnicodeScriptClassContext", "Unicode Script Class")
+            entry("NOT_UPPERCASEContext", "Not Uppercase")
+            entry("IS_ALPHABETICContext", "Is Alphabetic")
+            entry("CURRENCY_SYMBOLContext", "Currency Symbol")
+            entry("UPPERCASEContext", "Is Uppercase")
+            entry("LATINContext", "Is Latin")
+            entry("NOT_GREEKContext", "Not Greek")
+            entry("GREEKContext", "Is Greek")
+            entry("Extra_letters_allowed_inside_CCContext", "Letters")
+        ); 
+    
+        String clean = cleanClassNames.get(dirty);
+
+        return clean;
+    }
+
+
+
      public static void getTerminals(ParseTree root, ArrayList<String> terminals){
 
 
@@ -57,8 +133,11 @@ public class App {
 
         if(root != null){
             if(root instanceof TerminalNode){
+
+                String type = root.getParent().getClass().getSimpleName();
                 
-                terminals.add(root.getText());
+                // terminals.add();
+                // System.out.println("parent:"  + root.getParent().getText() + "root: " + root.getText());
 
                 return;
             }
@@ -106,8 +185,6 @@ public class App {
 
 
      public static void treePrinter(ParseTree root, int line){ // in-order traversal
-
-
         
         if(root != null){
 
