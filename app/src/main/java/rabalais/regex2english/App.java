@@ -16,6 +16,7 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
 import rabalais.regex2english.generated.*;
+import rabalais.regex2english.generated.regex2englishParser.*;
 
 public class App {
    
@@ -25,10 +26,16 @@ public class App {
 
     public static void main(String[] args) throws IOException{
         
-        String input = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
-        // input = "src/main/resources/input.txt";
+        // String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
+        // String input = "(((([a\\s][a\\s]))))";
+
+        // String input = "(@#$?%^?&+=)";
+
+        String input = "([ab][ab][ab])";
 
         processTree(input);
+
+
 
         // System.out.println("Key: \n----------------------------------------------------------------------------------------------------");
         // System.out.println("- Arrows (x) represents all of the (explicit) logical operators including quantifiers.");
@@ -58,8 +65,8 @@ public class App {
             entry("StartContext", "Start"),
             entry("ExprContext", "Expression"),
             entry("ExprHelperContext", "Expression"),
-            entry("CharacterClassContentContext", "Character Class Context"),
-            entry("CharacterClassContentHelperContext", "Character Class Context"),
+            entry("CharacterClassContentContext", "Character Class Content"),
+            entry("CharacterClassContentHelperContext", "Character Class Content"),
             entry("EscapedToLiteralInsideCharClassContext", "Escape Sequence (inside character class)"),
             entry("EscapedToLiteralOutsideCharClassContext", "Escape Sequences (outside character class)"),
             entry("ZeroWidthAssertionsContext", "Zero Width Assertion"),
@@ -82,40 +89,40 @@ public class App {
             entry("OrContext", "Or"),
             entry("EscapedFromLiteralContext", "Escape Sequence"),
             entry("InlineModifierContext", "Inline Modifier"),
-            entry("NamedCaptureGroupContext", "Named Capture Group")
-            entry("NonCaptureGroupContext", "Non Capture Group")
-            entry("IndependentNonCapturingGroupContext", "Independent Non Capturing Group")
-            entry("ZeroWidthPositiveLookAheadContext", "Zero Width Positive Look Ahead")
-            entry("ZeroWidthNegativeLookAheadContext", "Zero Width Negative Look Ahead")
-            entry("ZeroWidthPositiveLookBehindContext", "Zero Width Positive Look Behind")
-            entry("ZeroWidthNegativeLookBehindContext", "Zero Width Negative Look Behind")
-            entry("PosixContext", "POSIX")
-            entry("POSIX_LETTERSContext", "POSIX LETTERS")
-            entry("POSIX_ALPHANUMERICContext", "POSIX ALPHANUMERIC")
-            entry("POSIX_LOWERCASEContext", "POSIX Lowercase")
-            entry("POSIX_WHITESPACE_OR_GLYPHContext", "POSIX Whitespace or Glyph")
-            entry("POSIX_CONTROL_CHARACTERSContext", "POSIX Control Characters")
-            entry("POSIX_ALPHANUM_PUNCTUATIONContext", "POSIX Alphanumeric or Punctuation")
-            entry("POSIX_DIGITSContext", "POSIX Digits")
-            entry("POSIX_WHITESPACEContext", "POSIX Whitespace")
-            entry("POSIX_SPACE_OR_TABContext", "POSIX Space or Tab")
-            entry("POSIX_ASCIIContext", "POSIX ASCII")
-            entry("POSIX_UPPERCASEContext", "POSIX Uppercase")
-            entry("POSIX_X_DIGITContext", "POSIX HEX")
-            entry("POSIX_PUNCTUATIONContext", "POSIX Punctuation")
-            entry("JavalangCharacterClassContext", "java.lang.Character")
-            entry("JAVALANG_CC_LOWERCASEContext", "java.lang.Character Lowercase")
-            entry("JAVALANG_CC_WHITESPACEContext", "java.lang.Character Whitespace")
-            entry("JAVALANG_CC_UPPERCASEContext", "java.lang.Character Uppercase")
-            entry("JAVALANG_CC_LOWERCASEContext", "java.lang.Character lowercase")
-            entry("UnicodeScriptClassContext", "Unicode Script Class")
-            entry("NOT_UPPERCASEContext", "Not Uppercase")
-            entry("IS_ALPHABETICContext", "Is Alphabetic")
-            entry("CURRENCY_SYMBOLContext", "Currency Symbol")
-            entry("UPPERCASEContext", "Is Uppercase")
-            entry("LATINContext", "Is Latin")
-            entry("NOT_GREEKContext", "Not Greek")
-            entry("GREEKContext", "Is Greek")
+            entry("NamedCaptureGroupContext", "Named Capture Group"),
+            entry("NonCaptureGroupContext", "Non Capture Group"),
+            entry("IndependentNonCapturingGroupContext", "Independent Non Capturing Group"),
+            entry("ZeroWidthPositiveLookAheadContext", "Zero Width Positive Look Ahead"),
+            entry("ZeroWidthNegativeLookAheadContext", "Zero Width Negative Look Ahead"),
+            entry("ZeroWidthPositiveLookBehindContext", "Zero Width Positive Look Behind"),
+            entry("ZeroWidthNegativeLookBehindContext", "Zero Width Negative Look Behind"),
+            entry("PosixContext", "POSIX"),
+            entry("POSIX_LETTERSContext", "POSIX LETTERS"),
+            entry("POSIX_ALPHANUMERICContext", "POSIX ALPHANUMERIC"),
+            entry("POSIX_LOWERCASEContext", "POSIX Lowercase"),
+            entry("POSIX_WHITESPACE_OR_GLYPHContext", "POSIX Whitespace or Glyph"),
+            entry("POSIX_CONTROL_CHARACTERSContext", "POSIX Control Characters"),
+            entry("POSIX_ALPHANUM_PUNCTUATIONContext", "POSIX Alphanumeric or Punctuation"),
+            entry("POSIX_DIGITSContext", "POSIX Digits"),
+            entry("POSIX_WHITESPACEContext", "POSIX Whitespace"),
+            entry("POSIX_SPACE_OR_TABContext", "POSIX Space or Tab"),
+            entry("POSIX_ASCIIContext", "POSIX ASCII"),
+            entry("POSIX_UPPERCASEContext", "POSIX Uppercase"),
+            entry("POSIX_X_DIGITContext", "POSIX HEX"),
+            entry("POSIX_PUNCTUATIONContext", "POSIX Punctuation"),
+            entry("JavalangCharacterClassContext", "java.lang.Character"),
+            entry("JAVALANG_CC_LOWERCASEContext", "java.lang.Character Lowercase"),
+            entry("JAVALANG_CC_WHITESPACEContext", "java.lang.Character Whitespace"),
+            entry("JAVALANG_CC_UPPERCASEContext", "java.lang.Character Uppercase"),
+            entry("JAVALANG_CC_MIRROREDContext", "java.lang.Character Mirrored"),
+            entry("UnicodeScriptClassContext", "Unicode Script Class"),
+            entry("NOT_UPPERCASEContext", "Not Uppercase"),
+            entry("IS_ALPHABETICContext", "Is Alphabetic"),
+            entry("CURRENCY_SYMBOLContext", "Currency Symbol"),
+            entry("UPPERCASEContext", "Is Uppercase"),
+            entry("LATINContext", "Is Latin"),
+            entry("NOT_GREEKContext", "Not Greek"),
+            entry("GREEKContext", "Is Greek"),
             entry("Extra_letters_allowed_inside_CCContext", "Letters")
         ); 
     
@@ -125,31 +132,172 @@ public class App {
     }
 
 
-
-     public static void getTerminals(ParseTree root, ArrayList<String> terminals){
-
-
-        //letter or escape sequence or posix
-
+    public static String getTerminals(ParseTree root, String ret){
+       
         if(root != null){
+
             if(root instanceof TerminalNode){
-
-                String type = root.getParent().getClass().getSimpleName();
-                
-                // terminals.add();
-                // System.out.println("parent:"  + root.getParent().getText() + "root: " + root.getText());
-
-                return;
+                ret += root.getText();
             }
 
             for(int i = 0; i < root.getChildCount(); i++){
                
-                getTerminals(root.getChild(i), terminals);
+                ret = getTerminals(root.getChild(i), ret);
                 
             }
+        } 
+        // System.out.print(ret);
+
+        return ret;
+    }
+
+    // O(n^3)??
+    // public static void indexAtoms(ArrayList<Atom> atoms, Atom atom){
+
+    //     for(Atom curr: atoms){
+
+    //         if(atom == curr){
+
+    //         }
+
+    //         String precedingAtoms = "";
+
+    //         int atomHashCode = curr.getParentNode().hashCode();
+
+    //         for(Atom curr2: atoms){
+
+    //             ArrayList<ParseTree> nodes = curr2.getChildren();
+
+    //             for(ParseTree node: nodes){
+    //                 if(curr2.getParentNode().hashCode() == atomHashCode){
+    //                     break;
+    //                 }
+    //                 if(!(node.getText().equals("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$"))) {
+    //                     System.out.println("node.getText(): " + node.getText());
+    //                     precedingAtoms += node.getText();
+    //                 }
+    //             }
+    //         }
+    //         System.out.println();
+    //         curr.setIndex(precedingAtoms.length());
+    //     }
+
+        // String precedingAtoms = "";
+
+        //     int atomHashCode = atom.getParentNode().hashCode();
+
+        //     for(Atom curr: atoms){
+
+        //         ArrayList<ParseTree> nodes = curr.getChildren();
+
+        //         for(ParseTree node: nodes){
+        //             if(curr.getParentNode().hashCode() == atomHashCode){
+        //                 break;
+        //             }
+        //             if(!(node.getText().equals("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$"))) {
+        //                 System.out.println("node.getText(): " + node.getText());
+        //                 precedingAtoms += node.getText();
+        //             }
+        //         }
+        //     }
+        //     System.out.println();
+        //     curr.setIndex(precedingAtoms.length());
+
+    // }
+
+    
+
+
+
+    public static void getAtoms(ParseTree root, ArrayList<Atom> atoms, ArrayList<Atom> terminals, String input){
+    
+        if(root != null){
+
+            int length = 0;
+                        
+            if(root.getChildCount() > 0 && (root.getChild(0) instanceof TerminalNode || root.getChild(root.getChildCount() - 1) instanceof TerminalNode)){                 
+               
+                if(root.getClass().getSimpleName().equals("CharacterClassContentContext")){
+                    return;
+                }
+
+                String type = getCleanClassName(root.getClass().getSimpleName());
+                String content = "";
+
+
+                ArrayList<ParseTree> children = new ArrayList<>();
+
+                boolean isOnlyTerminals = true;
+                boolean isAtom = false;
+            
+                for(int i = 0; i < root.getChildCount(); i++){
+                    ParseTree child = root.getChild(i);
+                    if(!(child instanceof TerminalNode)){
+                        isOnlyTerminals = false;
+                    }
+                    if(child instanceof regex2englishParser.ExprHelperContext || child instanceof regex2englishParser.ExprContext){
+                        isAtom = false;
+                    }
+                    content += child.getText();
+                    children.add(child);
+                }
+
+                length = content.length();
+                String category = "category";
+               
+                Atom atom = new Atom(root, children, content, type, category, length);
+                if(isOnlyTerminals){
+                    terminals.add(atom);
+                }
+                if(isAtom){
+                    atom.setIsMolecule(isAtom);
+                }
+
+
+                int index = getAtomIndex(input, root);
+                atom.setIndex(index);
+                // System.out.println("'" + content + "' (" + index + ")");
+
+                // indexAtoms(atoms, atom);
+
+                // String inputUpToAtom = getInputUpToAtom(root, "" , atomNode.hashCode());
+                // System.out.println("ATOM: '" + content + "'       IUTA: '" + inputUpToAtom + "'");
+                // temp.setIndex(inputUpToAtom.length());
+                atoms.add(atom);
+
+            }
+
+            for(int i = 0; i < root.getChildCount(); i++){
+               
+                getAtoms(root.getChild(i), atoms, terminals, input);
+                
+            }
+    
         }
 
-     }
+       
+    }
+
+     // things to group top down
+    // quote
+    // zeroWidthAssertions
+    // inlineModifier
+    // captureGroup 
+    // group
+    // boundaryMatcherStart
+    // escapedFromLiteral 
+    // characterClass 
+    // backReference 
+    // wordBoundary
+    // nonWordBoundary 
+    // inputStart 
+    // endOfMatch 
+    // letter
+    // quantifier 
+    // boundaryMatcherEnd
+    // endOfInputExceptFinalTerminator
+    // endOfInput
+    // or
 
     public static void processTree(String input){
 
@@ -164,12 +312,23 @@ public class App {
         ParseTree tree = parser.start();
         RegexVisitor visitor = new RegexVisitor();
 
-        HashMap<String, ArrayList<String>> atoms = new HashMap<>();
 
+     
+       
+        // testMemAddress(tree.getChild(0));
+       
+        ArrayList<Atom> atoms = new ArrayList<>();
+        ArrayList<Atom> terminals = new ArrayList<>();
 
-        ArrayList<String> terminals = new ArrayList();
-        getTerminals(tree, terminals);
-        System.out.println(terminals.toString());
+        getAtoms(tree, atoms, terminals, input);
+        indexAtoms(atoms);
+
+        for(Atom a: atoms){
+            System.out.println("'" + a.getContent() + "' (" + a.getIndex() + ")");
+            // System.out.println("' (" + a.getIndex() + ")");
+
+        }
+
 
         // String treeString = tree.toStringTree(parser).replaceAll("exprHelper", "expr");
 
@@ -184,58 +343,384 @@ public class App {
     }
 
 
-     public static void treePrinter(ParseTree root, int line){ // in-order traversal
+    //  public static void treePrinter(ParseTree root, int line){ // in-order traversal
         
-        if(root != null){
+    //     if(root != null){
 
-            String payload = "empty";
+    //         String payload = "empty";
 
-            if(root instanceof RuleNode && root.getChildCount() == 1){
+    //         if(root instanceof RuleNode && root.getChildCount() == 1){
 
-                ParseTree child = root.getChild(0);
+    //             ParseTree child = root.getChild(0);
               
-                while(child != null && !(child instanceof TerminalNode) && root.getChildCount() == 1){
-                    root = root.getChild(0);
-                    // System.out.println("skip");
-                }
-                // System.out.println("Rule:" + ((RuleNode)root.getPayload()).getText());
-            }
+    //             while(child != null && !(child instanceof TerminalNode) && root.getChildCount() == 1){
+    //                 root = root.getChild(0);
+    //                 // System.out.println("skip");
+    //             }
+    //             // System.out.println("Rule:" + ((RuleNode)root.getPayload()).getText());
+    //         }
 
 
-            if(root.getChildCount() > 0){
-                payload = ((RuleContext)root.getPayload()).getText();
-            }
+    //         if(root.getChildCount() > 0){
+    //             payload = ((RuleContext)root.getPayload()).getText();
+    //         }
             
-            if(root.getParent() != null && root.getParent().getChildCount() == 1){
-                // root = 
+    //         if(root.getParent() != null && root.getParent().getChildCount() == 1){
+    //             // root = 
 
-            }
-            // System.out.print("'" + ((TerminalNode)root.getPayload()).getText() + "'  ");
+    //         }
+    //         // System.out.print("'" + ((TerminalNode)root.getPayload()).getText() + "'  ");
 
-            if(root.getChildCount() == 0){ 
-                // return;
+    //         if(root.getChildCount() == 0){ 
+    //             // return;
         
                
 
-                payload = root.getText();
+    //             payload = root.getText();
 
-            }else{
+    //         }else{
 
-                // payload = ((RuleContext)root.getPayload()).getText();
+    //             // payload = ((RuleContext)root.getPayload()).getText();
 
+    //         }
+
+    //         System.out.println("Line#" + line + "| '" + payload + "'");
+    //         treePrinter(root.getChild(0), (root.getChild(0) != null) ? ++line: line);
+    //         treePrinter(root.getChild(1), (root.getChild(1) != null) ? ++line: line);
+
+    //     }
+
+    //  }
+
+
+
+// graveyard
+//---------------------------------------------------
+
+    public static int getDuplicateAtomsCount(ArrayList<Atom> atoms, String content){
+            
+        int duplicateCount = 0;
+        
+        for (Atom atom: atoms){
+
+            if(atom.getContent().equals(content)){
+                duplicateCount++;
+            }
+        }
+
+        return duplicateCount;
+    }
+
+    public static int getDuplicatePreviousAtomsCount(ArrayList<Atom> atoms, String content){
+        
+        int duplicateCount = 0;
+        
+        for (Atom atom: atoms){
+
+            if(atom.getContent().equals(content)){
+                duplicateCount++;
+            }
+        }
+
+        return duplicateCount - 1;
+    }
+    
+
+    // side experiment to see if the memory address of root.getParent().getChild() == root()
+    public static void testMemAddress(ParseTree root){
+
+        if(root != null){
+        ParseTree parent = root.getParent();
+        
+        if(parent != null){
+            
+            System.out.println("Parent: '" + parent.getText()  + "' | Root: '" + root.getText());
+            for(int i = 0; i < parent.getChildCount();i++){
+                System.out.println("Sibling: '" + parent.getChild(i).getText() + "' | Sibling = Root: " + (parent.getChild(i) == root));
+            }
+        }
+
+            if(root instanceof TerminalNode){
+
+                return;
+            }
+            
+            for(int i = 0; i < root.getChildCount(); i++){
+                System.out.println();
+                testMemAddress(root.getChild(i));
+                
+            }
+        }
+
+    }
+
+
+
+    public static void indexAtoms(ArrayList<Atom> atoms){
+
+        System.out.println("atoms: ");
+
+        for(Atom a : atoms){
+           if(a.getIsMolecule()){
+            System.out.println(a.getContent());
+
+           }
+        }
+
+        System.out.println();
+
+    }
+
+    // // gets all the values of the children that are terminalNodes
+    //  public static void getTerminalList(ParseTree root, ArrayList<Atom> terminals){
+
+    //     if(root != null){
+    //         if(root instanceof TerminalNode){
+
+    //             String type = getCleanClassName(root.getParent().getClass().getSimpleName());
+    //             // System.out.println("type: " + type);
+
+
+                
+    //             terminals.add();
+    //             // System.out.println(root.getText() + " (" + type + ")");
+
+
+    //             return;
+    //         }
+
+    //         for(int i = 0; i < root.getChildCount(); i++){
+               
+    //             getTerminalList(root.getChild(i), terminals);
+                
+    //         }
+    //     }
+
+    //  }
+
+    public static String getInputUpToAtom(ParseTree root, String ret, int atomHashCode){
+
+        int nodeHashCode = root.hashCode();
+       
+        if(root != null){
+
+            if(nodeHashCode == atomHashCode){
+                root = null;
+                return "";
             }
 
-            System.out.println("Line#" + line + "| '" + payload + "'");
-            treePrinter(root.getChild(0), (root.getChild(0) != null) ? ++line: line);
-            treePrinter(root.getChild(1), (root.getChild(1) != null) ? ++line: line);
+                if(root instanceof TerminalNode){
+                    ret += root.getText();
+                }
+    
+                for(int i = 0; i < root.getChildCount(); i++){                   
+                    ret = getInputUpToAtom(root.getChild(i), ret, atomHashCode);
+                    
+                }
+            
+            
+        } 
 
-        }
+        return ret;
 
      }
 
+    //  public static boolean noChildrenContainNode(ParseTree root, int hashCode, boolean a){
+
+    //     return false;
+    //  }
 
 
+
+
+
+    // // method to get getChild() index for the parent of a given child 
+    public static int getChildIndex(ParseTree root){
+
+        ParseTree parent = root.getParent();
+
+        if(parent.getChildCount() == 1){
+            return 0;
+        }
+        int index = 0;
+
+        if(parent != null){  
+            for(int i = 0; i < parent.getChildCount(); i++){
+                if(parent.getChild(i) == root){
+
+                    index = i;
+                    break;
+                }
+            }
+        }
+        // System.out.println("index: " + index + "\n");
+        System.out.println();
+        return index;
     }
+
+
+    // public static int indexAtom(ArrayList<Atom> atoms, String input, String content){
+
+    //     int index = 0;
+    //     int duplicateAtomsInList = 0;
+
+    //     // get the number of duplicate atoms
+    //     for (Atom atom: atoms){
+    //         if(atom.getContent().equals(content)){
+    //             duplicateAtomsInList++;
+    //         }
+    //     }
+
+    //     int atomOccurancesInInput = instancesOf(input, content)
+
+    //     while(instancesOf(input, content) != 1){
+            
+    //     }
+        
+        
+
+    //     for(int i = 0; i < duplicateAtomsInList - 1; i++){
+
+    //         index += input.indexOf(content);
+    //         input = input.substring(index);
+
+    //     }
+
+    //     return index;
+
+    // }
+
+    public static int getAtomIndex(String input, ParseTree node){
+
+        ParseTree originalNode = node;
+        ParseTree parent;
+        
+        String atomContent = getTerminals(node, "");
+
+        String temp = new String(atomContent);
+
+        int index = input.indexOf(atomContent);
+
+        String leftAtomContent = "";
+
+        int alternator = 0;
+
+        ParseTree child = node;
+        System.out.println("-----------------");
+
+
+        while(instancesOfWithDuplicates(input, atomContent) != 1 && node != null && node.getParent() != null){
+            
+
+            int childIndex;
+
+
+            parent = node.getParent();
+
+            while(parent.getParent() != null && parent.getParent().getChildCount() == 1){
+                child = parent;
+                parent = parent.getParent();
+            }
+
+            childIndex = getChildIndex(node);
+
+            for(int i = 0; i < parent.getChildCount(); i++){
+                String output = (leftAtomContent == "") ? "" : "LAC: " + leftAtomContent + "\n";
+                System.out.print(output);
+                
+                if(i < childIndex){
+                  
+                    leftAtomContent = getTerminals(parent.getChild(i), "") + leftAtomContent;
+                
+                }
+            }
+    
+            System.out.println("The substring: '" + atomContent + "' appears " + instancesOfWithDuplicates(input, atomContent) + "x in the String: '" + input + "'.");
+
+
+
+            if(instancesOfWithDuplicates(input, atomContent) == 0){
+                break;
+            }
+
+
+            node = parent;
+            atomContent = getTerminals(node, "");
+            index = input.indexOf(atomContent) + leftAtomContent.length();
+
+        }
+        System.out.println("---------");
+
+        return index;
+    }
+
+    // public static void removeNodeByMemAddress(ParseTree nodeToRemove, ){
+
+        public static ParseTree getNearestRelevantParent(ParseTree node) {
+
+            while(node.getParent() != null && node.getParent().getChildCount() == 1){
+                node = node.getParent();
+            }
+            
+            
+            return node; 
+        }
+    
+        
+
+
+    // }
+
+    public static int instancesOf2(String input, String substring){
+
+        int count = 0;
+
+        while(input.contains(substring)){
+            input = input.substring(input.indexOf(substring) + 1);
+            count++;
+        }
+
+        return count;
+    }
+
+    public static int instancesOfWithDuplicates(String input, String substring){
+
+        if(input.equals(substring)){
+            return 1;
+        }
+
+        int count = 0;
+
+        for(int i = 0; i < input.length() - substring.length();i++){
+
+            if(input.substring(i, i + substring.length()).equals(substring)){
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    public static String getTerminalsToTheLeft(ParseTree root, String ret, int childIndex){
+       
+        if(childIndex > 0 && root != null){
+
+            if(root instanceof TerminalNode){
+                ret += root.getText();
+            }
+
+            for(int i = 0; i < childIndex ; i++){
+               
+                ret = getTerminals(root.getChild(i), ret);
+                
+            }
+        } 
+
+
+        return ret;
+    }  
+
+
 
     /*
      * 
@@ -290,282 +775,4 @@ public class App {
      * 
      */
 
-
-    
-
-    
-    // characterClassContentHelper: DOUBLE_AMPERSAND  (characterClass | characterClassContent) (characterClassContentHelper | <EOF>) 
-    // | characterClass (characterClassContentHelper | <EOF>)
-    // ;
-    
-    // escapedToLiteralInsideCharClass: BACKSLASH_ESCAPED
-    // | RBRACKET_ESCAPED
-    // | HYPHEN_ESCAPED
-    // | LBRACKET_ESCAPED
-    // ;
-    
-    // escapedToLiteralOutsideCharClass: LBRACKET_ESCAPED
-    // | ASTERISK_ESCAPED
-    // | PLUS_ESCAPED
-    // | QMARK_ESCAPED
-    // | LBRACE_ESCAPED
-    // | DOT_ESCAPED
-    // | LPAREN_ESCAPED
-    // | RPAREN_ESCAPED
-    // | CARET_ESCAPED
-    // | DOLLAR_SIGN_ESCAPED
-    // | PIPE_ESCAPED
-    // | BACKSLASH_ESCAPED
-    // ;
-    
-    // quote: LEFT_QUOTE expr RIGHT_QUOTE ;
-    
-    // zeroWidthAssertions: zeroWidthPositiveLookAhead
-    // | zeroWidthNegativeLookAhead
-    // | zeroWidthPositiveLookBehind
-    // | zeroWidthNegativeLookBehind
-    // ;
-    
-    // captureGroup: namedCaptureGroup
-    // | nonCaptureGroup
-    // | independentNonCapturingGroup
-    // ;
-    
-    // // think of more things that aren't in character class but could go in group
-    // group: LPAREN expr RPAREN
-    // | LPAREN range RPAREN
-    // ;
-    
-    // range: LETTER_RANGE
-    // | NUMBER_RANGE
-    // | RANGE_QUANTIFIER;
-    
-    // predefinedCharacterClass : WILDCARD
-    // | DIGIT
-    // | NON_DIGIT
-    // | HORIZONTAL_WHITESPACE
-    // | NON_HORIZONTAL_WHITESPACE
-    // | WHITESPACE
-    // | NON_WHITESPACE
-    // | VERTICAL_WHITESPACE
-    // | NON_VERTICAL_WHITESPACE
-    // | WORD
-    // | NON_WORD 
-    // ;
-    
-    // characterClass: LBRACKET characterClassContent RBRACKET ;
-    
-    // backReference: N_TH_CAPTURE_GROUP
-    // | NAMED_CAPTURE_GROUP_MATCH 
-    // ;
-    
-    // boundaryMatcherStart: CARET expr ;
-    
-    // wordBoundary: WORD_BOUNDARY expr WORD_BOUNDARY ;
-    
-    // nonWordBoundary: NON_WORD_BOUNDARY expr NON_WORD_BOUNDARY;
-    
-    // inputStart: INPUT_START expr;
-    
-    // endOfMatch: END_OF_MATCH expr;
-    
-    // letter: LETTER+;
-    
-    // concatenation: expr;
-    
-    // quantifier: N_OCCURRANCES
-    // | MAX_QUANTIFIER 
-    // | MIN_QUANTIFIER
-    // | RANGE_QUANTIFIER
-    // | PLUS
-    // | ASTERISK
-    // | QMARK
-    // ;
-    
-    // boundaryMatcherEnd: DOLLAR_SIGN ;
-    
-    // endOfInputExceptFinalTerminator: INPUT_END_INC_NEWLINE ;
-    
-    // endOfOnput: INPUT_END ;
-    
-    // or: PIPE expr ;
-    
-    // escapedFromLiteral : predefinedCharacterClass
-    // | OCTAL_1 
-    // | OCTAL_2 
-    // | OCTAL_3 
-    // | HEXA_2 
-    // | HEXA_4 
-    // | HEXA_6
-    // | CARRIAGE_RETURN
-    // | TAB 
-    // | FORM_FEED
-    // | ALERT
-    // | ESC
-    // | CARET
-    // | DOLLAR_SIGN
-    // | WORD_BOUNDARY
-    // | NON_WORD_BOUNDARY
-    // | INPUT_START
-    // | END_OF_MATCH
-    // | INPUT_END
-    // | INPUT_END_INC_NEWLINE
-    // | LINEBREAK_MATCHER
-    // ;
-    
-    // // Inline Modifiers
-    // inlineModifier: INLINEMODIFIER | (LOCAL_INLINE_MODIFIER_TEMPLATE expr RPAREN) ;
-    
-    // // Capture Groups
-    // namedCaptureGroup : LPAREN '<?'NAMED_CAPTURE_GROUP_NAME'>' expr RPAREN;
-    // nonCaptureGroup: LPAREN '?:' expr RPAREN;
-    // independentNonCapturingGroup: LPAREN '?>' expr RPAREN;
-    
-    // // Look Aheads
-    // zeroWidthPositiveLookAhead: LPAREN POSITIVE_LA expr RPAREN;
-    // zeroWidthNegativeLookAhead: LPAREN NEGATIVE_LA expr RPAREN;
-    // zeroWidthPositiveLookBehind: LPAREN POSITIVE_LB expr RPAREN;
-    // zeroWidthNegativeLookBehind: LPAREN NEGATIVE_LB expr RPAREN;
-    
-    
-    // // POSIX Character Classes (US-ASCII only)
-    // posix :  '\\p{Lower}' # POSIX_LOWERCASE //[a-z] 
-    // | '\\p{Upper}' # POSIX_UPPERCASE //[A-Z]
-    // | '\\p{ASCII}' # POSIX_ASCII //[\x00-\x7F]
-    // | '\\p{Alpha}' # POSIX_LETTERS // [a-zA-Z]
-    // | '\\p{Digit}' # POSIX_DIGITS // [0-9]
-    // | '\\p{Alnum}' # POSIX_ALPHANUMERIC // [a-zA-Z0-9]
-    // | '\\p{Punct}' # POSIX_PUNCTUATION // [!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]
-    // | '\\p{Graph}' # POSIX_ALPHANUM_PUNCTUATION // Any alphanumeric or punctuation character [\p{Alnum}\p{Punct}]
-    // | '\\p{Print}' # POSIX_WHITESPACE_OR_GLYPH // any glyph or whitespace
-    // | '\\p{Blank}' # POSIX_SPACE_OR_TAB // space or tab: [ \t]
-    // | '\\p{Cntrl}' # POSIX_CONTROL_CHARACTERS // control characters [\x00-\x1F\x7F]
-    // | '\\p{XDigit}'# POSIX_X_DIGIT // [0-9a-fA-F]
-    // | '\\p{Space}' # POSIX_WHITESPACE // whitespace character: [ \t\n\x0B\f\r]
-    // ;
-    
-    // // java.lang.Character Classes 
-    // javalangCharacterClass : '\\p{javaLowerCase}' # JAVALANG_CC_LOWERCASE // Equivalent to java.lang.Character.isLowerCase()
-    // | '\\p{javaUpperCase}' # JAVALANG_CC_UPPERCASE	// Equivalent to java.lang.Character.isUpperCase()
-    // | '\\p{javaWhitespace}' # JAVALANG_CC_WHITESPACE //Equivalent to java.lang.Character.isWhitespace()
-    // | '\\p{javaMirrored}' # JAVALANG_CC_MIRRORED //Equivalent to java.lang.Character.isMirrored()
-    // ;
-    
-    // //Classes for Unicode Scripts
-    // unicodeScriptClass : '\\p{IsLatin}' # LATIN //A Latin script character (script)
-    // | '\\p{InGreek}'# GREEK //A character in the Greek block (block)
-    // |  '\\p{Lu}' # UPPERCASE //An uppercase letter (category)
-    // | '\\p{IsAlphabetic}' # IS_ALPHABETIC  //An alphabetic character (binary property)
-    // | '\\p{Sc}' # CURRENCY_SYMBOL //A currency symbol
-    // | '\\P{InGreek}' # NOT_GREEK//Any character except one in the Greek block (negation)
-    // | '[\\p{L}&&[^\\p{Lu}]]' # NOT_UPPERCASE//Any letter except an uppercase letter (subtraction)
-    // ;
-    
-    // // Lexer:
-    
-    // WILDCARD: '.';
-    // CARET : '^';
-    // DIGIT: '\\d';
-    // NON_DIGIT: '\\D';
-    // HORIZONTAL_WHITESPACE: '\\h' ;
-    // NON_HORIZONTAL_WHITESPACE: '\\H';
-    // WHITESPACE: '\\s' ;
-    // NON_WHITESPACE: '\\S' ;
-    // VERTICAL_WHITESPACE: '\\v' ;
-    // NON_VERTICAL_WHITESPACE: '\\V';
-    // WORD: '\\w' ;
-    // NON_WORD: '\\W' ;
-    
-    // // Quotes
-    // LEFT_QUOTE: '\\Q';
-    // RIGHT_QUOTE: '\\E';
-    
-    // // Ranges
-    // LETTER_RANGE : [a-zA-Z]'-'[a-zA-Z];
-    // NUMBER_RANGE : [0-9]'-'[0-9];
-    
-    // // Operators
-    // DOUBLE_AMPERSAND : '&&' ;
-    // PIPE : '|' ;
-    
-    // // Special Escaped Characters
-    // PLUS_ESCAPED : '\\+' ;
-    // LBRACE_ESCAPED : '\\{' ;
-    // PIPE_ESCAPED : '\\|' ;
-    // BACKSLASH_ESCAPED : '\\\\' ;
-    // LPAREN_ESCAPED: '\\(' ;
-    // RPAREN_ESCAPED: '\\)' ;
-    // LBRACKET_ESCAPED: '\\]' ;
-    // RBRACKET_ESCAPED: '\\[' ;
-    // DOT_ESCAPED: '\\.' ;
-    // CARET_ESCAPED: '\\^' ;
-    // QMARK_ESCAPED: '\\?' ;
-    // ASTERISK_ESCAPED : '\\*' ;
-    // DOLLAR_SIGN_ESCAPED : '\\$';
-    // HYPHEN_ESCAPED : '\\-' ;
-    
-    // // Quantifiers
-    // N_OCCURRANCES : '{' [0-9] '}';
-    // MAX_QUANTIFIER : '{,' [0-9]? '}';
-    // MIN_QUANTIFIER : '{' [0-9]? ',}';
-    // RANGE_QUANTIFIER : '{' [0-9]? ',' [0-9]? '}' ;
-    // PLUS: '+';
-    // ASTERISK: '*' ;
-    // QMARK: '?' ;
-    
-    // // Brackets
-    // LBRACKET : '[' ; 
-    // RBRACKET : ']' ; 
-    // LPAREN : '(' ;
-    // RPAREN : ')';
-    
-    // // Characters
-    // BACKSLASH : '\\';
-    // OCTAL_1 : '\\0'[0-7];
-    // OCTAL_2 : '\\0'[0-7][0-7];
-    // OCTAL_3 : '\\0'[0-3][0-7][0-7];
-    // HEXA_2 : '\\x'[a-fA-F0-9];
-    // HEXA_4 : '\\u'[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9];
-    // HEXA_6 : 'x{U+'('10'|[0-9]|'00')?[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9]'}';
-    // CARRIAGE_RETURN : '\\r';
-    // TAB : '\\t' ;
-    // FORM_FEED : '\\f' ;
-    // ALERT : '\\a' ;
-    // ESC : '\\e' ;
-    
-    // //Lookaheads/behinds
-    // POSITIVE_LA: '?=';
-    // NEGATIVE_LA: '?!';
-    // POSITIVE_LB: '?<=';
-    // NEGATIVE_LB: '?<!';
-    
-    // // Boundary Matchers
-    // DOLLAR_SIGN : '$';
-    // WORD_BOUNDARY : '\\b';
-    // NON_WORD_BOUNDARY : '\\B';
-    // INPUT_START : '\\A';
-    // END_OF_MATCH : '\\G';
-    // INPUT_END : '\\z';
-    // INPUT_END_INC_NEWLINE : '\\Z';
-    
-    // //Linebreak Matcher
-    // LINEBREAK_MATCHER : '\\R' ;
-    
-    // // Letters
-    // LETTER : [a-zA-Z0-9/!,#&];
-    // EXTRA_LETTER_ALLOWED_INSIDE:  [|*\\?.$-]; //following: https://www.abareplace.com/blog/escape-regexp/
-    
-    // //Inline Modifier
-    // /* 
-    // - must be checked in the visitor whether modifiers are being repeatedly 
-    // because ANTLR regex does not support lookaheads and back references so 
-    // it cannot be verified here
-    // - also check if it contains the minus sign which negates the toggle
-    // */
-    // INLINEMODIFIER: LPAREN QMARK [-?][imsx]+ RPAREN;
-    // LOCAL_INLINE_MODIFIER_TEMPLATE: LPAREN QMARK [-]?[:][imsx]+ ;
-    
-    // // Back References
-    // N_TH_CAPTURE_GROUP: '\\'[0-9]+ ;	// Whatever the nth capturing group matched
-    // NAMED_CAPTURE_GROUP_MATCH: '\\k<'[a-zA-Z]+'>'; //	Whatever the named-capturing group "name" matched
-    // NAMED_CAPTURE_GROUP_NAME : [a-zA-Z_];
+}

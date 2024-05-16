@@ -11,7 +11,7 @@ expr : (escapedToLiteralOutsideCharClass
 | group
 | boundaryMatcherStart
 | escapedFromLiteral 
-| characterClass 
+| characterClass
 | backReference 
 | wordBoundary
 | nonWordBoundary 

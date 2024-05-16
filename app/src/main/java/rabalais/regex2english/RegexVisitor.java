@@ -37,11 +37,21 @@ public class RegexVisitor extends regex2englishBaseVisitor<String>{
     
     @Override public String visitZeroWidthAssertions(regex2englishParser.ZeroWidthAssertionsContext ctx) { 
             
-        ParseTree child = ctx.getChild(0);
-        System.out.println("1");
-
-        return visitChildren((RuleNode)child); 
+        return visitChildren((RuleNode)ctx.getChild(0)); 
     }
+
+//     @Override public String visitCharacterClass(regex2englishParser.ZeroWidthAssertionsContext ctx) { 
+            
+//         ParseTree child = ctx.getChild(0);
+//         Token l
+// TerminalNodeImpl​ leftBracket = new TerminalNodeImpl​(Token symbol)	
+
+
+//         ctx.addAnyChild(child);
+
+
+//         return visitChildren((RuleNode)child); 
+//     }
 
     // Override characterclass to subsume character class content
 
