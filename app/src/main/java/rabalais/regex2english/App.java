@@ -25,19 +25,10 @@ public class App {
     }
 
     public static void main(String[] args) throws IOException{
-        
-        String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
-        // String input = "(((([a\\s][a\\s]))))";
 
-        // String input = "(@#$?%^?&+=)";
-
-        // String input = "([ab][ab][ab][ab][ab][ab])";
-        // String input = "([ab][cb][bc])";
-
-
+        // String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}";
+        String input = "([ab][ab][ab][ab][ab][ab])";
         processTree(input);
-
-
 
         // System.out.println("Key: \n----------------------------------------------------------------------------------------------------");
         // System.out.println("- Arrows (x) represents all of the (explicit) logical operators including quantifiers.");
@@ -55,7 +46,6 @@ public class App {
         //letters, charcter class,  groups, logical operators and meta sequences
 
         
-
     //    System.out.println("◀GROUP:1▶");
 
 
@@ -152,64 +142,6 @@ public class App {
         return ret;
     }
 
-    // O(n^3)??
-    // public static void indexAtoms(ArrayList<Atom> atoms, Atom atom){
-
-    //     for(Atom curr: atoms){
-
-    //         if(atom == curr){
-
-    //         }
-
-    //         String precedingAtoms = "";
-
-    //         int atomHashCode = curr.getParentNode().hashCode();
-
-    //         for(Atom curr2: atoms){
-
-    //             ArrayList<ParseTree> nodes = curr2.getChildren();
-
-    //             for(ParseTree node: nodes){
-    //                 if(curr2.getParentNode().hashCode() == atomHashCode){
-    //                     break;
-    //                 }
-    //                 if(!(node.getText().equals("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$"))) {
-    //                     System.out.println("node.getText(): " + node.getText());
-    //                     precedingAtoms += node.getText();
-    //                 }
-    //             }
-    //         }
-    //         System.out.println();
-    //         curr.setIndex(precedingAtoms.length());
-    //     }
-
-        // String precedingAtoms = "";
-
-        //     int atomHashCode = atom.getParentNode().hashCode();
-
-        //     for(Atom curr: atoms){
-
-        //         ArrayList<ParseTree> nodes = curr.getChildren();
-
-        //         for(ParseTree node: nodes){
-        //             if(curr.getParentNode().hashCode() == atomHashCode){
-        //                 break;
-        //             }
-        //             if(!(node.getText().equals("(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$"))) {
-        //                 System.out.println("node.getText(): " + node.getText());
-        //                 precedingAtoms += node.getText();
-        //             }
-        //         }
-        //     }
-        //     System.out.println();
-        //     curr.setIndex(precedingAtoms.length());
-
-    // }
-
-    
-
-
-
     public static void getAtoms(ParseTree root, ArrayList<Atom> atoms, ArrayList<Atom> terminals, String input){
     
         if(root != null){
@@ -257,13 +189,6 @@ public class App {
 
                 int index = getAtomIndex(input, root);
                 atom.setIndex(index);
-                // System.out.println("'" + content + "' (" + index + ")");
-
-                // indexAtoms(atoms, atom);
-
-                // String inputUpToAtom = getInputUpToAtom(root, "" , atomNode.hashCode());
-                // System.out.println("ATOM: '" + content + "'       IUTA: '" + inputUpToAtom + "'");
-                // temp.setIndex(inputUpToAtom.length());
                 atoms.add(atom);
 
             }
@@ -278,6 +203,80 @@ public class App {
 
        
     }
+
+        // // method to get getChild() index for the parent of a given child 
+        public static int getChildIndex(ParseTree root){
+
+            ParseTree parent = root.getParent();
+    
+            if(parent.getChildCount() == 1){
+                return 0;
+            }
+            int index = 0;
+    
+            if(parent != null){  
+                for(int i = 0; i < parent.getChildCount(); i++){
+                    if(parent.getChild(i) == root){
+    
+                        index = i;
+                        break;
+                    }
+                }
+            }
+    
+            return index;
+        }
+        
+    
+    
+        public static int getAtomIndex(String input, ParseTree node){
+            
+            String atomContent = getTerminals(node, "");
+    
+    
+            int index = input.indexOf(atomContent);
+    
+            String leftAtomContent = "";
+    
+            while(instancesOfWithDuplicates(input, atomContent) != 1 && node != null && node.getParent() != null){
+         
+                for(int i = 0; i < getChildIndex(node); i++){
+    
+                    leftAtomContent = getTerminals(node.getParent().getChild(i), "") + leftAtomContent;
+    
+                }
+    
+                if(instancesOfWithDuplicates(input, atomContent) == 0){
+                    break;
+                }
+    
+                node =  node.getParent();
+    
+                atomContent = getTerminals(node, "");
+                index = input.indexOf(atomContent) + leftAtomContent.length();
+    
+            }
+    
+            return index;
+        }
+    
+        public static int instancesOfWithDuplicates(String input, String substring){
+    
+            if(input.equals(substring)){
+                return 1;
+            }
+    
+            int count = 0;
+    
+            for(int i = 0; i < input.length() - substring.length();i++){
+    
+                if(input.substring(i, i + substring.length()).equals(substring)){
+                    count++;
+                }
+            }
+    
+            return count;
+        }
 
      // things to group top down
     // quote
@@ -312,11 +311,6 @@ public class App {
 
         ParseTree tree = parser.start();
         RegexVisitor visitor = new RegexVisitor();
-
-
-     
-       
-        // testMemAddress(tree.getChild(0));
        
         ArrayList<Atom> atoms = new ArrayList<>();
         ArrayList<Atom> terminals = new ArrayList<>();
@@ -330,135 +324,65 @@ public class App {
 
         }
 
-
-        // String treeString = tree.toStringTree(parser).replaceAll("exprHelper", "expr");
-
-        // System.out.println("Pre-visitor:\n" + treeString);
-        
-        // visitor.visit(tree);
-
-        // treeString = tree.toStringTree(parser).replaceAll("exprHelper", "expr");
-
-        
-
     }
-
-
-    //  public static void treePrinter(ParseTree root, int line){ // in-order traversal
-        
-    //     if(root != null){
-
-    //         String payload = "empty";
-
-    //         if(root instanceof RuleNode && root.getChildCount() == 1){
-
-    //             ParseTree child = root.getChild(0);
-              
-    //             while(child != null && !(child instanceof TerminalNode) && root.getChildCount() == 1){
-    //                 root = root.getChild(0);
-    //                 // System.out.println("skip");
-    //             }
-    //             // System.out.println("Rule:" + ((RuleNode)root.getPayload()).getText());
-    //         }
-    //         if(root.getChildCount() > 0){
-    //             payload = ((RuleContext)root.getPayload()).getText();
-    //         }
-            
-    //         if(root.getParent() != null && root.getParent().getChildCount() == 1){
-    //             // root = 
-
-    //         }
-    //         // System.out.print("'" + ((TerminalNode)root.getPayload()).getText() + "'  ");
-
-    //         if(root.getChildCount() == 0){ 
-    //             // return;
-    //             payload = root.getText();
-    //         }else{
-
-    //             // payload = ((RuleContext)root.getPayload()).getText();
-    //         }
-    //         System.out.println("Line#" + line + "| '" + payload + "'");
-    //         treePrinter(root.getChild(0), (root.getChild(0) != null) ? ++line: line);
-    //         treePrinter(root.getChild(1), (root.getChild(1) != null) ? ++line: line);
-
-    //     }
-    //  }
 
 
 // graveyard
-//---------------------------------------------------
+//---------------------------------------------------    
 
-    public static int getDuplicateAtomsCount(ArrayList<Atom> atoms, String content){
+    // // side experiment to see if the memory address of root.getParent().getChild() == root()
+    // public static void testMemAddress(ParseTree root){
+
+    //     if(root != null){
+    //     ParseTree parent = root.getParent();
+        
+    //     if(parent != null){
             
-        int duplicateCount = 0;
-        
-        for (Atom atom: atoms){
+    //         System.out.println("Parent: '" + parent.getText()  + "' | Root: '" + root.getText());
+    //         for(int i = 0; i < parent.getChildCount();i++){
+    //             System.out.println("Sibling: '" + parent.getChild(i).getText() + "' | Sibling = Root: " + (parent.getChild(i) == root));
+    //         }
+    //     }
 
-            if(atom.getContent().equals(content)){
-                duplicateCount++;
-            }
-        }
+    //         if(root instanceof TerminalNode){
 
-        return duplicateCount;
-    }
-
-    public static int getDuplicatePreviousAtomsCount(ArrayList<Atom> atoms, String content){
-        
-        int duplicateCount = 0;
-        
-        for (Atom atom: atoms){
-
-            if(atom.getContent().equals(content)){
-                duplicateCount++;
-            }
-        }
-
-        return duplicateCount - 1;
-    }
-    
-
-    // side experiment to see if the memory address of root.getParent().getChild() == root()
-    public static void testMemAddress(ParseTree root){
-
-        if(root != null){
-        ParseTree parent = root.getParent();
-        
-        if(parent != null){
+    //             return;
+    //         }
             
-            System.out.println("Parent: '" + parent.getText()  + "' | Root: '" + root.getText());
-            for(int i = 0; i < parent.getChildCount();i++){
-                System.out.println("Sibling: '" + parent.getChild(i).getText() + "' | Sibling = Root: " + (parent.getChild(i) == root));
-            }
-        }
-
-            if(root instanceof TerminalNode){
-
-                return;
-            }
-            
-            for(int i = 0; i < root.getChildCount(); i++){
-                System.out.println();
-                testMemAddress(root.getChild(i));
+    //         for(int i = 0; i < root.getChildCount(); i++){
+    //             System.out.println();
+    //             testMemAddress(root.getChild(i));
                 
-            }
-        }
+    //         }
+    //     }
 
-    }
+    // }
+
+    // public static int getDuplicateAtomsCount(ArrayList<Atom> atoms, String content){
+            
+    //     int duplicateCount = 0;
+        
+    //     for (Atom atom: atoms){
+
+    //         if(atom.getContent().equals(content)){
+    //             duplicateCount++;
+    //         }
+    //     }
+
+    //     return duplicateCount;
+    // }
+
+    // 
 
 
 
     public static void indexAtoms(ArrayList<Atom> atoms){
 
-        System.out.println("atoms: ");
-
         for(Atom a : atoms){
            if(a.getIsMolecule()){
-            System.out.println(a.getContent());
 
            }
         }
-
-        // System.out.println();
 
     }
 
@@ -489,238 +413,29 @@ public class App {
 
     //  }
 
-    public static String getInputUpToAtom(ParseTree root, String ret, int atomHashCode){
+    // public static String getInputUpToAtom(ParseTree root, String ret, int atomHashCode){
 
-        int nodeHashCode = root.hashCode();
+    //     int nodeHashCode = root.hashCode();
        
-        if(root != null){
+    //     if(root != null){
 
-            if(nodeHashCode == atomHashCode){
-                root = null;
-                return "";
-            }
-
-                if(root instanceof TerminalNode){
-                    ret += root.getText();
-                }
-    
-                for(int i = 0; i < root.getChildCount(); i++){                   
-                    ret = getInputUpToAtom(root.getChild(i), ret, atomHashCode);
-                    
-                }
-            
-            
-        } 
-
-        return ret;
-
-     }
-
-    //  public static boolean noChildrenContainNode(ParseTree root, int hashCode, boolean a){
-
-    //     return false;
-    //  }
-
-
-
-
-
-    // // method to get getChild() index for the parent of a given child 
-    public static int getChildIndex(ParseTree root){
-
-        ParseTree parent = root.getParent();
-
-        if(parent.getChildCount() == 1){
-            return 0;
-        }
-        int index = 0;
-
-        if(parent != null){  
-            for(int i = 0; i < parent.getChildCount(); i++){
-                if(parent.getChild(i) == root){
-
-                    index = i;
-                    break;
-                }
-            }
-        }
-        // System.out.println("index: " + index + "\n");
-        System.out.println();
-        return index;
-    }
-
-
-    // public static int indexAtom(ArrayList<Atom> atoms, String input, String content){
-
-    //     int index = 0;
-    //     int duplicateAtomsInList = 0;
-
-    //     // get the number of duplicate atoms
-    //     for (Atom atom: atoms){
-    //         if(atom.getContent().equals(content)){
-    //             duplicateAtomsInList++;
+    //         if(nodeHashCode == atomHashCode){
+    //             root = null;
+    //             return "";
     //         }
-    //     }
 
-    //     int atomOccurancesInInput = instancesOf(input, content)
-
-    //     while(instancesOf(input, content) != 1){
-            
-    //     }
-        
-        
-
-    //     for(int i = 0; i < duplicateAtomsInList - 1; i++){
-
-    //         index += input.indexOf(content);
-    //         input = input.substring(index);
-
-    //     }
-
-    //     return index;
-
-    // }
-
-    public static int getAtomIndex(String input, ParseTree node){
-
-       
-        ParseTree originalNode = node;
-        ParseTree parent;
-
-        while(node.getParent() != null && !(node.getClass().getSimpleName().equals("ExprContext"))){
-
-            node = node.getParent();
-        }
-        
-        String atomContent = getTerminals(node, "");
-
-
-        int index = input.indexOf(atomContent);
-
-        String leftAtomContent = "";
-
-
-        ParseTree child = node;
-        System.out.println("-----------------");
-
-
-        while(instancesOfWithDuplicates(input, atomContent) != 1 && node != null && node.getParent() != null){
-            
-            int childIndex;
-            parent = node.getParent();
-
-            // while(parent.getParent() != null && parent.getParent().getChildCount() == 1){
-            //     child = parent;
-            //     parent = parent.getParent();
-            // }
-
-            childIndex = getChildIndex(node);
-
-            String isTerminalNode = (node instanceof TerminalNode) ? "isTerminalNode": "isNotTerminalNode";
-
-            // System.out.println("Node(" + getCleanClassName(node.getClass().getSimpleName()) + " - " + isTerminalNode + "):" + node.getText() + "| Atom Content: " + atomContent);
-            System.out.println("The substring: '" + atomContent + "' appears " + instancesOfWithDuplicates(input, atomContent) + "x in the String: '" + input + "'.");
-
-            // System.out.println("LAC before: " + leftAtomContent);
-
-            System.out.println("Node: (" + getCleanClassName(node.getClass().getSimpleName()) + ") '" + node.getText() + "'");
-
-            System.out.println("parent subtree " + getTerminals(parent, ""));
-
-            String parentTerminals = getTerminals(parent, "");
-     
-            for(int i = 0; i < childIndex; i++){
-
-                System.out.println("parent subtree up to current node: " + getTerminals(parent.getChild(i), ""));
-
-                leftAtomContent = getTerminals(parent.getChild(i), "") + leftAtomContent;
-                    
-                String output = (leftAtomContent == "") ? "" : "LAC after: " + leftAtomContent + "\n";
-                System.out.print(output);
-            }
-
-
-            if(instancesOfWithDuplicates(input, atomContent) == 0){
-                break;
-            }
-
-            node = parent;
-
-            atomContent = getTerminals(node, "");
-            index = input.indexOf(atomContent) + leftAtomContent.length();
-
-        }
-        System.out.println("---------");
-
-        return index;
-    }
-
-    // public static void removeNodeByMemAddress(ParseTree nodeToRemove, ){
-
-        public static ParseTree getNearestRelevantParent(ParseTree node) {
-
-            while(node.getParent() != null && node.getParent().getChildCount() == 1){
-                node = node.getParent();
-            }
-            
-            
-            return node; 
-        }
+    //             if(root instanceof TerminalNode){
+    //                 ret += root.getText();
+    //             }
     
-        
+    //             for(int i = 0; i < root.getChildCount(); i++){                   
+    //                 ret = getInputUpToAtom(root.getChild(i), ret, atomHashCode);
+                    
+    //             }
+    //     } 
 
-
-    // }
-
-    public static int instancesOf2(String input, String substring){
-
-        int count = 0;
-
-        while(input.contains(substring)){
-            input = input.substring(input.indexOf(substring) + 1);
-            count++;
-        }
-
-        return count;
-    }
-
-    public static int instancesOfWithDuplicates(String input, String substring){
-
-        if(input.equals(substring)){
-            return 1;
-        }
-
-        int count = 0;
-
-        for(int i = 0; i < input.length() - substring.length();i++){
-
-            if(input.substring(i, i + substring.length()).equals(substring)){
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    public static String getTerminalsToTheLeft(ParseTree root, String ret, int childIndex){
-       
-        if(childIndex > 0 && root != null){
-
-            if(root instanceof TerminalNode){
-                ret += root.getText();
-            }
-
-            for(int i = 0; i < childIndex ; i++){
-               
-                ret = getTerminals(root.getChild(i), ret);
-                
-            }
-        } 
-
-
-        return ret;
-    }  
-
+    //     return ret;
+    //  }
 
 
     /*
