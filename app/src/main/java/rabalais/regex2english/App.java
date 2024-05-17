@@ -26,8 +26,8 @@ public class App {
 
     public static void main(String[] args) throws IOException{
 
-        // String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}";
-        String input = "([ab][ab][ab][ab][ab][ab])";
+        String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
+        // String input = "([ab][ab][ab][ab][ab][ab])";
         processTree(input);
 
         // System.out.println("Key: \n----------------------------------------------------------------------------------------------------");
@@ -186,7 +186,6 @@ public class App {
                     atom.setIsMolecule(isAtom);
                 }
 
-
                 int index = getAtomIndex(input, root);
                 atom.setIndex(index);
                 atoms.add(atom);
@@ -230,16 +229,20 @@ public class App {
     
     
         public static int getAtomIndex(String input, ParseTree node){
+
             
             String atomContent = getTerminals(node, "");
-    
-    
             int index = input.indexOf(atomContent);
-    
+
             String leftAtomContent = "";
     
             while(instancesOfWithDuplicates(input, atomContent) != 1 && node != null && node.getParent() != null){
          
+
+                while(node.getParent() != null && node.getParent().getChildCount() == 1){
+                    node = node.getParent();
+                }
+
                 for(int i = 0; i < getChildIndex(node); i++){
     
                     leftAtomContent = getTerminals(node.getParent().getChild(i), "") + leftAtomContent;
@@ -301,7 +304,6 @@ public class App {
 
     public static void processTree(String input){
 
-
         CharStream inputStream = CharStreams.fromString(input);
         // CharStream input = CharStreams.fromFileName("src/main/resources/input.txt");
          
@@ -315,13 +317,16 @@ public class App {
         ArrayList<Atom> atoms = new ArrayList<>();
         ArrayList<Atom> terminals = new ArrayList<>();
 
+       
+
         getAtoms(tree, atoms, terminals, input);
-        indexAtoms(atoms);
+
+        // for(Atom a: terminals){
+        //     System.out.println("'" + a.getContent() + "' (" + a.getIndex() + ")");
+        // }
 
         for(Atom a: atoms){
             System.out.println("'" + a.getContent() + "' (" + a.getIndex() + ")");
-            // System.out.println("' (" + a.getIndex() + ")");
-
         }
 
     }
@@ -373,18 +378,6 @@ public class App {
     // }
 
     // 
-
-
-
-    public static void indexAtoms(ArrayList<Atom> atoms){
-
-        for(Atom a : atoms){
-           if(a.getIsMolecule()){
-
-           }
-        }
-
-    }
 
     // // gets all the values of the children that are terminalNodes
     //  public static void getTerminalList(ParseTree root, ArrayList<Atom> terminals){
