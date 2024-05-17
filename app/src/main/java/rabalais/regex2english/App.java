@@ -26,12 +26,14 @@ public class App {
 
     public static void main(String[] args) throws IOException{
         
-        // String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
+        String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
         // String input = "(((([a\\s][a\\s]))))";
 
         // String input = "(@#$?%^?&+=)";
 
-        String input = "([ab][ab][ab])";
+        // String input = "([ab][ab][ab][ab][ab][ab])";
+        // String input = "([ab][cb][bc])";
+
 
         processTree(input);
 
@@ -146,7 +148,6 @@ public class App {
                 
             }
         } 
-        // System.out.print(ret);
 
         return ret;
     }
@@ -359,8 +360,6 @@ public class App {
     //             }
     //             // System.out.println("Rule:" + ((RuleNode)root.getPayload()).getText());
     //         }
-
-
     //         if(root.getChildCount() > 0){
     //             payload = ((RuleContext)root.getPayload()).getText();
     //         }
@@ -373,25 +372,17 @@ public class App {
 
     //         if(root.getChildCount() == 0){ 
     //             // return;
-        
-               
-
     //             payload = root.getText();
-
     //         }else{
 
     //             // payload = ((RuleContext)root.getPayload()).getText();
-
     //         }
-
     //         System.out.println("Line#" + line + "| '" + payload + "'");
     //         treePrinter(root.getChild(0), (root.getChild(0) != null) ? ++line: line);
     //         treePrinter(root.getChild(1), (root.getChild(1) != null) ? ++line: line);
 
     //     }
-
     //  }
-
 
 
 // graveyard
@@ -467,7 +458,7 @@ public class App {
            }
         }
 
-        System.out.println();
+        // System.out.println();
 
     }
 
@@ -592,18 +583,22 @@ public class App {
 
     public static int getAtomIndex(String input, ParseTree node){
 
+       
         ParseTree originalNode = node;
         ParseTree parent;
+
+        while(node.getParent() != null && !(node.getClass().getSimpleName().equals("ExprContext"))){
+
+            node = node.getParent();
+        }
         
         String atomContent = getTerminals(node, "");
 
-        String temp = new String(atomContent);
 
         int index = input.indexOf(atomContent);
 
         String leftAtomContent = "";
 
-        int alternator = 0;
 
         ParseTree child = node;
         System.out.println("-----------------");
@@ -611,40 +606,46 @@ public class App {
 
         while(instancesOfWithDuplicates(input, atomContent) != 1 && node != null && node.getParent() != null){
             
-
             int childIndex;
-
-
             parent = node.getParent();
 
-            while(parent.getParent() != null && parent.getParent().getChildCount() == 1){
-                child = parent;
-                parent = parent.getParent();
-            }
+            // while(parent.getParent() != null && parent.getParent().getChildCount() == 1){
+            //     child = parent;
+            //     parent = parent.getParent();
+            // }
 
             childIndex = getChildIndex(node);
 
-            for(int i = 0; i < parent.getChildCount(); i++){
-                String output = (leftAtomContent == "") ? "" : "LAC: " + leftAtomContent + "\n";
-                System.out.print(output);
-                
-                if(i < childIndex){
-                  
-                    leftAtomContent = getTerminals(parent.getChild(i), "") + leftAtomContent;
-                
-                }
-            }
-    
+            String isTerminalNode = (node instanceof TerminalNode) ? "isTerminalNode": "isNotTerminalNode";
+
+            // System.out.println("Node(" + getCleanClassName(node.getClass().getSimpleName()) + " - " + isTerminalNode + "):" + node.getText() + "| Atom Content: " + atomContent);
             System.out.println("The substring: '" + atomContent + "' appears " + instancesOfWithDuplicates(input, atomContent) + "x in the String: '" + input + "'.");
 
+            // System.out.println("LAC before: " + leftAtomContent);
+
+            System.out.println("Node: (" + getCleanClassName(node.getClass().getSimpleName()) + ") '" + node.getText() + "'");
+
+            System.out.println("parent subtree " + getTerminals(parent, ""));
+
+            String parentTerminals = getTerminals(parent, "");
+     
+            for(int i = 0; i < childIndex; i++){
+
+                System.out.println("parent subtree up to current node: " + getTerminals(parent.getChild(i), ""));
+
+                leftAtomContent = getTerminals(parent.getChild(i), "") + leftAtomContent;
+                    
+                String output = (leftAtomContent == "") ? "" : "LAC after: " + leftAtomContent + "\n";
+                System.out.print(output);
+            }
 
 
             if(instancesOfWithDuplicates(input, atomContent) == 0){
                 break;
             }
 
-
             node = parent;
+
             atomContent = getTerminals(node, "");
             index = input.indexOf(atomContent) + leftAtomContent.length();
 
