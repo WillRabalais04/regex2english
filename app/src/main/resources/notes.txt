@@ -1,0 +1,68 @@
+Feature Notes:
+- ^a$bc$ cannot match anything but the parser parses it so must add some error detection
+- for lookaheads, treat them differently when traversing the AST so what they reference is clear
+- for double boundary matchers add a special case when traversing the AST
+UI Notes:
+- things to group top down
+    - quote
+    - zeroWidthAssertions
+    - inlineModifier
+    - captureGroup 
+    - group
+    - boundaryMatcherStart
+    - escapedFromLiteral 
+    - characterClass 
+    - backReference 
+    - wordBoundary
+    - nonWordBoundary 
+    - inputStart 
+    - endOfMatch 
+    - letter
+    - quantifier 
+    - boundaryMatcherEnd
+    - endOfInputExceptFinalTerminator
+    - endOfInput
+    - or
+ 
+    4 categories: logical operators, expressions, character classes & tokens 
+    - logical operators includes:
+        - quantifier
+        - or 
+     - expressions include: - just use exprs
+        - expr
+        - exprHelper (rename to expr)
+        - escapedToLiteralOutsideCharClass 
+        - quote
+        - zeroWidthAssertions
+        - inlineModifier
+        - captureGroup 
+        - group
+        - escapedFromLiteral 
+        - characterClass 
+        - backReference 
+        - boundaryMatcherStart 
+        - wordBoundary
+        - nonWordBoundary 
+        - inputStart
+        - endOfMatch 
+        - letter
+        - concatenation
+        - quantifier 
+        - boundaryMatcherEnd
+        - endOfInputExceptFinalTerminator
+        - endOfOnput 
+
+    - character classes include:
+        - CARET characterClassContent
+        - group
+        - escapedToLiteralInsideCharClass
+        - predefinedCharacterClass 
+        - posix 
+        - javalangCharacterClass 
+        - unicodeScriptClass
+        - (LETTER_RANGE | NUMBER_RANGE | ((LETTER | EXTRA_LETTER_ALLOWED_INSIDE) | CARET))+) 
+        - (characterClassContentHelper | <EOF>)
+      
+     - tokens include:
+        - letters
+        - escape sequences

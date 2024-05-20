@@ -27,6 +27,8 @@ public class App {
     public static void main(String[] args) throws IOException{
 
         String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
+        // String input = "[ab]";
+
         // String input = "([ab][ab][ab][ab][ab][ab])";
         processTree(input);
 
@@ -60,7 +62,7 @@ public class App {
             entry("CharacterClassContentContext", "Character Class Content"),
             entry("CharacterClassContentHelperContext", "Character Class Content"),
             entry("EscapedToLiteralInsideCharClassContext", "Escape Sequence (inside character class)"),
-            entry("EscapedToLiteralOutsideCharClassContext", "Escape Sequences (outside character class)"),
+            entry("EscapedToLiteralOutsideCharClassContext", "Escape Sequence (outside character class)"),
             entry("ZeroWidthAssertionsContext", "Zero Width Assertion"),
             entry("CaptureGroupContext", "Capture Group"),
             entry("GroupContext", "Group"),
@@ -115,7 +117,7 @@ public class App {
             entry("LATINContext", "Is Latin"),
             entry("NOT_GREEKContext", "Not Greek"),
             entry("GREEKContext", "Is Greek"),
-            entry("Extra_letters_allowed_inside_CCContext", "Letters")
+            entry("Extra_letters_allowed_inside_CCContext", "Letter")
         ); 
     
         String clean = cleanClassNames.get(dirty);
@@ -150,11 +152,18 @@ public class App {
                         
             if(root.getChildCount() > 0 && (root.getChild(0) instanceof TerminalNode || root.getChild(root.getChildCount() - 1) instanceof TerminalNode)){                 
                
-                if(root.getClass().getSimpleName().equals("CharacterClassContentContext")){
-                    return;
-                }
+                // if(root.getClass().getSimpleName().equals("CharacterClassContentContext")){
+                //     return;
+                // }
+
+                //  if(root.getClass().getSimpleName().equals("Start")){
+                //     return;
+                // }
 
                 String type = getCleanClassName(root.getClass().getSimpleName());
+                if(type == null){
+                    type = "NULL";
+                }
                 String content = "";
 
 
@@ -186,10 +195,12 @@ public class App {
                     atom.setIsMolecule(isAtom);
                 }
 
+
                 int index = getAtomIndex(input, root);
                 atom.setIndex(index);
-                atoms.add(atom);
+                System.out.println(atom.getIndex() + ")'" + atom.getContent() + "' - " + root.getClass().getSimpleName());
 
+                atoms.add(atom);
             }
 
             for(int i = 0; i < root.getChildCount(); i++){
@@ -199,7 +210,6 @@ public class App {
             }
     
         }
-
        
     }
 
@@ -281,28 +291,7 @@ public class App {
             return count;
         }
 
-     // things to group top down
-    // quote
-    // zeroWidthAssertions
-    // inlineModifier
-    // captureGroup 
-    // group
-    // boundaryMatcherStart
-    // escapedFromLiteral 
-    // characterClass 
-    // backReference 
-    // wordBoundary
-    // nonWordBoundary 
-    // inputStart 
-    // endOfMatch 
-    // letter
-    // quantifier 
-    // boundaryMatcherEnd
-    // endOfInputExceptFinalTerminator
-    // endOfInput
-    // or
-
-    public static void processTree(String input){
+    public static String processTree(String input){
 
         CharStream inputStream = CharStreams.fromString(input);
         // CharStream input = CharStreams.fromFileName("src/main/resources/input.txt");
@@ -325,9 +314,17 @@ public class App {
         //     System.out.println("'" + a.getContent() + "' (" + a.getIndex() + ")");
         // }
 
+        // for(Atom a: atoms){
+        //     System.out.println("'" + a.getContent() + "' (" + a.getIndex() + ")");
+        // }
+
+        String ret = "";
+
         for(Atom a: atoms){
-            System.out.println("'" + a.getContent() + "' (" + a.getIndex() + ")");
+            ret += "'" + a.getContent() + "'(" + a.getIndex() + ")\n";
         }
+
+        return ret;
 
     }
 
@@ -431,57 +428,6 @@ public class App {
     //  }
 
 
-    /*
-     * 
-     * 
-     * 4 categories: logical operators, expressions, character classes & tokens
-     * 
-     * logical operators includes:
-     * - quantifier
-     * - or
-     * - 
-     * 
-     * 
-     * expressions include:
-     * - expr
-     * - exprHelper (rename to expr)
-     * - escapedToLiteralOutsideCharClass 
-     * - quote
-     * - zeroWidthAssertions
-     * - inlineModifier
-     * - captureGroup 
-     * - group
-     * - escapedFromLiteral 
-     * - characterClass 
-     * - backReference 
-     * - boundaryMatcherStart 
-     * - wordBoundary
-     * - nonWordBoundary 
-     * - inputStart
-     * - endOfMatch 
-     * - letter
-     * - concatenation
-     * - quantifier 
-     * - boundaryMatcherEnd
-     * - endOfInputExceptFinalTerminator
-     *  - endOfOnput 
-     * 
-     * character classes include:
-     * - CARET characterClassContent
-     * - group
-     * - escapedToLiteralInsideCharClass
-     * - predefinedCharacterClass 
-     * - posix 
-     * - javalangCharacterClass 
-     * - unicodeScriptClass
-     * - (LETTER_RANGE | NUMBER_RANGE | ((LETTER | EXTRA_LETTER_ALLOWED_INSIDE) | CARET))+) 
-     * - (characterClassContentHelper | <EOF>)
-     * 
-     * tokens include:
-     * - letters
-     * - escape sequences
-     * 
-     * 
-     */
+
 
 }

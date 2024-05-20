@@ -3,7 +3,8 @@ grammar regex2english;
 // Parser:
 start: expr;
 
-expr : (escapedToLiteralOutsideCharClass 
+expr : (doubleBoundaryMatchers
+|escapedToLiteralOutsideCharClass 
 | quote
 | zeroWidthAssertions
 | inlineModifier
@@ -106,6 +107,8 @@ characterClass: LBRACKET characterClassContent RBRACKET ;
 backReference: N_TH_CAPTURE_GROUP
 | NAMED_CAPTURE_GROUP_MATCH 
 ;
+
+doubleBoundaryMatchers: CARET expr DOLLAR_SIGN;
 
 boundaryMatcherStart: CARET expr ;
 
