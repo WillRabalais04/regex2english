@@ -1,3 +1,8 @@
+TODO: 
+- add all boundary matchers to grammar (some were forgotten)
+- check all tokens are used in grammar rules
+
+
 Feature Notes:
 - ^a$bc$ cannot match anything but the parser parses it so must add some error detection
 - for lookaheads, treat them differently when traversing the AST so what they reference is clear
@@ -66,3 +71,26 @@ UI Notes:
      - tokens include:
         - letters
         - escape sequences
+
+
+
+Referencing Other Atoms:
+Use inheritance: 
+    - eg. boundary matcher extends atom and has extra instance variables to store what it bounds
+    - eg. quantifiers extends atom and has extra instance variables to store what it quantifies
+
+Types of Atoms that Reference Other Atoms: 
+- Boundary matchers
+- Quantifiers
+- Or 
+- capturing groups 
+- Special constructs (named-capturing and non-capturing)
+    - (?<name>X)	X, as a named-capturing group
+    - (?:X)	X, as a non-capturing group
+    - (?idmsuxU-idmsuxU) 	Nothing, but turns match flags i d m s u x U on - off
+    - (?idmsux-idmsux:X)  	X, as a non-capturing group with the given flags i d m s u x on - off
+    - (?=X)	X, via zero-width positive lookahead
+    - (?!X)	X, via zero-width negative lookahead
+    - (?<=X)	X, via zero-width positive lookbehind
+    - (?<!X)	X, via zero-width negative lookbehind
+    - (?>X)	X, as an independent, non-capturing group

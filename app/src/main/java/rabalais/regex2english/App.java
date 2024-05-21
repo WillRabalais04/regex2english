@@ -77,6 +77,7 @@ public class App {
             entry("EndOfMatchContext", "End Of Match"),
             entry("LetterContext", "Letter(s)"),
             entry("QuantifierContext", "Quantifier"),
+            entry("DoubleBoundaryMatchersContext", "Double Boundary Matchers Context"),
             entry("BoundaryMatcherEndContext", "Boundary Matcher End"),
             entry("EndOfInputExceptFinalTerminatorContext", "End Of Input (except terminator)"),
             entry("EndOfInputContext", "End Of Input"),
@@ -198,7 +199,7 @@ public class App {
 
                 int index = getAtomIndex(input, root);
                 atom.setIndex(index);
-                System.out.println(atom.getIndex() + ")'" + atom.getContent() + "' - " + root.getClass().getSimpleName());
+                System.out.println(atom.getIndex() + ")'" + atom.getContent() + "' - " + atom.getType());
 
                 atoms.add(atom);
             }
