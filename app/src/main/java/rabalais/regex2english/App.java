@@ -5,11 +5,14 @@ package rabalais.regex2english;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.HashMap;
 import java.util.Map;
-import static java.util.Map.entry;    
+import static java.util.Map.entry;   
+import java.util.Comparator;
+import java.util.TreeSet; 
 
 
 import org.antlr.v4.runtime.*;
@@ -20,112 +23,58 @@ import rabalais.regex2english.generated.regex2englishParser.*;
 
 public class App {
    
-    public String getGreeting() {
-        return "Hello World!";
-    }
-
     public static void main(String[] args) throws IOException{
 
         String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
         // String input = "[ab]";
 
         // String input = "([ab][ab][ab][ab][ab][ab])";
-        processTree(input);
 
-        // System.out.println("Key: \n----------------------------------------------------------------------------------------------------");
-        // System.out.println("- Arrows (x) represents all of the (explicit) logical operators including quantifiers.");
-        // System.out.println("          ∆");
-        // System.out.println("- Single underline (x) represents an expression.\n                    ¯");
-        // System.out.println("- Double underline (x) represents character classes.\n                    =");
-        // System.out.println("- Triple underline (x) represents a token meaning letters or escape sequences.\n                    ≡");
-        // System.out.println("- Quadruple underline (x) represents TBD\n                    ≣");
-        // System.out.println("----------------------------------------------------------------------------------------------------");
+        System.out.println("Key: \n----------------------------------------------------------------------------------------------------");
+        System.out.println("- Arrows (x) represent all of the logical operators and quantifiers.");
+        System.out.println("         \033[31m ∆ \033[37m");
+        System.out.println("- Single underline (x) represents a token meaning letters or escape sequences.\n                    \033[35m¯\033[37m");
+        System.out.println("- Double underline (x) represents character classes.\n                    \033[33m=\033[37m");
+        System.out.println("- Triple underline (x) represents an expression.\n                    \033[34m≡\033[37m");
+        System.out.println("- Quadruple underline (x) represents TBD\n                    \033[32m≣\033[37m");
+        System.out.println("----------------------------------------------------------------------------------------------------");
       
-        // System.out.println("\033[31mreminder to use ansi escape codes\033[0m");
-
-        // treePrinter(tree, 1);
-
         //letters, charcter class,  groups, logical operators and meta sequences
+        //System.out.println("◀GROUP:1▶");
 
-        
-    //    System.out.println("◀GROUP:1▶");
-
+           System.out.println(processTree(input));
 
     }
 
-    public static String getCleanClassName(String dirty){
+ 
 
-        Map<String, String> cleanClassNames = Map.ofEntries(
-            entry("StartContext", "Start"),
-            entry("ExprContext", "Expression"),
-            entry("ExprHelperContext", "Expression"),
-            entry("CharacterClassContentContext", "Character Class Content"),
-            entry("CharacterClassContentHelperContext", "Character Class Content"),
-            entry("EscapedToLiteralInsideCharClassContext", "Escape Sequence (inside character class)"),
-            entry("EscapedToLiteralOutsideCharClassContext", "Escape Sequence (outside character class)"),
-            entry("ZeroWidthAssertionsContext", "Zero Width Assertion"),
-            entry("CaptureGroupContext", "Capture Group"),
-            entry("GroupContext", "Group"),
-            entry("RangeContext", "Range"),
-            entry("PredefinedCharacterClassContext", "Predefined Character Class"),
-            entry("CharacterClassContext", "Character Class"),
-            entry("BackReferenceContext", "Back Reference"),
-            entry("BoundaryMatcherStartContext", "Boundary Matcher Start"),
-            entry("WordBoundaryContext", "Word Boundary"),
-            entry("NonWordBoundaryContext", "Non Word Boundary"),
-            entry("InputStartContext", "Input Start"),
-            entry("EndOfMatchContext", "End Of Match"),
-            entry("LetterContext", "Letter(s)"),
-            entry("QuantifierContext", "Quantifier"),
-            entry("DoubleBoundaryMatchersContext", "Double Boundary Matchers Context"),
-            entry("BoundaryMatcherEndContext", "Boundary Matcher End"),
-            entry("EndOfInputExceptFinalTerminatorContext", "End Of Input (except terminator)"),
-            entry("EndOfInputContext", "End Of Input"),
-            entry("OrContext", "Or"),
-            entry("EscapedFromLiteralContext", "Escape Sequence"),
-            entry("InlineModifierContext", "Inline Modifier"),
-            entry("NamedCaptureGroupContext", "Named Capture Group"),
-            entry("NonCaptureGroupContext", "Non Capture Group"),
-            entry("IndependentNonCapturingGroupContext", "Independent Non Capturing Group"),
-            entry("ZeroWidthPositiveLookAheadContext", "Zero Width Positive Look Ahead"),
-            entry("ZeroWidthNegativeLookAheadContext", "Zero Width Negative Look Ahead"),
-            entry("ZeroWidthPositiveLookBehindContext", "Zero Width Positive Look Behind"),
-            entry("ZeroWidthNegativeLookBehindContext", "Zero Width Negative Look Behind"),
-            entry("PosixContext", "POSIX"),
-            entry("POSIX_LETTERSContext", "POSIX LETTERS"),
-            entry("POSIX_ALPHANUMERICContext", "POSIX ALPHANUMERIC"),
-            entry("POSIX_LOWERCASEContext", "POSIX Lowercase"),
-            entry("POSIX_WHITESPACE_OR_GLYPHContext", "POSIX Whitespace or Glyph"),
-            entry("POSIX_CONTROL_CHARACTERSContext", "POSIX Control Characters"),
-            entry("POSIX_ALPHANUM_PUNCTUATIONContext", "POSIX Alphanumeric or Punctuation"),
-            entry("POSIX_DIGITSContext", "POSIX Digits"),
-            entry("POSIX_WHITESPACEContext", "POSIX Whitespace"),
-            entry("POSIX_SPACE_OR_TABContext", "POSIX Space or Tab"),
-            entry("POSIX_ASCIIContext", "POSIX ASCII"),
-            entry("POSIX_UPPERCASEContext", "POSIX Uppercase"),
-            entry("POSIX_X_DIGITContext", "POSIX HEX"),
-            entry("POSIX_PUNCTUATIONContext", "POSIX Punctuation"),
-            entry("JavalangCharacterClassContext", "java.lang.Character"),
-            entry("JAVALANG_CC_LOWERCASEContext", "java.lang.Character Lowercase"),
-            entry("JAVALANG_CC_WHITESPACEContext", "java.lang.Character Whitespace"),
-            entry("JAVALANG_CC_UPPERCASEContext", "java.lang.Character Uppercase"),
-            entry("JAVALANG_CC_MIRROREDContext", "java.lang.Character Mirrored"),
-            entry("UnicodeScriptClassContext", "Unicode Script Class"),
-            entry("NOT_UPPERCASEContext", "Not Uppercase"),
-            entry("IS_ALPHABETICContext", "Is Alphabetic"),
-            entry("CURRENCY_SYMBOLContext", "Currency Symbol"),
-            entry("UPPERCASEContext", "Is Uppercase"),
-            entry("LATINContext", "Is Latin"),
-            entry("NOT_GREEKContext", "Not Greek"),
-            entry("GREEKContext", "Is Greek"),
-            entry("Extra_letters_allowed_inside_CCContext", "Letter")
-        ); 
+    public static String processTree(String input){
+
+        CharStream inputStream = CharStreams.fromString(input);
+        // CharStream input = CharStreams.fromFileName("src/main/resources/input.txt");
+         
+        regex2englishLexer lexer = new regex2englishLexer(inputStream);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        regex2englishParser parser = new regex2englishParser(tokens);
+
+        ParseTree tree = parser.start();
+        RegexVisitor visitor = new RegexVisitor();
+       
+        TreeSet<Atom> atoms = new TreeSet<Atom>(new Atom.AtomComparator());
+        ArrayList<Atom> terminals = new ArrayList<>();
+
+       
+
+        getAtoms(tree, atoms, terminals, input);
     
-        String clean = cleanClassNames.get(dirty);
+        String ret = "";
 
-        return clean;
+        for(Atom a: atoms){
+            ret += a.getIndex() + ") '" + a.getContent() + "' - " + a.getType() + " - " + a.getIsMolecule() + "\n";
+        }
+
+        return ret;
     }
-
 
     public static String getTerminals(ParseTree root, String ret){
        
@@ -145,21 +94,31 @@ public class App {
         return ret;
     }
 
-    public static void getAtoms(ParseTree root, ArrayList<Atom> atoms, ArrayList<Atom> terminals, String input){
+    public static void getAtoms(ParseTree root, TreeSet<Atom> atoms, ArrayList<Atom> terminals, String input){
     
         if(root != null){
+            
+            for(int i = 0; i < root.getChildCount(); i++){
+               
+                getAtoms(root.getChild(i), atoms, terminals, input);
+                
+            }
 
             int length = 0;
+
+           
                         
             if(root.getChildCount() > 0 && (root.getChild(0) instanceof TerminalNode || root.getChild(root.getChildCount() - 1) instanceof TerminalNode)){                 
                
-                // if(root.getClass().getSimpleName().equals("CharacterClassContentContext")){
+                if(root.getClass().getSimpleName().equals("CharacterClassContentContext")){
+                    return;
+                }
+                
+
+                //  if(root.getClass().getSimpleName().equals("DoubleBoundaryMatchersContext")){
                 //     return;
                 // }
 
-                //  if(root.getClass().getSimpleName().equals("Start")){
-                //     return;
-                // }
 
                 String type = getCleanClassName(root.getClass().getSimpleName());
                 if(type == null){
@@ -185,6 +144,25 @@ public class App {
                     children.add(child);
                 }
 
+
+                if(root.getClass().getSimpleName().equals("DoubleBoundaryMatchersContext")){
+
+                    int index = getAtomIndex(input, root);
+
+                    Atom caret = new Atom(root, null, "^", "Boundary Matcher Start", "category", 1);
+
+                    Atom dollar_sign = new Atom(root, null, "$", "Boundary Matcher End", "category", 1);
+
+                    caret.setIndex(index);
+                    dollar_sign.setIndex(index + content.length());
+
+                    atoms.add(caret);
+                    atoms.add(dollar_sign);
+
+
+                    return;
+                }
+
                 length = content.length();
                 String category = "category";
                
@@ -199,45 +177,16 @@ public class App {
 
                 int index = getAtomIndex(input, root);
                 atom.setIndex(index);
-                System.out.println(atom.getIndex() + ")'" + atom.getContent() + "' - " + atom.getType());
+                // System.out.println(atom.getIndex() + ")'" + atom.getContent() + "' - " + root.getClass().getSimpleName());
 
                 atoms.add(atom);
             }
 
-            for(int i = 0; i < root.getChildCount(); i++){
-               
-                getAtoms(root.getChild(i), atoms, terminals, input);
-                
-            }
+
     
         }
        
-    }
-
-        // // method to get getChild() index for the parent of a given child 
-        public static int getChildIndex(ParseTree root){
-
-            ParseTree parent = root.getParent();
-    
-            if(parent.getChildCount() == 1){
-                return 0;
-            }
-            int index = 0;
-    
-            if(parent != null){  
-                for(int i = 0; i < parent.getChildCount(); i++){
-                    if(parent.getChild(i) == root){
-    
-                        index = i;
-                        break;
-                    }
-                }
-            }
-    
-            return index;
-        }
-        
-    
+    }    
     
         public static int getAtomIndex(String input, ParseTree node){
 
@@ -292,42 +241,103 @@ public class App {
             return count;
         }
 
-    public static String processTree(String input){
+        // method to get getChild() index for the parent of a given child 
+        public static int getChildIndex(ParseTree root){
 
-        CharStream inputStream = CharStreams.fromString(input);
-        // CharStream input = CharStreams.fromFileName("src/main/resources/input.txt");
-         
-        regex2englishLexer lexer = new regex2englishLexer(inputStream);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        regex2englishParser parser = new regex2englishParser(tokens);
+            ParseTree parent = root.getParent();
 
-        ParseTree tree = parser.start();
-        RegexVisitor visitor = new RegexVisitor();
-       
-        ArrayList<Atom> atoms = new ArrayList<>();
-        ArrayList<Atom> terminals = new ArrayList<>();
+            if(parent.getChildCount() == 1){
+                return 0;
+            }
+            int index = 0;
 
-       
+            if(parent != null){  
+                for(int i = 0; i < parent.getChildCount(); i++){
+                    if(parent.getChild(i) == root){
 
-        getAtoms(tree, atoms, terminals, input);
+                        index = i;
+                        break;
+                    }
+                }
+            }
 
-        // for(Atom a: terminals){
-        //     System.out.println("'" + a.getContent() + "' (" + a.getIndex() + ")");
-        // }
-
-        // for(Atom a: atoms){
-        //     System.out.println("'" + a.getContent() + "' (" + a.getIndex() + ")");
-        // }
-
-        String ret = "";
-
-        for(Atom a: atoms){
-            ret += "'" + a.getContent() + "'(" + a.getIndex() + ")\n";
+            return index;
         }
 
-        return ret;
+        public static String getCleanClassName(String dirty){
 
-    }
+            Map<String, String> cleanClassNames = Map.ofEntries(
+                entry("StartContext", "Start"),
+                entry("ExprContext", "Expression"),
+                entry("ExprHelperContext", "Expression"),
+                entry("CharacterClassContentContext", "Character Class Content"),
+                entry("CharacterClassContentHelperContext", "Character Class Content"),
+                entry("EscapedToLiteralInsideCharClassContext", "Escape Sequence (inside character class)"),
+                entry("EscapedToLiteralOutsideCharClassContext", "Escape Sequence (outside character class)"),
+                entry("ZeroWidthAssertionsContext", "Zero Width Assertion"),
+                entry("CaptureGroupContext", "Capture Group"),
+                entry("GroupContext", "Group"),
+                entry("RangeContext", "Range"),
+                entry("PredefinedCharacterClassContext", "Predefined Character Class"),
+                entry("CharacterClassContext", "Character Class"),
+                entry("BackReferenceContext", "Back Reference"),
+                entry("BoundaryMatcherStartContext", "Boundary Matcher Start"),
+                entry("WordBoundaryContext", "Word Boundary"),
+                entry("NonWordBoundaryContext", "Non Word Boundary"),
+                entry("InputStartContext", "Input Start"),
+                entry("EndOfMatchContext", "End Of Match"),
+                entry("LetterContext", "Letter(s)"),
+                entry("QuantifierContext", "Quantifier"),
+                entry("DoubleBoundaryMatchersContext", "Double Boundary Matchers Context"),
+                entry("BoundaryMatcherEndContext", "Boundary Matcher End"),
+                entry("EndOfInputExceptFinalTerminatorContext", "End Of Input (except terminator)"),
+                entry("EndOfInputContext", "End Of Input"),
+                entry("OrContext", "Or"),
+                entry("EscapedFromLiteralContext", "Escape Sequence"),
+                entry("InlineModifierContext", "Inline Modifier"),
+                entry("NamedCaptureGroupContext", "Named Capture Group"),
+                entry("NonCaptureGroupContext", "Non Capture Group"),
+                entry("IndependentNonCapturingGroupContext", "Independent Non Capturing Group"),
+                entry("ZeroWidthPositiveLookAheadContext", "Zero Width Positive Look Ahead"),
+                entry("ZeroWidthNegativeLookAheadContext", "Zero Width Negative Look Ahead"),
+                entry("ZeroWidthPositiveLookBehindContext", "Zero Width Positive Look Behind"),
+                entry("ZeroWidthNegativeLookBehindContext", "Zero Width Negative Look Behind"),
+                entry("PosixContext", "POSIX"),
+                entry("POSIX_LETTERSContext", "POSIX LETTERS"),
+                entry("POSIX_ALPHANUMERICContext", "POSIX ALPHANUMERIC"),
+                entry("POSIX_LOWERCASEContext", "POSIX Lowercase"),
+                entry("POSIX_WHITESPACE_OR_GLYPHContext", "POSIX Whitespace or Glyph"),
+                entry("POSIX_CONTROL_CHARACTERSContext", "POSIX Control Characters"),
+                entry("POSIX_ALPHANUM_PUNCTUATIONContext", "POSIX Alphanumeric or Punctuation"),
+                entry("POSIX_DIGITSContext", "POSIX Digits"),
+                entry("POSIX_WHITESPACEContext", "POSIX Whitespace"),
+                entry("POSIX_SPACE_OR_TABContext", "POSIX Space or Tab"),
+                entry("POSIX_ASCIIContext", "POSIX ASCII"),
+                entry("POSIX_UPPERCASEContext", "POSIX Uppercase"),
+                entry("POSIX_X_DIGITContext", "POSIX HEX"),
+                entry("POSIX_PUNCTUATIONContext", "POSIX Punctuation"),
+                entry("JavalangCharacterClassContext", "java.lang.Character"),
+                entry("JAVALANG_CC_LOWERCASEContext", "java.lang.Character Lowercase"),
+                entry("JAVALANG_CC_WHITESPACEContext", "java.lang.Character Whitespace"),
+                entry("JAVALANG_CC_UPPERCASEContext", "java.lang.Character Uppercase"),
+                entry("JAVALANG_CC_MIRROREDContext", "java.lang.Character Mirrored"),
+                entry("UnicodeScriptClassContext", "Unicode Script Class"),
+                entry("NOT_UPPERCASEContext", "Not Uppercase"),
+                entry("IS_ALPHABETICContext", "Is Alphabetic"),
+                entry("CURRENCY_SYMBOLContext", "Currency Symbol"),
+                entry("UPPERCASEContext", "Is Uppercase"),
+                entry("LATINContext", "Is Latin"),
+                entry("NOT_GREEKContext", "Not Greek"),
+                entry("GREEKContext", "Is Greek"),
+                entry("Extra_letters_allowed_inside_CCContext", "Letter")
+            ); 
+        
+            String clean = cleanClassNames.get(dirty);
+    
+            return clean;
+        }
+
+ 
 
 
 // graveyard

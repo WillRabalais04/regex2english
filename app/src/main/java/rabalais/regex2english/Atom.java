@@ -3,6 +3,8 @@ package rabalais.regex2english;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import java.util.ArrayList;
+import java.util.Comparator;
+
 
 public class Atom {
 
@@ -11,7 +13,13 @@ public class Atom {
     private String content = "";
     private String type = "";
     private String category = "";
-    private boolean isMolecule = true;
+    private boolean isMolecule = false;
+
+    public static class AtomComparator implements Comparator<rabalais.regex2english.Atom>{
+        public int compare(Atom atom1, Atom atom2){
+            return Integer.compare(atom1.getIndex(), atom2.getIndex());
+        }
+    }
 
 
     public void setIsMolecule(boolean val){

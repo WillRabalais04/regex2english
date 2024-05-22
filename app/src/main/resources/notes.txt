@@ -1,6 +1,7 @@
 TODO: 
 - add all boundary matchers to grammar (some were forgotten)
 - check all tokens are used in grammar rules
+- in getAtoms() fix boundary matchers
 
 
 Feature Notes:
@@ -72,8 +73,6 @@ UI Notes:
         - letters
         - escape sequences
 
-
-
 Referencing Other Atoms:
 Use inheritance: 
     - eg. boundary matcher extends atom and has extra instance variables to store what it bounds
@@ -94,3 +93,33 @@ Types of Atoms that Reference Other Atoms:
     - (?<=X)	X, via zero-width positive lookbehind
     - (?<!X)	X, via zero-width negative lookbehind
     - (?>X)	X, as an independent, non-capturing group
+
+
+feature: highlight all text, escape sequenecs, etc..
+
+Idea: use print arrows to show relations between referentials below the string and show groups above the string
+    - also do it for groups, showing when they begin and end
+       G1      G2        G3    
+     ⎡‾‾‾‾⎤⎡‾‾‾‾‾‾‾‾⎤⎡‾‾‾‾‾‾‾‾‾⎤
+    ^([asd])(?=.*\d\d)(?=.*[a-z]){8,16}$
+    ⎣__________________________________⎦
+                     Bounds
+
+highlight 4 distinct categories (atoms, operators/quantifiers, referentials, groups):
+
+atoms: literals (inc. escaped characters), character classes, 
+
+referentials: lookaheads, anchors, back references, 
+
+quantifiers: *,{m,n}, etc...
+
+
+feature idea: print the whole tree with https://github.com/davidsusu/tree-printer 
+
+commands to run program with:
+- default mode (shows regex expression and then you can cycle thru the atoms and click on any for more context)
+- key (shows key)
+- listatoms (lists all atoms, similar to default mode but you in one column)
+- printtree
+- highlight [atom type] eg. highlight escape sequences
+
