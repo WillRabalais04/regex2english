@@ -6,9 +6,11 @@ package rabalais.regex2english;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Arrays;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import static java.util.Map.entry;   
 import java.util.Comparator;
@@ -22,6 +24,28 @@ import rabalais.regex2english.generated.*;
 import rabalais.regex2english.generated.regex2englishParser.*;
 
 public class App {
+
+    private static List<String> atomTypes = Arrays.asList("DoubleBoundaryMatchersContext",
+        "escapedToLiteralOutsideCharClassContext",
+        "QuoteContext",
+        "ZeroWidthAssertionsContext",
+        "InlineModifierContext",
+        "CaptureGroupContext",
+        "GroupContext",
+        "BoundaryMatcherStartContext",
+        "EscapedFromLiteralContext",
+        "CharacterClassContext",
+        "BackReferenceContext",
+        "WordBoundaryContext",
+        "NonWordBoundaryContext",
+        "InputStartContext",
+        "EndOfMatchContext",
+        "LetterContext",
+        "QuantifierContext",
+        "BoundaryMatcherEndContext",
+        "EndOfInputExceptFinalTerminator",
+        "OrContext"
+        );
    
     public static void main(String[] args) throws IOException{
 
@@ -70,8 +94,33 @@ public class App {
         String ret = "";
 
         for(Atom a: atoms){
-            ret += a.getIndex() + ") '" + a.getContent() + "' - " + a.getType() + " - " + a.getIsMolecule() + "\n";
+            ret += a.getIndex() + ") '" + a.getContent() + "' - " + a.getType() + "\n";
         }
+
+
+        StringBuilder v = new StringBuilder(input.length());
+
+        for (int i = 0; i < input.length(); i++){
+            v.append(' ');
+        }
+
+        atoms.stream()
+        .filter(atom -> atom.stream()
+        .anyMatch(otherAtom -> otherAtom != atom && otherAtom.getIndex() >= atom.getIndex() && otherAtom.getIndex() < atom.getIndex() + atom.getLength()))
+        .forEach(atom->);;
+
+
+        for(Atom a: atoms){
+
+            // System.out.println(a.getIndex() + ") '" + a.getContent());
+            // System.out.println(v);
+            for(int i = 0; i < a.getLength(); i++){
+                // System.out.print(a.getIndex() + i);
+                v.setCharAt(a.getIndex() + i, a.getContent().charAt(i));
+            }
+        }
+
+        System.out.println("V: '" + v + "'");
 
         return ret;
     }
@@ -94,6 +143,17 @@ public class App {
         return ret;
     }
 
+
+
+    public static boolean isAtom(ParseTree node){
+
+        String nodeClassName = node.getClass().getSimpleName();
+        
+        return atomTypes.stream().anyMatch(type -> nodeClassName.equals(type));
+
+    }
+
+
     public static void getAtoms(ParseTree root, TreeSet<Atom> atoms, ArrayList<Atom> terminals, String input){
     
         if(root != null){
@@ -108,11 +168,27 @@ public class App {
 
            
                         
-            if(root.getChildCount() > 0 && (root.getChild(0) instanceof TerminalNode || root.getChild(root.getChildCount() - 1) instanceof TerminalNode)){                 
+            // if(root.getChildCount() > 0 && (root.getChild(0) instanceof TerminalNode || root.getChild(root.getChildCount() - 1) instanceof TerminalNode)){                 
+            if(root.getChildCount() > 0 && isAtom(root)){
                
-                if(root.getClass().getSimpleName().equals("CharacterClassContentContext")){
-                    return;
-                }
+                // if(root.getClass().getSimpleName().equals("CharacterClassContentContext")){
+                //     return;
+                // }
+                // if(root.getClass().getSimpleName().equals("CharacterClassContext")){
+                //     return;
+                // }
+                // if(root.getClass().getSimpleName().equals("LetterContext")){
+                //     return;
+                // }
+                // if(root.getClass().getSimpleName().equals("PredefinedCharacterClassContext")){
+                //     return;
+                // }
+
+                // if(root.getClass().getSimpleName().equals("Extra_letters_allowed_inside_CCContext")){
+                //     return;
+                // }
+
+
                 
 
                 //  if(root.getClass().getSimpleName().equals("DoubleBoundaryMatchersContext")){
@@ -154,7 +230,7 @@ public class App {
                     Atom dollar_sign = new Atom(root, null, "$", "Boundary Matcher End", "category", 1);
 
                     caret.setIndex(index);
-                    dollar_sign.setIndex(index + content.length());
+                    dollar_sign.setIndex(index + content.length() - 1);
 
                     atoms.add(caret);
                     atoms.add(dollar_sign);
@@ -329,7 +405,8 @@ public class App {
                 entry("LATINContext", "Is Latin"),
                 entry("NOT_GREEKContext", "Not Greek"),
                 entry("GREEKContext", "Is Greek"),
-                entry("Extra_letters_allowed_inside_CCContext", "Letter")
+                entry("Extra_letters_allowed_inside_CCContext", "Letter"),
+                entry("QuoteContext", "Quote")
             ); 
         
             String clean = cleanClassNames.get(dirty);

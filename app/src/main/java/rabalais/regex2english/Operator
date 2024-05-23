@@ -1,0 +1,17 @@
+package rabalais.regex2english;
+
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+
+
+// includes quantifier
+public class Operator extends Atom{
+
+    private int index = -1;
+    private int type = -1;
+    private Atom referenceOne = null;
+    private Atom referenceTwo = null;
+
+}

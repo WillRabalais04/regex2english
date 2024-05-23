@@ -111,7 +111,7 @@ atoms: literals (inc. escaped characters), character classes,
 
 referentials: lookaheads, anchors, back references, 
 
-quantifiers: *,{m,n}, etc...
+operators/quantifiers: |, *,{m,n}, etc...
 
 
 feature idea: print the whole tree with https://github.com/davidsusu/tree-printer 
@@ -123,3 +123,41 @@ commands to run program with:
 - printtree
 - highlight [atom type] eg. highlight escape sequences
 
+flags: 
+- '-g' (shows all groupings)
+
+
+Atoms: character classes | 
+
+character class containing (javalangCharacterClass |  posix | group | escape sequence | quantifier | logical operator | anchors | back reference | )
+
+atoms consist of:
+
+(DoubleBoundaryMatchersContext
+|escapedToLiteralOutsideCharClassContext 
+| QuoteContext
+| ZeroWidthAssertionsContext
+| InlineModifierContext
+| CaptureGroupContext
+| GroupContext
+| BoundaryMatcherStartContext
+| EscapedFromLiteralContext 
+| CharacterClassContext
+| BackReferenceContext
+| WordBoundaryContext
+| NonWordBoundaryContext
+| InputStartContext
+| EndOfMatchContext
+| LetterContext
+| QuantifierContext
+| BoundaryMatcherEndContext
+| EndOfInputExceptFinalTerminator
+| OrContext
+)
+
+ideas for splitting up atoms with nested atoms:
+- atoms instead of having an int storing index and a String storing their content, have map that takes an index and a String
+- have an array of all atoms, go thru all atoms, find atoms that overlap, choose the atom with the shorter length to be passed into 
+
+
+Use https://github.com/mabe02/lanterna instead of Smenu
