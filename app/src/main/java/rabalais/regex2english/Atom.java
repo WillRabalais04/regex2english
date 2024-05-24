@@ -5,6 +5,7 @@ import org.antlr.v4.runtime.tree.*;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Comparator;
 
 
@@ -13,8 +14,8 @@ public class Atom {
     private ParseTree node;
     private String fullContent = "";
     private LinkedHashSet<String> atomTypes = new LinkedHashSet<>();
-    private HashMap<Integer, String> contentAtIndex = new HashMap<>();
-    private String terminal = "";
+    private TreeMap<Integer, String> content = new TreeMap<>();
+    private String terminal = "N/A"; // if null then, the atom is not a terminal
 
     public static class AtomComparator implements Comparator<rabalais.regex2english.Atom>{
         public int compare(Atom atom1, Atom atom2){
@@ -22,22 +23,22 @@ public class Atom {
         }
     }
 
-    private int index = -1;
     private int fullContentLength = -1;
 
-    public Atom(ParseTree node, String fullContent){
+    public Atom(ParseTree node){
         this.node = node;
-        this.fullContent = fullContent;
+        this.fullContent = node.getText();
         this.atomTypes.add(App.getCleanClassName(node.getClass().getSimpleName())); 
         this.fullContentLength = fullContent.length(); 
     }
 
     public void printAtom(){
-        System.out.println(this.index + ")'" + this.fullContent + "' (" + terminal + ") Categories: " + atomTypes.toString());
+        String term = (this.terminal == "") ? "" : "(" + this.terminal + ")"; 
+        System.out.println(getIndex() + ")'" + this.fullContent + "' " + term + " | Categories: " + atomTypes.toString());
     }
     
     public int getIndex() {
-        return index;
+        return content.firstKey();
     }
   
     public ParseTree getNode() {
@@ -67,10 +68,6 @@ public class Atom {
         return types;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
     public void setLength(int fullContentLength) {
         this.fullContentLength = fullContentLength;
     }
@@ -83,12 +80,12 @@ public class Atom {
         this.atomTypes.add(type);
     }
 
-    public void setContentAtIndex(int index, String content){
-        this.contentAtIndex.put(index, content);
+    public void addContent(int index, String content){
+        this.content.put(index, content);
     }
 
-    public String getContentAtIndex(int index){
-        return new String(contentAtIndex.get(index));
+    public String getContent(int index){
+        return new String(content.get(index));
     }
 
     public String getTerminal(){

@@ -40,9 +40,9 @@ public class App {
    
     public static void main(String[] args) throws IOException{
 
-        String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
+        // String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
         // String input = "[ab]";
-        // String input = "\\\\";
+        String input = "\\\\ab\\\\";
 
 
         // String input = "([ab][ab][ab][ab][ab][ab])";
@@ -81,9 +81,8 @@ public class App {
         visitor = new RegexVisitor();
        
         TreeSet<Atom> atoms = new TreeSet<Atom>(new Atom.AtomComparator());
-        ArrayList<Atom> terminals = new ArrayList<>();
 
-        getAtoms(tree, atoms, terminals, input);
+        getAtoms(tree, atoms, input);
     
         String ret = "";
 
@@ -123,99 +122,24 @@ public class App {
         return ret;
     }
 
-    public static String getTerminals(ParseTree root, String ret){
-       
-        if(root != null){
-
-            if(root instanceof TerminalNode){
-                ret += root.getText();
-            }
-
-            for(int i = 0; i < root.getChildCount(); i++){
-               
-                ret = getTerminals(root.getChild(i), ret);
-                
-            }
-        } 
-
-        return ret;
-    }
-
-    // updates terminal string parameter and returns a list of the types of 
-    public static void setAtomTerminalAndCategories(Atom atom){
-
-        ParseTree root = atom.getNode();
-
-        // String type = getCleanClassName(root.getClass().getSimpleName());
-        String type = getCleanClassName(root.getClass().getSimpleName());
-        atom.addType(type);
-
-
-        while(root.getChildCount() == 1 && root.getChild(0) != null){
-            
-            // type = getCleanClassName(root.getClass().getSimpleName());
-            root = root.getChild(0);
-            
-            atom.addType(type);
-            type = root.getClass().getSimpleName();
-
-
-
-        }
-
-        if(root instanceof TerminalNode){
-    
-            Vocabulary vocab = lexer.getVocabulary();
-            atom.setTerminal(getCleanTerminalName(vocab.getSymbolicName(((Token)root.getPayload()).getType())));
-        }
-        else{
-            atom.setTerminal("Expression");
-        }
-
-    }
-
-
-
-    public static void getAtoms(ParseTree root, TreeSet<Atom> atoms, ArrayList<Atom> terminals, String input){
+    public static void getAtoms(ParseTree root, TreeSet<Atom> atoms, String input){
     
         if(root != null){
-            
             for(int i = 0; i < root.getChildCount(); i++){
-               
-                getAtoms(root.getChild(i), atoms, terminals, input);
+
+                // ParseTree child = root.getChild(i);
+                               
+                // if(!(child instanceof TerminalNode)){
+                //     getAtoms(child, atoms, input);
+
+                // }
+
+                getAtoms(root.getChild(i), atoms, input);
                 
             }
 
-            int length = 0;
-
-           
-                        
-            // if(root.getChildCount() > 0 && (root.getChild(0) instanceof TerminalNode || root.getChild(root.getChildCount() - 1) instanceof TerminalNode)){                 
-            if(root.getChildCount() > 0 && isAtom(root)){
-               
-                // if(root.getClass().getSimpleName().equals("CharacterClassContentContext")){
-                //     return;
-                // }
-                // if(root.getClass().getSimpleName().equals("CharacterClassContext")){
-                //     return;
-                // }
-                // if(root.getClass().getSimpleName().equals("LetterContext")){
-                //     return;
-                // }
-                // if(root.getClass().getSimpleName().equals("PredefinedCharacterClassContext")){
-                //     return;
-                // }
-
-                // if(root.getClass().getSimpleName().equals("Extra_letters_allowed_inside_CCContext")){
-                //     return;
-                // }
-
-
-                
-
-                //  if(root.getClass().getSimpleName().equals("DoubleBoundaryMatchersContext")){
-                //     return;
-                // }
+                                 
+            if(isAtom(root)){
 
                 /*  atoms that need two parts:
                 - groups
@@ -224,58 +148,56 @@ public class App {
 
                 */
 
+                Atom atom = new Atom(root);
 
                 String type = getCleanClassName(root.getClass().getSimpleName());
-                if(type == null){
-                    type = "NULL";
+                atom.addType(type);
+
+
+                while(root.getChildCount() == 1 && root.getChild(0) != null){
+                    root = root.getChild(0);                    
+                    atom.addType(type);
+                    type = getCleanClassName(root.getClass().getSimpleName());
                 }
 
-                String content = getTerminals(root, "");
-
-
-                if(root.getClass().getSimpleName().equals("DoubleBoundaryMatchersContext")){
-
-                    int index = getAtomIndex(input, root);
-
-                    Atom caret = new Atom(root, "^");
-
-                    Atom dollar_sign = new Atom(root, "$");
-
-                    Atom doubleBoundaryMatcher = new Atom(root, root.getText());
-
-                    caret.setIndex(index);
-                    dollar_sign.setIndex(index + content.length() - 1);
-
-                    atoms.add(caret);
-                    atoms.add(dollar_sign);
-
-
-                    return;
+                if(root instanceof TerminalNode){
+                    Vocabulary vocab = lexer.getVocabulary();
+                    atom.setTerminal(getCleanTerminalName(vocab.getSymbolicName(((Token)root.getPayload()).getType())));
+                }
+                else if(root.getChildCount() > 1){
+                    atom.setTerminal("N/A");
+                }
+                else{
+                    atom.setTerminal("?");
                 }
 
-                length = content.length();
-               
-                Atom atom = new Atom(root, content);
-                setAtomTerminalAndCategories(atom);
-
-
-                int index = getAtomIndex(input, root);
-                atom.setIndex(index);
-                // System.out.println(atom.getIndex() + ")'" + atom.getContent() + "' - " + root.getClass().getSimpleName());
-
+                atom.addContent(getAtomIndex(input, root), root.getText());
                 atoms.add(atom);
             }
+            // else if(root instanceof TerminalNode){
+            //         Atom atom = new Atom(root);
 
+            //         String type = getCleanClassName(root.getClass().getSimpleName());
+            //         atom.addType(type);
+            //         Vocabulary vocab = lexer.getVocabulary();
+            //         atom.setTerminal(getCleanTerminalName(vocab.getSymbolicName(((Token)root.getPayload()).getType())));
+            //     }
+                // System.out.println("'" + root.getText() + "' | Class: " + root.getClass().getSimpleName());
+            
+            
+            
+          
+           
 
     
         }
        
-    }    
+    }     
     
         public static int getAtomIndex(String input, ParseTree node){
 
             
-            String atomContent = getTerminals(node, "");
+            String atomContent = node.getText();
             int index = input.indexOf(atomContent);
 
             String leftAtomContent = "";
@@ -289,7 +211,7 @@ public class App {
 
                 for(int i = 0; i < getChildIndex(node); i++){
     
-                    leftAtomContent = getTerminals(node.getParent().getChild(i), "") + leftAtomContent;
+                    leftAtomContent = node.getParent().getChild(i).getText() + leftAtomContent;
     
                 }
     
@@ -299,7 +221,7 @@ public class App {
     
                 node =  node.getParent();
     
-                atomContent = getTerminals(node, "");
+                atomContent = node.getText();
                 index = input.indexOf(atomContent) + leftAtomContent.length();
     
             }
@@ -351,7 +273,7 @@ public class App {
         public static boolean isAtom(ParseTree node){
         
             List<String> atomTypes = Arrays.asList("DoubleBoundaryMatchersContext",
-            "escapedToLiteralOutsideCharClassContext",
+            "EscapedToLiteralOutsideCharClassContext",
             "QuoteContext",
             "ZeroWidthAssertionsContext",
             "InlineModifierContext",
@@ -539,6 +461,24 @@ public class App {
 
 // graveyard
 //---------------------------------------------------    
+
+    // public static String getTerminals(ParseTree root, String ret){
+        
+    //     if(root != null){
+
+    //         if(root instanceof TerminalNode){
+    //             ret += root.getText();
+    //         }
+
+    //         for(int i = 0; i < root.getChildCount(); i++){
+            
+    //             ret = getTerminals(root.getChild(i), ret);
+                
+    //         }
+    //     } 
+
+    //     return ret;
+    // }
 
     // // side experiment to see if the memory address of root.getParent().getChild() == root()
     // public static void testMemAddress(ParseTree root){

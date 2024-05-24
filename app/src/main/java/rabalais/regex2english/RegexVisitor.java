@@ -11,34 +11,34 @@ public class RegexVisitor extends regex2englishBaseVisitor<String>{
 
     ArrayList<String> components = new ArrayList<>();
 
-    @Override
-    public String visitExprHelper(regex2englishParser.ExprHelperContext ctx) {
+    // @Override
+    // public String visitExprHelper(regex2englishParser.ExprHelperContext ctx) {
         
-        ParseTree child;
+    //     ParseTree child;
     
-        if(ctx.getChildCount() == 1 && ctx instanceof RuleNode && !(ctx.getChild(0) instanceof TerminalNode)){
-            child = ctx.getChild(0);
-            ctx.removeLastChild();
-        }else{
-            return visitChildren(ctx);
-        }
+    //     if(ctx.getChildCount() == 1 && ctx instanceof RuleNode && !(ctx.getChild(0) instanceof TerminalNode)){
+    //         child = ctx.getChild(0);
+    //         ctx.removeLastChild();
+    //     }else{
+    //         return visitChildren(ctx);
+    //     }
             
-        while(child != null && child.getChildCount() == 1){
-            child = (ParseTree)child.getChild(0);
-        }
+    //     while(child != null && child.getChildCount() == 1){
+    //         child = (ParseTree)child.getChild(0);
+    //     }
 
-        ctx.addAnyChild(child);
+    //     ctx.addAnyChild(child);
 
 
-        return visitChildren(ctx);
+    //     return visitChildren(ctx);
         
-    }
+    // }
 
     
-    @Override public String visitZeroWidthAssertions(regex2englishParser.ZeroWidthAssertionsContext ctx) { 
+    // @Override public String visitZeroWidthAssertions(regex2englishParser.ZeroWidthAssertionsContext ctx) { 
             
-        return visitChildren((RuleNode)ctx.getChild(0)); 
-    }
+    //     return visitChildren((RuleNode)ctx.getChild(0)); 
+    // }
 
     // public String getTerminalTokenName(int tokenType){
 

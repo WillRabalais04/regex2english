@@ -164,4 +164,4 @@ Use https://github.com/mabe02/lanterna instead of Smenu
 
 for predefined, character classes, escape sequences and quantifiers, get the terminal
 
-FIX TREE TRAVERSAL IN GETATOMS: "\\\\" does not work
+FIX TREE TRAVERSAL IN GETATOMS: "\\\\"  and "\\" do not work
