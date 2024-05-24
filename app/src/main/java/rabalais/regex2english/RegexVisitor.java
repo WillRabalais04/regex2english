@@ -40,6 +40,15 @@ public class RegexVisitor extends regex2englishBaseVisitor<String>{
         return visitChildren((RuleNode)ctx.getChild(0)); 
     }
 
+    // public String getTerminalTokenName(int tokenType){
+
+    //     Vocabulary vocab = regex2englishLexer.getVocabulary();
+
+    //     return "";
+
+    // }
+    
+
 //     @Override public String visitCharacterClass(regex2englishParser.ZeroWidthAssertionsContext ctx) { 
             
 //         ParseTree child = ctx.getChild(0);

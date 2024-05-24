@@ -16,7 +16,6 @@ import static java.util.Map.entry;
 import java.util.Comparator;
 import java.util.TreeSet; 
 
-
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
@@ -25,27 +24,19 @@ import rabalais.regex2english.generated.regex2englishParser.*;
 
 public class App {
 
-    private static List<String> atomTypes = Arrays.asList("DoubleBoundaryMatchersContext",
-        "escapedToLiteralOutsideCharClassContext",
-        "QuoteContext",
-        "ZeroWidthAssertionsContext",
-        "InlineModifierContext",
-        "CaptureGroupContext",
-        "GroupContext",
-        "BoundaryMatcherStartContext",
-        "EscapedFromLiteralContext",
-        "CharacterClassContext",
-        "BackReferenceContext",
-        "WordBoundaryContext",
-        "NonWordBoundaryContext",
-        "InputStartContext",
-        "EndOfMatchContext",
-        "LetterContext",
-        "QuantifierContext",
-        "BoundaryMatcherEndContext",
-        "EndOfInputExceptFinalTerminator",
-        "OrContext"
-        );
+    static int MAX_REGEX_LENGTH = 33554432; // change this to the length of the input passed in by user
+    public static int[] regexAllocationChecker = new int[MAX_REGEX_LENGTH];
+
+    private static CharStream inputStream;
+    private static regex2englishLexer lexer;
+    private static CommonTokenStream tokens;
+    private static regex2englishParser  parser; 
+    private static ParseTree tree;
+    private static RegexVisitor visitor;
+
+    public static void splitAtom(){
+
+    }
    
     public static void main(String[] args) throws IOException{
 
@@ -66,61 +57,66 @@ public class App {
         //letters, charcter class,  groups, logical operators and meta sequences
         //System.out.println("◀GROUP:1▶");
 
-           System.out.println(processTree(input));
+        processTree(input);
+        //    System.out.println();
 
     }
 
- 
-
     public static String processTree(String input){
 
-        CharStream inputStream = CharStreams.fromString(input);
+        for(int i = 0; i < input.length(); i++){
+            regexAllocationChecker[i] = 0;
+        }
+
+        inputStream = CharStreams.fromString(input);
         // CharStream input = CharStreams.fromFileName("src/main/resources/input.txt");
          
-        regex2englishLexer lexer = new regex2englishLexer(inputStream);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        regex2englishParser parser = new regex2englishParser(tokens);
+        lexer = new regex2englishLexer(inputStream);
+        tokens = new CommonTokenStream(lexer);
+        parser = new regex2englishParser(tokens);
 
-        ParseTree tree = parser.start();
-        RegexVisitor visitor = new RegexVisitor();
+        tree = parser.start();
+        visitor = new RegexVisitor();
        
         TreeSet<Atom> atoms = new TreeSet<Atom>(new Atom.AtomComparator());
         ArrayList<Atom> terminals = new ArrayList<>();
-
-       
 
         getAtoms(tree, atoms, terminals, input);
     
         String ret = "";
 
         for(Atom a: atoms){
-            ret += a.getIndex() + ") '" + a.getContent() + "' - " + a.getType() + "\n";
+            a.printAtom();
+            ret += a.getIndex() + ") '" + a.getFullContent() + "' - " + a.getAtomTypes() + " | Terminal: '" + a.getTerminal() + "'\n";
         }
 
+      
 
-        StringBuilder v = new StringBuilder(input.length());
+        // StringBuilder v = new StringBuilder(input.length());
 
-        for (int i = 0; i < input.length(); i++){
-            v.append(' ');
-        }
+        // for (int i = 0; i < input.length(); i++){
+        //     v.append(' ');
+        // }
 
-        atoms.stream()
-        .filter(atom -> atom.stream()
-        .anyMatch(otherAtom -> otherAtom != atom && otherAtom.getIndex() >= atom.getIndex() && otherAtom.getIndex() < atom.getIndex() + atom.getLength()))
-        .forEach(atom->);;
+        // check every atom if there is an overlapping atom 
+
+        // atoms.stream()
+        // .filter(atom -> atom.stream()
+        // .forEach(otherAtom -> otherAtom != atom && otherAtom.getIndex() >= atom.getIndex() && otherAtom.getIndex() < atom.getIndex() + atom.getLength()))
+        // .forEach(atom->);
 
 
-        for(Atom a: atoms){
+        // for(Atom a: atoms){
 
-            // System.out.println(a.getIndex() + ") '" + a.getContent());
-            // System.out.println(v);
-            for(int i = 0; i < a.getLength(); i++){
-                // System.out.print(a.getIndex() + i);
-                v.setCharAt(a.getIndex() + i, a.getContent().charAt(i));
-            }
-        }
+        //     // System.out.println(a.getIndex() + ") '" + a.getContent());
+        //     // System.out.println(v);
+        //     for(int i = 0; i < a.getLength(); i++){
+        //         // System.out.print(a.getIndex() + i);
+        //         v.setCharAt(a.getIndex() + i, a.getFullContent().charAt(i));
+        //     }
+        // }
 
-        System.out.println("V: '" + v + "'");
+        // System.out.println("V: '" + v + "'");
 
         return ret;
     }
@@ -143,15 +139,39 @@ public class App {
         return ret;
     }
 
+    // updates terminal string parameter and returns a list of the types of 
+    public static void setAtomTerminalandCategories(Atom atom){
+
+        ParseTree root = atom.getNode();
+
+        // String type = getCleanClassName(root.getClass().getSimpleName());
+        String type = root.getClass().getSimpleName();
+        atom.addType(type);
 
 
-    public static boolean isAtom(ParseTree node){
+        while(root.getChildCount() == 1 && root.getChild(0) != null){
+            
+            // type = getCleanClassName(root.getClass().getSimpleName());
+            root = root.getChild(0);
+            
+            atom.addType(type);
+            type = root.getClass().getSimpleName();
 
-        String nodeClassName = node.getClass().getSimpleName();
-        
-        return atomTypes.stream().anyMatch(type -> nodeClassName.equals(type));
+
+
+        }
+
+        if(root instanceof TerminalNode){
+    
+            Vocabulary vocab = lexer.getVocabulary();
+            atom.setTerminal(vocab.getSymbolicName(((Token)root.getPayload()).getType()));
+        }
+        else{
+            atom.setTerminal("terminalNotFound");
+        }
 
     }
+
 
 
     public static void getAtoms(ParseTree root, TreeSet<Atom> atoms, ArrayList<Atom> terminals, String input){
@@ -195,39 +215,31 @@ public class App {
                 //     return;
                 // }
 
+                /*  atoms that need two parts:
+                - groups
+                - character class containing (javalangCharacterClass |  posix | group | escape sequence | quantifier | logical operator | anchors | back reference | )
+                - lookahead/behinds
+
+                */
+
 
                 String type = getCleanClassName(root.getClass().getSimpleName());
                 if(type == null){
                     type = "NULL";
                 }
-                String content = "";
 
-
-                ArrayList<ParseTree> children = new ArrayList<>();
-
-                boolean isOnlyTerminals = true;
-                boolean isAtom = false;
-            
-                for(int i = 0; i < root.getChildCount(); i++){
-                    ParseTree child = root.getChild(i);
-                    if(!(child instanceof TerminalNode)){
-                        isOnlyTerminals = false;
-                    }
-                    if(child instanceof regex2englishParser.ExprHelperContext || child instanceof regex2englishParser.ExprContext){
-                        isAtom = false;
-                    }
-                    content += child.getText();
-                    children.add(child);
-                }
+                String content = getTerminals(root, "");
 
 
                 if(root.getClass().getSimpleName().equals("DoubleBoundaryMatchersContext")){
 
                     int index = getAtomIndex(input, root);
 
-                    Atom caret = new Atom(root, null, "^", "Boundary Matcher Start", "category", 1);
+                    Atom caret = new Atom(root, "^");
 
-                    Atom dollar_sign = new Atom(root, null, "$", "Boundary Matcher End", "category", 1);
+                    Atom dollar_sign = new Atom(root, "$");
+
+                    Atom doubleBoundaryMatcher = new Atom(root, root.getText());
 
                     caret.setIndex(index);
                     dollar_sign.setIndex(index + content.length() - 1);
@@ -240,15 +252,9 @@ public class App {
                 }
 
                 length = content.length();
-                String category = "category";
                
-                Atom atom = new Atom(root, children, content, type, category, length);
-                if(isOnlyTerminals){
-                    terminals.add(atom);
-                }
-                if(isAtom){
-                    atom.setIsMolecule(isAtom);
-                }
+                Atom atom = new Atom(root, content);
+                setAtomTerminalandCategories(atom);
 
 
                 int index = getAtomIndex(input, root);
@@ -340,6 +346,36 @@ public class App {
             return index;
         }
 
+        public static boolean isAtom(ParseTree node){
+        
+            List<String> atomTypes = Arrays.asList("DoubleBoundaryMatchersContext",
+            "escapedToLiteralOutsideCharClassContext",
+            "QuoteContext",
+            "ZeroWidthAssertionsContext",
+            "InlineModifierContext",
+            "CaptureGroupContext",
+            "GroupContext",
+            "BoundaryMatcherStartContext",
+            "EscapedFromLiteralContext",
+            "CharacterClassContext",
+            "BackReferenceContext",
+            "WordBoundaryContext",
+            "NonWordBoundaryContext",
+            "InputStartContext",
+            "EndOfMatchContext",
+            "LetterContext",
+            "QuantifierContext",
+            "BoundaryMatcherEndContext",
+            "EndOfInputExceptFinalTerminator",
+            "OrContext"
+            );
+    
+            String nodeClassName = node.getClass().getSimpleName();
+            
+            return atomTypes.stream().anyMatch(type -> nodeClassName.equals(type));
+    
+        }
+
         public static String getCleanClassName(String dirty){
 
             Map<String, String> cleanClassNames = Map.ofEntries(
@@ -364,7 +400,7 @@ public class App {
                 entry("EndOfMatchContext", "End Of Match"),
                 entry("LetterContext", "Letter(s)"),
                 entry("QuantifierContext", "Quantifier"),
-                entry("DoubleBoundaryMatchersContext", "Double Boundary Matchers Context"),
+                entry("DoubleBoundaryMatchersContext", "Double Boundary Matcher"),
                 entry("BoundaryMatcherEndContext", "Boundary Matcher End"),
                 entry("EndOfInputExceptFinalTerminatorContext", "End Of Input (except terminator)"),
                 entry("EndOfInputContext", "End Of Input"),
@@ -410,8 +446,90 @@ public class App {
             ); 
         
             String clean = cleanClassNames.get(dirty);
+            return (clean == null) ? dirty : clean;
     
-            return clean;
+        }
+
+        public static String getCleanTerminalName(String dirty){
+
+            Map<String, String> cleanTerminalNames = new HashMap<>();
+            cleanTerminalNames.put("WILDCARD", "Wildcard");
+            cleanTerminalNames.put("CARET", "Caret");
+            cleanTerminalNames.put("DIGIT", "Digit");
+            cleanTerminalNames.put("NON_DIGIT", "Non-Digit");
+            cleanTerminalNames.put("HORIZONTAL_WHITESPACE", "Horizontal Whitespace");
+            cleanTerminalNames.put("NON_HORIZONTAL_WHITESPACE", "Non-Horizontal Whitespace");
+            cleanTerminalNames.put("WHITESPACE", "Whitespace");
+            cleanTerminalNames.put("NON_WHITESPACE", "Non-Whitespace");
+            cleanTerminalNames.put("VERTICAL_WHITESPACE", "Vertical Whitespace");
+            cleanTerminalNames.put("NON_VERTICAL_WHITESPACE", "Non-Vertical Whitespace");
+            cleanTerminalNames.put("WORD", "Word");
+            cleanTerminalNames.put("NON_WORD", "Non-Word");
+            cleanTerminalNames.put("LEFT_QUOTE", "Left Quote");
+            cleanTerminalNames.put("RIGHT_QUOTE", "Right Quote");
+            cleanTerminalNames.put("LETTER_RANGE", "Letter Range");
+            cleanTerminalNames.put("NUMBER_RANGE", "Number Range");
+            cleanTerminalNames.put("DOUBLE_AMPERSAND", "Double Ampersand");
+            cleanTerminalNames.put("PIPE", "Pipe");
+            cleanTerminalNames.put("PLUS_ESCAPED", "Plus Escaped");
+            cleanTerminalNames.put("LBRACE_ESCAPED", "Left Brace Escaped");
+            cleanTerminalNames.put("PIPE_ESCAPED", "Pipe Escaped");
+            cleanTerminalNames.put("BACKSLASH_ESCAPED", "Backslash Escaped");
+            cleanTerminalNames.put("LPAREN_ESCAPED", "Left Parenthesis Escaped");
+            cleanTerminalNames.put("RPAREN_ESCAPED", "Right Parenthesis Escaped");
+            cleanTerminalNames.put("LBRACKET_ESCAPED", "Left Bracket Escaped");
+            cleanTerminalNames.put("RBRACKET_ESCAPED", "Right Bracket Escaped");
+            cleanTerminalNames.put("DOT_ESCAPED", "Dot Escaped");
+            cleanTerminalNames.put("CARET_ESCAPED", "Caret Escaped");
+            cleanTerminalNames.put("QMARK_ESCAPED", "Question Mark Escaped");
+            cleanTerminalNames.put("ASTERISK_ESCAPED", "Asterisk Escaped");
+            cleanTerminalNames.put("DOLLAR_SIGN_ESCAPED", "Dollar Sign Escaped");
+            cleanTerminalNames.put("HYPHEN_ESCAPED", "Hyphen Escaped");
+            cleanTerminalNames.put("N_OCCURRANCES", "N Occurrences");
+            cleanTerminalNames.put("MAX_QUANTIFIER", "Max Quantifier");
+            cleanTerminalNames.put("MIN_QUANTIFIER", "Min Quantifier");
+            cleanTerminalNames.put("RANGE_QUANTIFIER", "Range Quantifier");
+            cleanTerminalNames.put("PLUS", "Plus");
+            cleanTerminalNames.put("ASTERISK", "Asterisk");
+            cleanTerminalNames.put("QMARK", "Question Mark");
+            cleanTerminalNames.put("LBRACKET", "Left Bracket");
+            cleanTerminalNames.put("RBRACKET", "Right Bracket");
+            cleanTerminalNames.put("LPAREN", "Left Parenthesis");
+            cleanTerminalNames.put("RPAREN", "Right Parenthesis");
+            cleanTerminalNames.put("BACKSLASH", "Backslash");
+            cleanTerminalNames.put("OCTAL_1", "Octal 1");
+            cleanTerminalNames.put("OCTAL_2", "Octal 2");
+            cleanTerminalNames.put("OCTAL_3", "Octal 3");
+            cleanTerminalNames.put("HEXA_2", "Hexadecimal 2");
+            cleanTerminalNames.put("HEXA_4", "Hexadecimal 4");
+            cleanTerminalNames.put("HEXA_6", "Hexadecimal 6");
+            cleanTerminalNames.put("CARRIAGE_RETURN", "Carriage Return");
+            cleanTerminalNames.put("TAB", "Tab");
+            cleanTerminalNames.put("FORM_FEED", "Form Feed");
+            cleanTerminalNames.put("ALERT", "Alert");
+            cleanTerminalNames.put("ESC", "Escape");
+            cleanTerminalNames.put("POSITIVE_LA", "Positive Lookahead");
+            cleanTerminalNames.put("NEGATIVE_LA", "Negative Lookahead");
+            cleanTerminalNames.put("POSITIVE_LB", "Positive Lookbehind");
+            cleanTerminalNames.put("NEGATIVE_LB", "Negative Lookbehind");
+            cleanTerminalNames.put("DOLLAR_SIGN", "Dollar Sign");
+            cleanTerminalNames.put("WORD_BOUNDARY", "Word Boundary");
+            cleanTerminalNames.put("NON_WORD_BOUNDARY", "Non-Word Boundary");
+            cleanTerminalNames.put("INPUT_START", "Input Start");
+            cleanTerminalNames.put("END_OF_MATCH", "End of Match");
+            cleanTerminalNames.put("INPUT_END", "Input End");
+            cleanTerminalNames.put("INPUT_END_INC_NEWLINE", "Input End Including Newline");
+            cleanTerminalNames.put("LINEBREAK_MATCHER", "Linebreak Matcher");
+            cleanTerminalNames.put("LETTER", "Letter");
+            cleanTerminalNames.put("INLINEMODIFIER", "Inline Modifier");
+            cleanTerminalNames.put("LOCAL_INLINE_MODIFIER_TEMPLATE", "Local Inline Modifier Template");
+            cleanTerminalNames.put("N_TH_CAPTURE_GROUP", "Nth Capture Group");
+            cleanTerminalNames.put("NAMED_CAPTURE_GROUP_MATCH", "Named Capture Group Match");
+            cleanTerminalNames.put("NAMED_CAPTURE_GROUP_NAME", "Named Capture Group Name");             
+        
+            String clean = cleanTerminalNames.get(dirty);
+            return (clean == null) ? dirty : clean;
+    
         }
 
  
