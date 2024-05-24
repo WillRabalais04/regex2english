@@ -42,6 +42,8 @@ public class App {
 
         String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
         // String input = "[ab]";
+        // String input = "\\\\";
+
 
         // String input = "([ab][ab][ab][ab][ab][ab])";
 
@@ -140,12 +142,12 @@ public class App {
     }
 
     // updates terminal string parameter and returns a list of the types of 
-    public static void setAtomTerminalandCategories(Atom atom){
+    public static void setAtomTerminalAndCategories(Atom atom){
 
         ParseTree root = atom.getNode();
 
         // String type = getCleanClassName(root.getClass().getSimpleName());
-        String type = root.getClass().getSimpleName();
+        String type = getCleanClassName(root.getClass().getSimpleName());
         atom.addType(type);
 
 
@@ -164,10 +166,10 @@ public class App {
         if(root instanceof TerminalNode){
     
             Vocabulary vocab = lexer.getVocabulary();
-            atom.setTerminal(vocab.getSymbolicName(((Token)root.getPayload()).getType()));
+            atom.setTerminal(getCleanTerminalName(vocab.getSymbolicName(((Token)root.getPayload()).getType())));
         }
         else{
-            atom.setTerminal("terminalNotFound");
+            atom.setTerminal("Expression");
         }
 
     }
@@ -254,7 +256,7 @@ public class App {
                 length = content.length();
                
                 Atom atom = new Atom(root, content);
-                setAtomTerminalandCategories(atom);
+                setAtomTerminalAndCategories(atom);
 
 
                 int index = getAtomIndex(input, root);

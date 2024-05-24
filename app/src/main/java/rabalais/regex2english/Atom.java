@@ -3,6 +3,7 @@ package rabalais.regex2english;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.HashMap;
 import java.util.Comparator;
 
@@ -11,7 +12,7 @@ public class Atom {
 
     private ParseTree node;
     private String fullContent = "";
-    private ArrayList<String> atomTypes = new ArrayList<>();
+    private LinkedHashSet<String> atomTypes = new LinkedHashSet<>();
     private HashMap<Integer, String> contentAtIndex = new HashMap<>();
     private String terminal = "";
 
@@ -27,12 +28,12 @@ public class Atom {
     public Atom(ParseTree node, String fullContent){
         this.node = node;
         this.fullContent = fullContent;
-        // this.atomTypes.add(App.getCleanClassName(node.getClass().getSimpleName())); 
+        this.atomTypes.add(App.getCleanClassName(node.getClass().getSimpleName())); 
         this.fullContentLength = fullContent.length(); 
     }
 
     public void printAtom(){
-        System.out.println(this.index + ")'" + this.fullContent + "' " + atomTypes.toString());
+        System.out.println(this.index + ")'" + this.fullContent + "' (" + terminal + ") Categories: " + atomTypes.toString());
     }
     
     public int getIndex() {
