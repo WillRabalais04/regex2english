@@ -15,6 +15,8 @@ import java.util.Map;
 import static java.util.Map.entry;   
 import java.util.Comparator;
 import java.util.TreeSet; 
+import java.util.Comparator;
+
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
@@ -40,12 +42,14 @@ public class App {
    
     public static void main(String[] args) throws IOException{
 
-        // String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
+        String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
         // String input = "[ab]";
-        String input = "\\\\ab\\\\";
+        // String input = "\\\\ab\\\\";
+        // String input = "ghdf[ab]gw[ab]";
 
+        // String input = "[asdf][ab][ab]";
 
-        // String input = "([ab][ab][ab][ab][ab][ab])";
+        // String input = "([ab][ab][ab][ab])";
 
         System.out.println("Key: \n----------------------------------------------------------------------------------------------------");
         System.out.println("- Arrows (x) represent all of the logical operators and quantifiers.");
@@ -64,6 +68,12 @@ public class App {
 
     }
 
+    public static class AtomComparator implements Comparator<rabalais.regex2english.Atom>{
+        public int compare(Atom atom1, Atom atom2){
+            return Integer.compare(atom1.getIndex(), atom2.getIndex());
+        }
+    }
+
     public static String processTree(String input){
 
         for(int i = 0; i < input.length(); i++){
@@ -80,18 +90,22 @@ public class App {
         tree = parser.start();
         visitor = new RegexVisitor();
        
-        TreeSet<Atom> atoms = new TreeSet<Atom>(new Atom.AtomComparator());
+        ArrayList<Atom> atoms = new ArrayList<Atom>();
 
         getAtoms(tree, atoms, input);
+
+        // Collections.sort(atoms, new Atom.AtomComparator());
     
         String ret = "";
+    
+        Collections.sort(atoms, new AtomComparator());
 
         for(Atom a: atoms){
             a.printAtom();
             ret += a.getIndex() + ") '" + a.getFullContent() + "' - " + a.getAtomTypes() + " | Terminal: '" + a.getTerminal() + "'\n";
         }
 
-      
+     
 
         // StringBuilder v = new StringBuilder(input.length());
 
@@ -122,19 +136,21 @@ public class App {
         return ret;
     }
 
-    public static void getAtoms(ParseTree root, TreeSet<Atom> atoms, String input){
+    public static void getAtoms(ParseTree root, ArrayList<Atom> atoms, String input){
+
     
         if(root != null){
+
             for(int i = 0; i < root.getChildCount(); i++){
 
-                // ParseTree child = root.getChild(i);
+                ParseTree child = root.getChild(i);
                                
-                // if(!(child instanceof TerminalNode)){
-                //     getAtoms(child, atoms, input);
+                if(!(child instanceof TerminalNode)){
+                    getAtoms(child, atoms, input);
 
-                // }
+                }
 
-                getAtoms(root.getChild(i), atoms, input);
+                // getAtoms(root.getChild(i), atoms, input);
                 
             }
 
@@ -147,11 +163,14 @@ public class App {
                 - lookahead/behinds
 
                 */
+                // System.out.println(root.getClass().getSimpleName());
 
                 Atom atom = new Atom(root);
 
                 String type = getCleanClassName(root.getClass().getSimpleName());
                 atom.addType(type);
+
+                // System.out.println("ATOM: " + atom.getFullContent());
 
 
                 while(root.getChildCount() == 1 && root.getChild(0) != null){
@@ -195,7 +214,6 @@ public class App {
     }     
     
         public static int getAtomIndex(String input, ParseTree node){
-
             
             String atomContent = node.getText();
             int index = input.indexOf(atomContent);
@@ -203,7 +221,7 @@ public class App {
             String leftAtomContent = "";
     
             while(instancesOfWithDuplicates(input, atomContent) != 1 && node != null && node.getParent() != null){
-         
+
 
                 while(node.getParent() != null && node.getParent().getChildCount() == 1){
                     node = node.getParent();
@@ -237,13 +255,12 @@ public class App {
     
             int count = 0;
     
-            for(int i = 0; i < input.length() - substring.length();i++){
-    
+            for(int i = 0; i < input.length() - (substring.length() - 1);i++){
                 if(input.substring(i, i + substring.length()).equals(substring)){
                     count++;
                 }
             }
-    
+
             return count;
         }
 

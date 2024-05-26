@@ -3,10 +3,10 @@ package rabalais.regex2english;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.HashMap;
 import java.util.TreeMap;
-import java.util.Comparator;
 
 
 public class Atom {
@@ -16,12 +16,6 @@ public class Atom {
     private LinkedHashSet<String> atomTypes = new LinkedHashSet<>();
     private TreeMap<Integer, String> content = new TreeMap<>();
     private String terminal = "N/A"; // if null then, the atom is not a terminal
-
-    public static class AtomComparator implements Comparator<rabalais.regex2english.Atom>{
-        public int compare(Atom atom1, Atom atom2){
-            return Integer.compare(atom1.getIndex(), atom2.getIndex());
-        }
-    }
 
     private int fullContentLength = -1;
 
@@ -33,8 +27,14 @@ public class Atom {
     }
 
     public void printAtom(){
+
+        // Collections.sort(content);
         String term = (this.terminal == "") ? "" : "(" + this.terminal + ")"; 
-        System.out.println(getIndex() + ")'" + this.fullContent + "' " + term + " | Categories: " + atomTypes.toString());
+
+        for(Integer index: content.keySet()){
+            System.out.println(index + ")'" + content.get(index) + "' " + term + " | Categories: " + atomTypes.toString());
+        }
+
     }
     
     public int getIndex() {
