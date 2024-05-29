@@ -26,17 +26,12 @@ import rabalais.regex2english.generated.regex2englishParser.*;
 
 public class App {
 
-    static int MAX_REGEX_LENGTH = 1000; // change this to the length of the input passed in by user
-    // public static int[] regexAllocationChecker = new int[MAX_REGEX_LENGTH];
-
     private static CharStream inputStream;
     private static regex2englishLexer lexer;
     private static CommonTokenStream tokens;
     private static regex2englishParser  parser; 
     private static ParseTree tree;
     private static RegexVisitor visitor;
-    private static String input2 = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
-
    
     public static void main(String[] args) throws IOException{
 
@@ -115,7 +110,6 @@ public class App {
     }
 
       System.out.println("Sum of Atoms Equals Input? '" + (sum.toString().equals(input) ? "✅" : "❌") + "'");
-
     }
 
     public static void printAtoms(ArrayList<Atom> atoms){
