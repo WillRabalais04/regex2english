@@ -164,4 +164,6 @@ Use https://github.com/mabe02/lanterna instead of Smenu
 
 for predefined, character classes, escape sequences and quantifiers, get the terminal
 
-FIX TREE TRAVERSAL IN GETATOMS: "\\\\"  and "\\" do not work
+FEATURE IDEA: have a mode where you can scroll through character by character or atom by atom
+
+change getatomindex to to take Atom as parameter instead of node

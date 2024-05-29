@@ -9,12 +9,12 @@ import java.util.Collections;
 import java.util.Arrays;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.TreeMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import static java.util.Map.entry;   
 import java.util.Comparator;
-import java.util.TreeSet; 
 import java.util.Comparator;
 
 
@@ -26,8 +26,8 @@ import rabalais.regex2english.generated.regex2englishParser.*;
 
 public class App {
 
-    static int MAX_REGEX_LENGTH = 33554432; // change this to the length of the input passed in by user
-    public static int[] regexAllocationChecker = new int[MAX_REGEX_LENGTH];
+    static int MAX_REGEX_LENGTH = 1000; // change this to the length of the input passed in by user
+    // public static int[] regexAllocationChecker = new int[MAX_REGEX_LENGTH];
 
     private static CharStream inputStream;
     private static regex2englishLexer lexer;
@@ -35,10 +35,8 @@ public class App {
     private static regex2englishParser  parser; 
     private static ParseTree tree;
     private static RegexVisitor visitor;
+    private static String input2 = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
 
-    public static void splitAtom(){
-
-    }
    
     public static void main(String[] args) throws IOException{
 
@@ -74,15 +72,9 @@ public class App {
         }
     }
 
-    public static String processTree(String input){
+    public static void processTree(String input){
 
-        for(int i = 0; i < input.length(); i++){
-            regexAllocationChecker[i] = 0;
-        }
-
-        inputStream = CharStreams.fromString(input);
-        // CharStream input = CharStreams.fromFileName("src/main/resources/input.txt");
-         
+        inputStream = CharStreams.fromString(input);         
         lexer = new regex2englishLexer(inputStream);
         tokens = new CommonTokenStream(lexer);
         parser = new regex2englishParser(tokens);
@@ -93,47 +85,63 @@ public class App {
         ArrayList<Atom> atoms = new ArrayList<Atom>();
 
         getAtoms(tree, atoms, input);
-
-        // Collections.sort(atoms, new Atom.AtomComparator());
-    
-        String ret = "";
-    
         Collections.sort(atoms, new AtomComparator());
+        splitAtoms(atoms);
+        checkAtomsSumToInput(atoms, input);
+        printAtoms(atoms);
 
-        for(Atom a: atoms){
-            a.printAtom();
-            ret += a.getIndex() + ") '" + a.getFullContent() + "' - " + a.getAtomTypes() + " | Terminal: '" + a.getTerminal() + "'\n";
+    }
+
+    public static void checkAtomsSumToInput(ArrayList<Atom> atoms, String input){
+       
+        StringBuilder sum = new StringBuilder(input.length());
+
+        for (int i = 0; i < input.length(); i++){
+            sum.append(' ');
         }
 
-     
+        for(Atom atom: atoms){ // O(n^3) but n is small
 
-        // StringBuilder v = new StringBuilder(input.length());
+          for(int index: atom.getContent().keySet()){
 
-        // for (int i = 0; i < input.length(); i++){
-        //     v.append(' ');
-        // }
+              String content = atom.getContent(index);
+              
+                for(int i = 0; i < content.length(); i++){
+                
+                sum.setCharAt(index + i, content.charAt(i));
+              
+                }
+          }
+    }
 
-        // check every atom if there is an overlapping atom 
+      System.out.println("Sum of Atoms Equals Input? '" + (sum.toString().equals(input) ? "✅" : "❌") + "'");
 
-        // atoms.stream()
-        // .filter(atom -> atom.stream()
-        // .forEach(otherAtom -> otherAtom != atom && otherAtom.getIndex() >= atom.getIndex() && otherAtom.getIndex() < atom.getIndex() + atom.getLength()))
-        // .forEach(atom->);
+    }
+
+    public static void printAtoms(ArrayList<Atom> atoms){
+
+        String toPrint = "";
+
+        TreeMap<Integer, String> allEntries = new TreeMap<>();
 
 
-        // for(Atom a: atoms){
+        for(Atom atom: atoms){
 
-        //     // System.out.println(a.getIndex() + ") '" + a.getContent());
-        //     // System.out.println(v);
-        //     for(int i = 0; i < a.getLength(); i++){
-        //         // System.out.print(a.getIndex() + i);
-        //         v.setCharAt(a.getIndex() + i, a.getFullContent().charAt(i));
-        //     }
-        // }
+            for(Map.Entry<Integer, String> partition: atom.getContent().entrySet()){
 
-        // System.out.println("V: '" + v + "'");
+                String atomText = partition.getKey() + ") '" + partition.getValue() + "' | Categories: " + atom.getAtomTypes() + "\n";
+                allEntries.put(partition.getKey(), atomText);
+            }
 
-        return ret;
+        }
+
+        for(Map.Entry<Integer, String> partition : allEntries.entrySet()){
+
+          toPrint += partition.getValue(); 
+        }
+        
+        System.out.println(toPrint);
+
     }
 
     public static void getAtoms(ParseTree root, ArrayList<Atom> atoms, String input){
@@ -148,30 +156,16 @@ public class App {
                 if(!(child instanceof TerminalNode)){
                     getAtoms(child, atoms, input);
 
-                }
-
-                // getAtoms(root.getChild(i), atoms, input);
-                
+                }                
             }
 
                                  
             if(isAtom(root)){
 
-                /*  atoms that need two parts:
-                - groups
-                - character class containing (javalangCharacterClass |  posix | group | escape sequence | quantifier | logical operator | anchors | back reference | )
-                - lookahead/behinds
-
-                */
-                // System.out.println(root.getClass().getSimpleName());
-
                 Atom atom = new Atom(root);
 
                 String type = getCleanClassName(root.getClass().getSimpleName());
                 atom.addType(type);
-
-                // System.out.println("ATOM: " + atom.getFullContent());
-
 
                 while(root.getChildCount() == 1 && root.getChild(0) != null){
                     root = root.getChild(0);                    
@@ -193,22 +187,7 @@ public class App {
                 atom.addContent(getAtomIndex(input, root), root.getText());
                 atoms.add(atom);
             }
-            // else if(root instanceof TerminalNode){
-            //         Atom atom = new Atom(root);
 
-            //         String type = getCleanClassName(root.getClass().getSimpleName());
-            //         atom.addType(type);
-            //         Vocabulary vocab = lexer.getVocabulary();
-            //         atom.setTerminal(getCleanTerminalName(vocab.getSymbolicName(((Token)root.getPayload()).getType())));
-            //     }
-                // System.out.println("'" + root.getText() + "' | Class: " + root.getClass().getSimpleName());
-            
-            
-            
-          
-           
-
-    
         }
        
     }     
@@ -245,6 +224,67 @@ public class App {
             }
     
             return index;
+        }
+
+        public static Map.Entry<Integer, Integer> getAtomOverlap(Atom atom1, Atom atom2){
+
+            HashMap<Integer, Integer> atomOneBounds = new HashMap<>();
+            HashMap<Integer, Integer> atomTwoBounds = new HashMap<>();
+
+            atom1.getContent().forEach((start, content) -> atomOneBounds.put(start, start + (content.length())) );
+            atom2.getContent().forEach((start, content) -> atomTwoBounds.put(start, start + (content.length())) );
+
+            //             (start1 < end2 && end1 > start2) || (start2 < end1 && end2 > start1)
+            Map.Entry<Integer, Integer> overlapBounds = atomOneBounds.entrySet().stream().filter(range1 -> atomTwoBounds.entrySet().stream()
+            .anyMatch(range2 -> (range1.getKey() < range2.getValue() && range1.getValue() > range2.getKey())
+            ||
+            ( range2.getKey() < range1.getValue() && range2.getValue() > range1.getKey())
+            ||
+            range1.getKey() == range2.getKey() && range1.getValue() == range2.getValue()))
+            .findFirst()
+            .orElse(null);
+    
+            return overlapBounds;
+        }
+
+        public static void splitAtoms(ArrayList<Atom> atoms){
+            
+            for(int i = 0; i < atoms.size(); i++){
+
+                Atom atom = atoms.get(i);
+                // could speed up this loop
+                for(int j = i - 1; j >= 0; j--){
+
+                    Atom precedingAtom = atoms.get(j);
+
+                    Map.Entry<Integer, Integer> overlapRange = getAtomOverlap(atom, precedingAtom);
+
+                    if(overlapRange != null){
+
+                        int start = overlapRange.getKey();
+                        int end = overlapRange.getValue();
+
+                        Map.Entry<Integer, String> portionToRemove = precedingAtom.getFloorEntry(start);
+
+
+                        int index = portionToRemove.getKey();                        
+                        String partition1 = portionToRemove.getValue();
+                        String partition2 = portionToRemove.getValue();
+
+                        partition1 = partition1.substring(0, start - index);
+                        partition2 = partition2.substring(end - index, partition2.length());
+                        
+                        precedingAtom.removeAtomPortion(index);
+
+                        if(!partition1.equals("")){precedingAtom.addContent(index, partition1);}
+                        if(!partition2.equals("")){precedingAtom.addContent(end, partition2);}
+                      
+                    }
+
+                }
+
+            }
+          
         }
     
         public static int instancesOfWithDuplicates(String input, String substring){

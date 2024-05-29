@@ -5,6 +5,7 @@ import org.antlr.v4.runtime.tree.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.TreeMap;
 
@@ -37,8 +38,12 @@ public class Atom {
 
     }
     
-    public int getIndex() {
+    public int getIndex() { // index of first portion of the atom
         return content.firstKey();
+    }
+
+    public int getLastIndex(){
+        return getIndex() + fullContent.length();
     }
   
     public ParseTree getNode() {
@@ -84,8 +89,16 @@ public class Atom {
         this.content.put(index, content);
     }
 
+    public void removeAtomPortion(int index){
+        this.content.remove(index);
+    }
+
+    public TreeMap<Integer, String> getContent(){
+        return this.content;
+    }
+
     public String getContent(int index){
-        return new String(content.get(index));
+        return content.get(index);
     }
 
     public String getTerminal(){
@@ -94,5 +107,34 @@ public class Atom {
 
     public void setTerminal(String terminal){
         this.terminal = terminal;
+    }
+
+    public int getAtomSize(){
+
+        int size = 0;
+
+        for(Integer index: content.keySet()){
+            size += getContent(index).length();
+        }
+
+        return size;
+
+    }
+
+    public String getContentAsString(){
+    
+        String completeContent = "";
+
+        for(String partial: content.values()){
+
+            completeContent += partial;
+        }
+
+        return completeContent;
+
+    }
+
+    public Map.Entry<Integer, String> getFloorEntry(int index){
+        return content.floorEntry(index);
     }
 }
