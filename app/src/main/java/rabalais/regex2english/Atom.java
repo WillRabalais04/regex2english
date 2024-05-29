@@ -118,7 +118,6 @@ public class Atom {
         }
 
         return size;
-
     }
 
     public String getContentAsString(){
