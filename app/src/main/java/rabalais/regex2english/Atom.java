@@ -23,17 +23,16 @@ public class Atom {
     public Atom(ParseTree node){
         this.node = node;
         this.fullContent = node.getText();
-        this.atomTypes.add(App.getCleanClassName(node.getClass().getSimpleName())); 
+        this.atomTypes.add(RegexProcessor.getCleanClassName(node.getClass().getSimpleName())); 
         this.fullContentLength = fullContent.length(); 
     }
 
     public void printAtom(){
 
-        // Collections.sort(content);
         String term = (this.terminal == "") ? "" : "(" + this.terminal + ")"; 
 
         for(Integer index: content.keySet()){
-            System.out.println(index + ")'" + content.get(index) + "' " + term + " | Categories: " + atomTypes.toString());
+            System.out.println(index + ")'" + getContentAsString() + "' " + term + " | Categories: " + atomTypes.toString());
         }
 
     }
