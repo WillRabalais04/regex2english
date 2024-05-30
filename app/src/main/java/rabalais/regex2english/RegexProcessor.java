@@ -16,6 +16,8 @@ import java.util.Map;
 import static java.util.Map.entry;   
 import java.util.Comparator;
 
+import hu.webarticum.treeprinter.*;
+
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
@@ -30,6 +32,42 @@ public class RegexProcessor {
     private static regex2englishParser  parser; 
     private static ParseTree tree;
     private static RegexVisitor visitor;
+
+    public ParseTree getParseTree(){
+        return this.tree;
+    }
+
+    public SimpleTreeNode getParseTreeAsSimpleTreeNode(){
+
+        return parseTreeToSimpleTreeNode(this.tree);
+    
+    }
+    public SimpleTreeNode parseTreeToSimpleTreeNode(ParseTree tree){
+        
+        if(tree != null){
+
+            String content = "";
+            if(tree instanceof TerminalNode){
+                Vocabulary vocab = lexer.getVocabulary();
+                content = getCleanTerminalName(vocab.getSymbolicName(((Token)tree.getPayload()).getType()));
+            }
+            else{
+                content = getCleanClassName(tree.getClass().getSimpleName());
+            }
+            SimpleTreeNode newTree = new SimpleTreeNode(content);
+
+
+            for(int i = 0; i < tree.getChildCount(); i++){
+                newTree.addChild(parseTreeToSimpleTreeNode(tree.getChild(i)));
+            }
+
+            return newTree;
+
+        }
+
+        return new SimpleTreeNode("Failed");
+
+    }
 
     public static class AtomComparator implements Comparator<rabalais.regex2english.Atom>{
         public int compare(Atom atom1, Atom atom2){

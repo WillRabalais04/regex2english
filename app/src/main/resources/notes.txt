@@ -1,8 +1,6 @@
 TODO: 
 - add all boundary matchers to grammar (some were forgotten)
 - check all tokens are used in grammar rules
-- in getAtoms() fix boundary matchers
-
 
 Feature Notes:
 - ^a$bc$ cannot match anything but the parser parses it so must add some error detection
@@ -167,3 +165,16 @@ for predefined, character classes, escape sequences and quantifiers, get the ter
 FEATURE IDEA: have a mode where you can scroll through character by character or atom by atom
 
 change getatomindex to to take Atom as parameter instead of node
+
+
+Ouputs:
+
+- r2e [input] [flags]
+
+flags: 
+- "-a" breaks it up into atoms
+- "-c" breaks it up by character
+- "-h" [type] - highlights all instances of a given type
+- "-t" prints parsetree
+
+

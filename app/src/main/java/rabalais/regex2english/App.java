@@ -4,28 +4,81 @@
 package rabalais.regex2english;
 
 import java.util.ArrayList;
+import java.lang.Runnable;
+
+import picocli.CommandLine;
+import picocli.CommandLine.*;
+
+import hu.webarticum.treeprinter.*;
+// import hu.webarticum.treeprinter.DefaultAligner;
 
 
-public class App {
+@Command(
+    name = "regex2english",
+    mixinStandardHelpOptions = true,
+    aliases = {"r2e"},
+    description = "..."
+  )
+class CLI implements Runnable{
 
-    private static String key = "Key: \n----------------------------------------------------------------------------------------------------\n- Arrows (x) represent all of the logical operators and quantifiers.\n         \033[31m ∆ \033[37m\n- Single underline (x) represents a token meaning letters or escape sequences.\n                    \033[35m¯\033[37m\n- Double underline (x) represents character classes.\n                    \033[33m=\033[37m\n- Triple underline (x) represents an expression.\n                    \033[34m≡\033[37m\n- Quadruple underline (x) represents TBD\n                    \033[32m≣\033[37m\n----------------------------------------------------------------------------------------------------";
-   
-    public static void main(String[] args){
+    @Parameters(description = "The regex input to process.")
+    private String input;
 
-        String input = "^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?!.*\\s).{8,16}$";
-        // String input = "[ab]";
-        // String input = "\\\\ab\\\\";
-        // String input = "ghdf[ab]gw[ab]";
+    @Option(names = {"-a", "--atoms"}, description = "Break up the regex input into atoms.")
+    boolean breakUpByAtoms;
 
-        // String input = "[asdf][ab][ab]";
+    @Option(names = {"-b", "--bblocks"}, description = "List all of the things the regex can be broken down to. Useful when invoking the highlight option.")
+    boolean printBB;
 
-        // String input = "([ab][ab][ab][ab])";
+    @Option(names = {"-c", "--char"}, description = "Break up the regex character by character.")
+    boolean breakUpByChar;
 
-        System.out.println(key);
-        ArrayList<Atom> atoms =  RegexProcessor.process(input);
+    @Option(names = {"-h", "--highlight"}, description = "Highlights all instances of a given type.")
+    boolean highlight;
+
+    @Option(names = {"-k", "--key"}, description = "Print the key.")
+    boolean printKey;
+
+    @Option(names = {"-t", "--tree"}, description = "Prints the abstract syntax tree that models the regex.")
+    boolean printTree;
+ 
+    private String key = "Key: \n----------------------------------------------------------------------------------------------------\n- Arrows (x) represent all of the logical operators and quantifiers.\n         \033[31m ∆ \033[37m\n- Single underline (x) represents a token meaning letters or escape sequences.\n                    \033[35m¯\033[37m\n- Double underline (x) represents character classes.\n                    \033[33m=\033[37m\n- Triple underline (x) represents an expression.\n                    \033[34m≡\033[37m\n- Quadruple underline (x) represents TBD\n                    \033[32m≣\033[37m\n----------------------------------------------------------------------------------------------------";
+
+    @Override
+    public void run() {
+
+        RegexProcessor processor = new RegexProcessor();
+        ArrayList<Atom> atoms =  processor.process(input);
+
+
+        if(printKey){
+            System.out.println(key);
+        }
+        if(printTree){
+    
+            SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode();
+            new ListingTreePrinter().print(tree);
+
+        }
+
+
+
+
+
+        SimpleTreeNode rootNode = new SimpleTreeNode("I'm the root!");
+
 
     }
- 
+}
 
+
+public class App{
+
+    public static void main(String[] args){
+
+        int exitCode = new CommandLine(new CLI()).execute(args); 
+        System.exit(exitCode);
+
+    }
 }
 
