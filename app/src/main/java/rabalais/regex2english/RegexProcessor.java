@@ -378,6 +378,7 @@ public class RegexProcessor {
                 entry("ExprHelperContext", "Expression"),
                 entry("CharacterClassContentContext", "Character Class Content"),
                 entry("CharacterClassContentHelperContext", "Character Class Content"),
+                entry("ConcatenationContext", "Concatenation"),
                 entry("EscapedToLiteralInsideCharClassContext", "Escape Sequence (inside character class)"),
                 entry("EscapedToLiteralOutsideCharClassContext", "Escape Sequence (outside character class)"),
                 entry("ZeroWidthAssertionsContext", "Zero Width Assertion"),
