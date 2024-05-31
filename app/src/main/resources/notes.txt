@@ -1,80 +1,76 @@
 TODO: 
 - add all boundary matchers to grammar (some were forgotten)
 - check all tokens are used in grammar rules
-
-Feature Notes:
-- ^a$bc$ cannot match anything but the parser parses it so must add some error detection
+- Figure out size limits
 - for lookaheads, treat them differently when traversing the AST so what they reference is clear
-- for double boundary matchers add a special case when traversing the AST
-UI Notes:
-- things to group top down
-    - quote
-    - zeroWidthAssertions
-    - inlineModifier
-    - captureGroup 
-    - group
-    - boundaryMatcherStart
-    - escapedFromLiteral 
-    - characterClass 
-    - backReference 
-    - wordBoundary
-    - nonWordBoundary 
-    - inputStart 
-    - endOfMatch 
-    - letter
-    - quantifier 
-    - boundaryMatcherEnd
-    - endOfInputExceptFinalTerminator
-    - endOfInput
-    - or
- 
-    4 categories: logical operators, expressions, character classes & tokens 
-    - logical operators includes:
-        - quantifier
-        - or 
-     - expressions include: - just use exprs
-        - expr
-        - exprHelper (rename to expr)
-        - escapedToLiteralOutsideCharClass 
-        - quote
-        - zeroWidthAssertions
-        - inlineModifier
-        - captureGroup 
-        - group
-        - escapedFromLiteral 
-        - characterClass 
-        - backReference 
-        - boundaryMatcherStart 
-        - wordBoundary
-        - nonWordBoundary 
-        - inputStart
-        - endOfMatch 
-        - letter
-        - concatenation
-        - quantifier 
-        - boundaryMatcherEnd
-        - endOfInputExceptFinalTerminator
-        - endOfOnput 
+- Implement referential atoms
+- Add test cases
+- change getAtomIndex to to take Atom as parameter instead of node
+- color tree based on whether it's a terminal or not or by categores even
+- Add features after the parse tree is created that treat edge cases like:
+    - ^a$bc$ cannot match anything but the parser parses it so must add some error detection
 
-    - character classes include:
-        - CARET characterClassContent
-        - group
-        - escapedToLiteralInsideCharClass
-        - predefinedCharacterClass 
-        - posix 
-        - javalangCharacterClass 
-        - unicodeScriptClass
-        - (LETTER_RANGE | NUMBER_RANGE | ((LETTER | EXTRA_LETTER_ALLOWED_INSIDE) | CARET))+) 
-        - (characterClassContentHelper | <EOF>)
-      
-     - tokens include:
-        - letters
-        - escape sequences
+____________________________________________________________________
+New Feature Ideas:
+- Linting:
+    use printed arrows to show relations between referentials below the string and show groups above the string
+        - also do it for groups, showing when they begin and end
+        G1      G2        G3    
+        ⎡‾‾‾‾⎤⎡‾‾‾‾‾‾‾‾⎤⎡‾‾‾‾‾‾‾‾‾⎤
+        ^([asd])(?=.*\d\d)(?=.*[a-z]){8,16}$
+        ⎣__________________________________⎦
+                        Bounds
 
-Referencing Other Atoms:
-Use inheritance: 
-    - eg. boundary matcher extends atom and has extra instance variables to store what it bounds
-    - eg. quantifiers extends atom and has extra instance variables to store what it quantifies
+    highlight 4 distinct categories (atoms, operators/quantifiers, referentials, groups):
+        -atoms: literals (inc. escaped characters), character classes, 
+        -referentials: lookaheads, anchors, back references, 
+        -operators/quantifiers: |, *,{m,n}, etc...
+        -groups: capture groups
+- Add flag that breaks up text into strings instead of by character 
+call it compact mode or something
+____________________________________________________________________
+Commands:
+
+- r2e [input] [flags]
+
+- Default Behavior: lints regex like shown above
+
+flags: 
+- "-a" breaks it up into atoms
+- "-c" breaks it up by character
+- "-cmp" compact mode, breaks up by strings instead of characters
+- "-h" [type] - highlights all instances of a given type
+- "-ls" list all atoms
+- "-k" prints key
+- "-t" prints parsetree
+- "-tl" prints parsetree as vertical list
+____________________________________________________________________
+
+Current List of Strings that Fail:
+____________________________________________________________________
+-  [\s\s]
+- [abc][\s\s]"
+- [\s\s][abc]
+- (?asfasd) // zero width assertions without the equal sign
+- [abcd] // doesn't split up by letters
+____________________________________________________________________
+Definitions:
+
+Atoms are Defined As:
+
+(escapedToLiteralOutsideCharClassContext 
+| QuoteContext
+| InlineModifierContext
+| CaptureGroupContext
+| EscapedFromLiteralContext 
+| CharacterClassContext
+| NonWordBoundaryContext
+| InputStartContext
+| LetterContext
+| EndOfInputExceptFinalTerminator
+)
+
+Referential Atoms are Defined As:
 
 Types of Atoms that Reference Other Atoms: 
 - Boundary matchers
@@ -91,90 +87,4 @@ Types of Atoms that Reference Other Atoms:
     - (?<=X)	X, via zero-width positive lookbehind
     - (?<!X)	X, via zero-width negative lookbehind
     - (?>X)	X, as an independent, non-capturing group
-
-
-feature: highlight all text, escape sequenecs, etc..
-
-Idea: use print arrows to show relations between referentials below the string and show groups above the string
-    - also do it for groups, showing when they begin and end
-       G1      G2        G3    
-     ⎡‾‾‾‾⎤⎡‾‾‾‾‾‾‾‾⎤⎡‾‾‾‾‾‾‾‾‾⎤
-    ^([asd])(?=.*\d\d)(?=.*[a-z]){8,16}$
-    ⎣__________________________________⎦
-                     Bounds
-
-highlight 4 distinct categories (atoms, operators/quantifiers, referentials, groups):
-
-atoms: literals (inc. escaped characters), character classes, 
-
-referentials: lookaheads, anchors, back references, 
-
-operators/quantifiers: |, *,{m,n}, etc...
-
-
-feature idea: print the whole tree with https://github.com/davidsusu/tree-printer 
-
-commands to run program with:
-- default mode (shows regex expression and then you can cycle thru the atoms and click on any for more context)
-- key (shows key)
-- listatoms (lists all atoms, similar to default mode but you in one column)
-- printtree
-- highlight [atom type] eg. highlight escape sequences
-
-flags: 
-- '-g' (shows all groupings)
-
-
-Atoms: character classes | 
-
-character class containing (javalangCharacterClass |  posix | group | escape sequence | quantifier | logical operator | anchors | back reference | )
-
-atoms consist of:
-
-(DoubleBoundaryMatchersContext
-|escapedToLiteralOutsideCharClassContext 
-| QuoteContext
-| ZeroWidthAssertionsContext
-| InlineModifierContext
-| CaptureGroupContext
-| GroupContext
-| BoundaryMatcherStartContext
-| EscapedFromLiteralContext 
-| CharacterClassContext
-| BackReferenceContext
-| WordBoundaryContext
-| NonWordBoundaryContext
-| InputStartContext
-| EndOfMatchContext
-| LetterContext
-| QuantifierContext
-| BoundaryMatcherEndContext
-| EndOfInputExceptFinalTerminator
-| OrContext
-)
-
-ideas for splitting up atoms with nested atoms:
-- atoms instead of having an int storing index and a String storing their content, have map that takes an index and a String
-- have an array of all atoms, go thru all atoms, find atoms that overlap, choose the atom with the shorter length to be passed into 
-
-
-Use https://github.com/mabe02/lanterna instead of Smenu
-
-for predefined, character classes, escape sequences and quantifiers, get the terminal
-
-FEATURE IDEA: have a mode where you can scroll through character by character or atom by atom
-
-change getatomindex to to take Atom as parameter instead of node
-
-
-Ouputs:
-
-- r2e [input] [flags]
-
-flags: 
-- "-a" breaks it up into atoms
-- "-c" breaks it up by character
-- "-h" [type] - highlights all instances of a given type
-- "-t" prints parsetree
-
-
+____________________________________________________________________

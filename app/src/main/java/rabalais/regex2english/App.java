@@ -10,6 +10,21 @@ import picocli.CommandLine;
 import picocli.CommandLine.*;
 
 import hu.webarticum.treeprinter.*;
+import hu.webarticum.treeprinter.decorator.BorderTreeNodeDecorator;
+import hu.webarticum.treeprinter.printer.*;
+
+import hu.webarticum.treeprinter.printer.listing.ListingTreePrinter;
+import hu.webarticum.treeprinter.printer.traditional.TraditionalTreePrinter;
+import hu.webarticum.treeprinter.printer.traditional.DefaultAligner;
+import hu.webarticum.treeprinter.decorator.PadTreeNodeDecorator;
+import hu.webarticum.treeprinter.decorator.ShadowTreeNodeDecorator;
+import hu.webarticum.treeprinter.decorator.JustifyTreeNodeDecorator;
+import hu.webarticum.treeprinter.text.AnsiFormat;
+// import hu.webarticum.treeprinter.text.AnsiConsoleText;
+import hu.webarticum.treeprinter.text.PlainConsoleText;
+import hu.webarticum.treeprinter.text.ConsoleText;
+
+
 // import hu.webarticum.treeprinter.DefaultAligner;
 
 
@@ -38,9 +53,18 @@ class CLI implements Runnable{
 
     @Option(names = {"-k", "--key"}, description = "Print the key.")
     boolean printKey;
+    
+    @Option(names = {"-ls", "--list"}, description = "Lists all of the atoms.")
+    boolean list;
 
     @Option(names = {"-t", "--tree"}, description = "Prints the abstract syntax tree that models the regex.")
     boolean printTree;
+
+    @Option(names = {"-tl", "--treelist"}, description = "Prints the abstract syntax tree that models the regex as a list. Recommended for longer inputs.")
+    boolean printTreeAsList;
+
+    @Option(names = {"-td", "--treedecorated"}, description = "Prints the abstract syntax tree that models the regex as a prettier tree. Recommended for smaller inputs.")
+    boolean printDecoratedTree;
  
     private String key = "Key: \n----------------------------------------------------------------------------------------------------\n- Arrows (x) represent all of the logical operators and quantifiers.\n         \033[31m ∆ \033[37m\n- Single underline (x) represents a token meaning letters or escape sequences.\n                    \033[35m¯\033[37m\n- Double underline (x) represents character classes.\n                    \033[33m=\033[37m\n- Triple underline (x) represents an expression.\n                    \033[34m≡\033[37m\n- Quadruple underline (x) represents TBD\n                    \033[32m≣\033[37m\n----------------------------------------------------------------------------------------------------";
 
@@ -50,23 +74,48 @@ class CLI implements Runnable{
         RegexProcessor processor = new RegexProcessor();
         ArrayList<Atom> atoms =  processor.process(input);
 
+        processor.printAtoms(atoms);
+
+
+ 
 
         if(printKey){
             System.out.println(key);
         }
-        if(printTree){
-    
+        if(printTree || printTreeAsList || printDecoratedTree){
             SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode();
-            new ListingTreePrinter().print(tree);
 
+            if(printTree){
+                new TraditionalTreePrinter().print(tree);
+                // new TraditionalTreePrinter().print(new BorderTreeNodeDecorator(tree));
+
+                // Could maybe use this to allow for horizontal scroll
+                // System.out.println(new TraditionalTreePrinter().stringify(tree));
+            }
+
+            if(printTreeAsList){
+
+                new ListingTreePrinter().print(tree);
+
+            }
+
+            if(printDecoratedTree){
+                TreeNode decoratedTreeNode = new ShadowTreeNodeDecorator(
+                BorderTreeNodeDecorator.builder()
+                        .wideUnicode()
+                        .buildFor(
+                                new PadTreeNodeDecorator(tree, new Insets(0, 1))));
+        
+                new TraditionalTreePrinter().print(decoratedTreeNode);
+            }
+
+            
+    
         }
 
-
-
-
-
-        SimpleTreeNode rootNode = new SimpleTreeNode("I'm the root!");
-
+       
+    
+        // new TraditionalTreePrinter().print(tree);
 
     }
 }

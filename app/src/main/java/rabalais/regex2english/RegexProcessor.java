@@ -47,9 +47,13 @@ public class RegexProcessor {
         if(tree != null){
 
             String content = "";
+            if(tree instanceof StartContext){
+                tree = tree.getChild(0);
+            }
+
             if(tree instanceof TerminalNode){
                 Vocabulary vocab = lexer.getVocabulary();
-                content = getCleanTerminalName(vocab.getSymbolicName(((Token)tree.getPayload()).getType()));
+                content = "'" + tree.getText() + "' - " + getCleanTerminalName(vocab.getSymbolicName(((Token)tree.getPayload()).getType()));
             }
             else{
                 content = getCleanClassName(tree.getClass().getSimpleName());
@@ -127,6 +131,8 @@ public class RegexProcessor {
                 }
           }
     }
+
+    System.out.println("sum.toString(): " + sum.toString());
 
       System.out.println("Sum of Atoms Equals Input? '" + (sum.toString().equals(input) ? "✅" : "❌") + "'");
     }
