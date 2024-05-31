@@ -31,47 +31,86 @@ public class RegexProcessor {
     private static CommonTokenStream tokens;
     private static regex2englishParser  parser; 
     private static ParseTree tree;
+    private static Vocabulary vocab;
 
     public ParseTree getParseTree(){
         return this.tree;
     }
 
-    public SimpleTreeNode getParseTreeAsSimpleTreeNode(boolean compact){
+    public SimpleTreeNode getParseTreeAsSimpleTreeNode(ParseTree node, boolean compact){
 
-        return parseTreeToSimpleTreeNode(this.tree, compact);
-    
-    }
-    public SimpleTreeNode parseTreeToSimpleTreeNode(ParseTree node, boolean compact){
-        
         if(node != null){
 
             String content = "";
             if(node instanceof StartContext){
                 node = node.getChild(0);
             }
+            vocab = lexer.getVocabulary();
 
             if(compact && (node instanceof LetterContext || node instanceof Extra_letters_allowed_inside_CCContext) && node.getChildCount() > 1){
+                    
+                    int childCount = node.getChildCount();
+
+                    String textContent = "'";
+                    
+                    for(int i = 0; i < childCount; i++){
+
+                        ParseTree child = node.getChild(i);
+                        textContent += child.getText();
+    
+                    }
+    
+                    textContent += "'";
+    
+                    SimpleTreeNode lettersNode = new SimpleTreeNode("Text");
+                    lettersNode.addChild(new SimpleTreeNode(textContent));
+    
+                    return lettersNode;
+
+            } else if(compact && node instanceof CharacterClassContentContext){
+
+
+                HashMap<String, String> children = new HashMap<>();
+
                 int childCount = node.getChildCount();
 
-                String textContent = "'";
-
-                for(int i = 0; i < childCount; i++){
+                String textContent = "";
                 
+                for(int i = 0; i < childCount; i++){
+
                     ParseTree child = node.getChild(i);
-                    textContent += child.getText();
+                    
+                    if(child instanceof Extra_letters_allowed_inside_CCContext || ((child instanceof TerminalNodeImpl || child instanceof TerminalNode) && (vocab.getSymbolicName(((Token)child.getPayload()).getType()).equals("LETTER")))){
+
+                        textContent += child.getText();
+
+                        if(i == childCount - 1 && !textContent.equals("") || (i+1 < childCount && !(node.getParent().getChild(i+1) instanceof Extra_letters_allowed_inside_CCContext || ((child instanceof TerminalNodeImpl || child instanceof TerminalNode) && (vocab.getSymbolicName(((Token)child.getPayload()).getType()).equals("LETTER")))))){
+                            children.put("Text", "'" + textContent + "'");
+                        }     
+
+                    } else if(child.getChildCount() < 1){
+                        children.put("Non-text", child.getText());
+                    }
 
                 }
+                SimpleTreeNode characterClassContentNode = new SimpleTreeNode("Character Class Content");
 
-                textContent += "'";
+                for(String child: children.keySet()){
 
-                SimpleTreeNode lettersNode = new SimpleTreeNode("Text");
-                lettersNode.addChild(new SimpleTreeNode(textContent));
+                    if(child.equals("Text")){
+                        SimpleTreeNode lettersNode = new SimpleTreeNode("Text");
+                        lettersNode.addChild(new SimpleTreeNode("'" + children.get(child) + "'"));      
+                        characterClassContentNode.addChild(lettersNode);
+                    } else{
+                        characterClassContentNode.addChild(new SimpleTreeNode(children.get(child)));
+                    }
+                }
 
-                return lettersNode;
-                    
+                return characterClassContentNode;
+            
             }
             else if(node instanceof TerminalNode){
-                Vocabulary vocab = lexer.getVocabulary();
+                // Vocabulary vocab = lexer.getVocabulary();
                 content = "'" + node.getText() + "' - " + getCleanTerminalName(vocab.getSymbolicName(((Token)node.getPayload()).getType()));
             }
             else{
@@ -81,7 +120,7 @@ public class RegexProcessor {
 
 
             for(int i = 0; i < node.getChildCount(); i++){
-                newTree.addChild(parseTreeToSimpleTreeNode(node.getChild(i), compact));
+                newTree.addChild(getParseTreeAsSimpleTreeNode(node.getChild(i), compact));
             }
 
             return newTree;
@@ -91,6 +130,57 @@ public class RegexProcessor {
         return new SimpleTreeNode("Failed.");
 
     }
+
+      // public SimpleTreeNode parseTreeToSimpleTreeNode(ParseTree node, boolean compact){
+        
+    //     if(node != null){
+
+    //         String content = "";
+    //         if(node instanceof StartContext){
+    //             node = node.getChild(0);
+    //         }
+
+    //         if(compact && (node instanceof LetterContext || node instanceof Extra_letters_allowed_inside_CCContext) && node.getChildCount() > 1){
+    //             int childCount = node.getChildCount();
+
+    //             String textContent = "'";
+
+    //             for(int i = 0; i < childCount; i++){
+                
+    //                 ParseTree child = node.getChild(i);
+    //                 textContent += child.getText();
+
+    //             }
+
+    //             textContent += "'";
+
+    //             SimpleTreeNode lettersNode = new SimpleTreeNode("Text");
+    //             lettersNode.addChild(new SimpleTreeNode(textContent));
+
+    //             return lettersNode;
+                    
+    //         }
+    //         else if(node instanceof TerminalNode){
+    //             Vocabulary vocab = lexer.getVocabulary();
+    //             content = "'" + node.getText() + "' - " + getCleanTerminalName(vocab.getSymbolicName(((Token)node.getPayload()).getType()));
+    //         }
+    //         else{
+    //             content = getCleanClassName(node.getClass().getSimpleName());
+    //         }
+    //         SimpleTreeNode newTree = new SimpleTreeNode(content);
+
+
+    //         for(int i = 0; i < node.getChildCount(); i++){
+    //             newTree.addChild(parseTreeToSimpleTreeNode(node.getChild(i), compact));
+    //         }
+
+    //         return newTree;
+
+    //     }
+
+    //     return new SimpleTreeNode("Failed.");
+
+    // }
 
     public static class AtomComparator implements Comparator<rabalais.regex2english.Atom>{
         public int compare(Atom atom1, Atom atom2){

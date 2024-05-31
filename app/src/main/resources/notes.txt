@@ -51,6 +51,8 @@ ____________________________________________________________________
 - [\s\s][abc]
 - (?asfasd) // zero width assertions without the equal sign
 - [abcd] // doesn't split up by letters
+- [abc{2}++abva] // treats {2} as a quantifier when it shouldn't
+- [a-zasdf] does not recognize range a-z
 ____________________________________________________________________
 Definitions:
 

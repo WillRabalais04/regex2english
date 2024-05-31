@@ -77,7 +77,7 @@ class CLI implements Runnable{
             System.out.println(key);
         }
         if(printTree || printTreeAsList || printDecoratedTree){
-            SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode(compactMode);
+            SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode(processor.getParseTree(), compactMode);
 
             if(printTree){
                 new TraditionalTreePrinter().print(tree);
