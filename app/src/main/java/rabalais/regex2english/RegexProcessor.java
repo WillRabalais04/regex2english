@@ -31,45 +31,64 @@ public class RegexProcessor {
     private static CommonTokenStream tokens;
     private static regex2englishParser  parser; 
     private static ParseTree tree;
-    private static RegexVisitor visitor;
 
     public ParseTree getParseTree(){
         return this.tree;
     }
 
-    public SimpleTreeNode getParseTreeAsSimpleTreeNode(){
+    public SimpleTreeNode getParseTreeAsSimpleTreeNode(boolean compact){
 
-        return parseTreeToSimpleTreeNode(this.tree);
+        return parseTreeToSimpleTreeNode(this.tree, compact);
     
     }
-    public SimpleTreeNode parseTreeToSimpleTreeNode(ParseTree tree){
+    public SimpleTreeNode parseTreeToSimpleTreeNode(ParseTree node, boolean compact){
         
-        if(tree != null){
+        if(node != null){
 
             String content = "";
-            if(tree instanceof StartContext){
-                tree = tree.getChild(0);
+            if(node instanceof StartContext){
+                node = node.getChild(0);
             }
 
-            if(tree instanceof TerminalNode){
+            if(compact && (node instanceof LetterContext || node instanceof Extra_letters_allowed_inside_CCContext) && node.getChildCount() > 1){
+                int childCount = node.getChildCount();
+
+                String textContent = "'";
+
+                for(int i = 0; i < childCount; i++){
+                
+                    ParseTree child = node.getChild(i);
+                    textContent += child.getText();
+
+                }
+
+                textContent += "'";
+
+                SimpleTreeNode lettersNode = new SimpleTreeNode("Text");
+                lettersNode.addChild(new SimpleTreeNode(textContent));
+
+                return lettersNode;
+                    
+            }
+            else if(node instanceof TerminalNode){
                 Vocabulary vocab = lexer.getVocabulary();
-                content = "'" + tree.getText() + "' - " + getCleanTerminalName(vocab.getSymbolicName(((Token)tree.getPayload()).getType()));
+                content = "'" + node.getText() + "' - " + getCleanTerminalName(vocab.getSymbolicName(((Token)node.getPayload()).getType()));
             }
             else{
-                content = getCleanClassName(tree.getClass().getSimpleName());
+                content = getCleanClassName(node.getClass().getSimpleName());
             }
             SimpleTreeNode newTree = new SimpleTreeNode(content);
 
 
-            for(int i = 0; i < tree.getChildCount(); i++){
-                newTree.addChild(parseTreeToSimpleTreeNode(tree.getChild(i)));
+            for(int i = 0; i < node.getChildCount(); i++){
+                newTree.addChild(parseTreeToSimpleTreeNode(node.getChild(i), compact));
             }
 
             return newTree;
 
         }
 
-        return new SimpleTreeNode("Failed");
+        return new SimpleTreeNode("Failed.");
 
     }
 
@@ -79,15 +98,13 @@ public class RegexProcessor {
         }
     }
 
-    public static ArrayList<Atom> process(String input){
+    public static ArrayList<Atom> process(String input, boolean compact){
 
         inputStream = CharStreams.fromString(input);         
         lexer = new regex2englishLexer(inputStream);
         tokens = new CommonTokenStream(lexer);
         parser = new regex2englishParser(tokens);
-
         tree = parser.start();
-        visitor = new RegexVisitor();
        
         ArrayList<Atom> atoms = new ArrayList<Atom>();
 
@@ -163,48 +180,47 @@ public class RegexProcessor {
 
     }
 
-    public static void getAtoms(ParseTree root, ArrayList<Atom> atoms, String input){
+    public static void getAtoms(ParseTree node, ArrayList<Atom> atoms, String input){
 
     
-        if(root != null){
-
-            for(int i = 0; i < root.getChildCount(); i++){
-
-                ParseTree child = root.getChild(i);
-                               
-                if(!(child instanceof TerminalNode)){
-                    getAtoms(child, atoms, input);
-
-                }                
-            }
-
+        if(node != null){
                                  
-            if(isAtom(root)){
+            if(isAtom(node)){
 
-                Atom atom = new Atom(root);
+                Atom atom = new Atom(node);
 
-                String type = getCleanClassName(root.getClass().getSimpleName());
+                String type = getCleanClassName(node.getClass().getSimpleName());
                 atom.addType(type);
 
-                while(root.getChildCount() == 1 && root.getChild(0) != null){
-                    root = root.getChild(0);                    
+                while(node.getChildCount() == 1 && node.getChild(0) != null){
+                    node = node.getChild(0);   
                     atom.addType(type);
-                    type = getCleanClassName(root.getClass().getSimpleName());
+                    type = getCleanClassName(node.getClass().getSimpleName());
                 }
 
-                if(root instanceof TerminalNode){
+                if(node instanceof TerminalNode || node instanceof TerminalNodeImpl){
                     Vocabulary vocab = lexer.getVocabulary();
-                    atom.setTerminal(getCleanTerminalName(vocab.getSymbolicName(((Token)root.getPayload()).getType())));
+                    atom.setTerminal(getCleanTerminalName(vocab.getSymbolicName(((Token)node.getPayload()).getType())));
                 }
-                else if(root.getChildCount() > 1){
+                else if(node.getChildCount() > 1){
                     atom.setTerminal("N/A");
                 }
                 else{
                     atom.setTerminal("?");
                 }
 
-                atom.addContent(getAtomIndex(input, root), root.getText());
+                atom.addContent(getAtomIndex(input, node), node.getText());
                 atoms.add(atom);
+            }
+
+            for(int i = 0; i < node.getChildCount(); i++){
+
+                ParseTree child = node.getChild(i);
+                               
+                if(!(child instanceof TerminalNode)){
+                    getAtoms(child, atoms, input);
+
+                }                
             }
 
         }
@@ -324,9 +340,9 @@ public class RegexProcessor {
         }
 
         // method to get getChild() index for the parent of a given child 
-        public static int getChildIndex(ParseTree root){
+        public static int getChildIndex(ParseTree node){
 
-            ParseTree parent = root.getParent();
+            ParseTree parent = node.getParent();
 
             if(parent.getChildCount() == 1){
                 return 0;
@@ -335,7 +351,7 @@ public class RegexProcessor {
 
             if(parent != null){  
                 for(int i = 0; i < parent.getChildCount(); i++){
-                    if(parent.getChild(i) == root){
+                    if(parent.getChild(i) == node){
 
                         index = i;
                         break;
@@ -399,7 +415,7 @@ public class RegexProcessor {
                 entry("NonWordBoundaryContext", "Non Word Boundary"),
                 entry("InputStartContext", "Input Start"),
                 entry("EndOfMatchContext", "End Of Match"),
-                entry("LetterContext", "Letter(s)"),
+                entry("LetterContext", "Letter"),
                 entry("QuantifierContext", "Quantifier"),
                 entry("DoubleBoundaryMatchersContext", "Double Boundary Matcher"),
                 entry("BoundaryMatcherEndContext", "Boundary Matcher End"),

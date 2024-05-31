@@ -26,8 +26,6 @@ New Feature Ideas:
         -referentials: lookaheads, anchors, back references, 
         -operators/quantifiers: |, *,{m,n}, etc...
         -groups: capture groups
-- Add flag that breaks up text into strings instead of by character 
-call it compact mode or something
 ____________________________________________________________________
 Commands:
 

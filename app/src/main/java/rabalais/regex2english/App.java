@@ -15,18 +15,8 @@ import hu.webarticum.treeprinter.printer.*;
 
 import hu.webarticum.treeprinter.printer.listing.ListingTreePrinter;
 import hu.webarticum.treeprinter.printer.traditional.TraditionalTreePrinter;
-import hu.webarticum.treeprinter.printer.traditional.DefaultAligner;
 import hu.webarticum.treeprinter.decorator.PadTreeNodeDecorator;
 import hu.webarticum.treeprinter.decorator.ShadowTreeNodeDecorator;
-import hu.webarticum.treeprinter.decorator.JustifyTreeNodeDecorator;
-import hu.webarticum.treeprinter.text.AnsiFormat;
-// import hu.webarticum.treeprinter.text.AnsiConsoleText;
-import hu.webarticum.treeprinter.text.PlainConsoleText;
-import hu.webarticum.treeprinter.text.ConsoleText;
-
-
-// import hu.webarticum.treeprinter.DefaultAligner;
-
 
 @Command(
     name = "regex2english",
@@ -47,6 +37,9 @@ class CLI implements Runnable{
 
     @Option(names = {"-c", "--char"}, description = "Break up the regex character by character.")
     boolean breakUpByChar;
+
+    @Option(names = {"-cmp", "--compactmode"}, description = "Combine letters into strings when parsing.")
+    boolean compactMode;
 
     @Option(names = {"-h", "--highlight"}, description = "Highlights all instances of a given type.")
     boolean highlight;
@@ -72,7 +65,8 @@ class CLI implements Runnable{
     public void run() {
 
         RegexProcessor processor = new RegexProcessor();
-        ArrayList<Atom> atoms =  processor.process(input);
+   
+        ArrayList<Atom> atoms =  processor.process(input, compactMode);
 
         processor.printAtoms(atoms);
 
@@ -83,7 +77,7 @@ class CLI implements Runnable{
             System.out.println(key);
         }
         if(printTree || printTreeAsList || printDecoratedTree){
-            SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode();
+            SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode(compactMode);
 
             if(printTree){
                 new TraditionalTreePrinter().print(tree);
