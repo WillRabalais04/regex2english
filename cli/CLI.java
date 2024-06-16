@@ -38,99 +38,99 @@ import com.googlecode.lanterna.terminal.Terminal;
 // import com.googlecode.lanterna.terminal.swing.SwingTerminal;
 // import java.io.PrintWriter;
 
-// @Command(
-//     name = "regex2english",
-//     mixinStandardHelpOptions = true,
-//     aliases = {"r2e"},
-//     description = "..."
-//   )
-// class CLI implements Runnable{
+@Command(
+    name = "regex2english",
+    mixinStandardHelpOptions = true,
+    aliases = {"r2e"},
+    description = "..."
+  )
+class CLI implements Runnable{
 
-//     @Parameters(description = "The regex input to process.")
-//     private String input;
+    @Parameters(description = "The regex input to process.")
+    private String input;
 
-//     @Option(names = {"-a", "--atoms"}, description = "Break up the regex input into atoms.")
-//     boolean breakUpByAtoms;
+    @Option(names = {"-a", "--atoms"}, description = "Break up the regex input into atoms.")
+    boolean breakUpByAtoms;
 
-//     @Option(names = {"-b", "--bblocks"}, description = "List all of the things the regex can be broken down to. Useful when invoking the highlight option.")
-//     boolean printBB;
+    @Option(names = {"-b", "--bblocks"}, description = "List all of the things the regex can be broken down to. Useful when invoking the highlight option.")
+    boolean printBB;
 
-//     @Option(names = {"-c", "--char"}, description = "Break up the regex character by character.")
-//     boolean breakUpByChar;
+    @Option(names = {"-c", "--char"}, description = "Break up the regex character by character.")
+    boolean breakUpByChar;
 
-//     @Option(names = {"-cmp", "--compactmode"}, description = "Combine letters into strings when parsing.")
-//     boolean compactMode;
+    @Option(names = {"-cmp", "--compactmode"}, description = "Combine letters into strings when parsing.")
+    boolean compactMode;
 
-//     @Option(names = {"-h", "--highlight"}, description = "Highlights all instances of a given type.")
-//     boolean highlight;
+    @Option(names = {"-h", "--highlight"}, description = "Highlights all instances of a given type.")
+    boolean highlight;
 
-//     @Option(names = {"-k", "--key"}, description = "Print the key.")
-//     boolean printKey;
+    @Option(names = {"-k", "--key"}, description = "Print the key.")
+    boolean printKey;
     
-//     @Option(names = {"-ls", "--list"}, description = "Lists all of the atoms.")
-//     boolean list;
+    @Option(names = {"-ls", "--list"}, description = "Lists all of the atoms.")
+    boolean list;
 
-//     @Option(names = {"-t", "--tree"}, description = "Prints the abstract syntax tree that models the regex.")
-//     boolean printTree;
+    @Option(names = {"-t", "--tree"}, description = "Prints the abstract syntax tree that models the regex.")
+    boolean printTree;
 
-//     @Option(names = {"-tl", "--treelist"}, description = "Prints the abstract syntax tree that models the regex as a list. Recommended for longer inputs.")
-//     boolean printTreeAsList;
+    @Option(names = {"-tl", "--treelist"}, description = "Prints the abstract syntax tree that models the regex as a list. Recommended for longer inputs.")
+    boolean printTreeAsList;
 
-//     @Option(names = {"-td", "--treedecorated"}, description = "Prints the abstract syntax tree that models the regex as a prettier tree. Recommended for smaller inputs.")
-//     boolean printDecoratedTree;
+    @Option(names = {"-td", "--treedecorated"}, description = "Prints the abstract syntax tree that models the regex as a prettier tree. Recommended for smaller inputs.")
+    boolean printDecoratedTree;
  
-//     private String key = "Key: \n----------------------------------------------------------------------------------------------------\n- Arrows (x) represent all of the logical operators and quantifiers.\n         \033[31m ∆ \033[37m\n- Single underline (x) represents a token meaning letters or escape sequences.\n                    \033[35m¯\033[37m\n- Double underline (x) represents character classes.\n                    \033[33m=\033[37m\n- Triple underline (x) represents an expression.\n                    \033[34m≡\033[37m\n- Quadruple underline (x) represents TBD\n                    \033[32m≣\033[37m\n----------------------------------------------------------------------------------------------------";
+    private String key = "Key: \n----------------------------------------------------------------------------------------------------\n- Arrows (x) represent all of the logical operators and quantifiers.\n         \033[31m ∆ \033[37m\n- Single underline (x) represents a token meaning letters or escape sequences.\n                    \033[35m¯\033[37m\n- Double underline (x) represents character classes.\n                    \033[33m=\033[37m\n- Triple underline (x) represents an expression.\n                    \033[34m≡\033[37m\n- Quadruple underline (x) represents TBD\n                    \033[32m≣\033[37m\n----------------------------------------------------------------------------------------------------";
 
-    // @Override
-    // public void run() {
+    @Override
+    public void run() {
 
-    //     RegexProcessor processor = new RegexProcessor();
-    //     processor.process(input); 
+        RegexProcessor processor = new RegexProcessor();
+        processor.process(input); 
 
-    //     if(printKey){
-    //         System.out.println(key);
-    //     }
-    //     if(list){
-    //         ArrayList<Atom> atoms =  processor.getAtoms(input, false); 
-    //         processor.printAtoms(atoms);
-    //     }
-    //     if(printTree || printTreeAsList || printDecoratedTree){
-    //         SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode(processor.getParseTree(), compactMode);
+        if(printKey){
+            System.out.println(key);
+        }
+        if(list){
+            ArrayList<Atom> atoms =  processor.getAtoms(input, false); 
+            processor.printAtoms(atoms);
+        }
+        if(printTree || printTreeAsList || printDecoratedTree){
+            SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode(processor.getParseTree(), compactMode);
 
-    //         if(printTree){
-    //             new TraditionalTreePrinter().print(tree);
-    //             // new TraditionalTreePrinter().print(new BorderTreeNodeDecorator(tree));
+            if(printTree){
+                new TraditionalTreePrinter().print(tree);
+                // new TraditionalTreePrinter().print(new BorderTreeNodeDecorator(tree));
 
-    //             // Could maybe use this to allow for horizontal scroll
-    //             // System.out.println(new TraditionalTreePrinter().stringify(tree));
-    //         }
+                // Could maybe use this to allow for horizontal scroll
+                // System.out.println(new TraditionalTreePrinter().stringify(tree));
+            }
 
-    //         if(printTreeAsList){
+            if(printTreeAsList){
 
-    //             new ListingTreePrinter().print(tree);
+                new ListingTreePrinter().print(tree);
 
-    //         }
+            }
 
-    //         if(printDecoratedTree){
-    //             TreeNode decoratedTreeNode = new ShadowTreeNodeDecorator(
-    //             BorderTreeNodeDecorator.builder()
-    //                     .wideUnicode()
-    //                     .buildFor(
-    //                             new PadTreeNodeDecorator(tree, new Insets(0, 1))));
+            if(printDecoratedTree){
+                TreeNode decoratedTreeNode = new ShadowTreeNodeDecorator(
+                BorderTreeNodeDecorator.builder()
+                        .wideUnicode()
+                        .buildFor(
+                                new PadTreeNodeDecorator(tree, new Insets(0, 1))));
         
-    //             new TraditionalTreePrinter().print(decoratedTreeNode);
-    //         }
+                new TraditionalTreePrinter().print(decoratedTreeNode);
+            }
 
             
     
-    //     }
+        }
 
        
     
-    //     // new TraditionalTreePrinter().print(tree);
+        // new TraditionalTreePrinter().print(tree);
 
-    // }
-// }
+    }
+}
 
 
 public class CLI{
@@ -143,9 +143,9 @@ public class CLI{
 
         // Create panel to hold components
         Panel panel = new Panel();
-        panel.setLayoutManager(new GridLayout(2));
+        panel.setLayoutManager(new GridLayout(3));
 
-        panel.addComponent(new Label("DURRR"));
+        panel.addComponent(new Label("DURRR"));re
         panel.addComponent(new TextBox());
 
         panel.addComponent(new Label("YURRR"));
