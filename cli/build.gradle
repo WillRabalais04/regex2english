@@ -1,0 +1,38 @@
+tasks{
+
+//     task start(type: Exec) {
+//     commandLine './run_cli.sh'
+// }
+
+    task compileJavaFile(type: JavaCompile) {
+    source = file('cli/CLI.java')
+    classpath = sourceSets.main.compileClasspath
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+    destinationDirectory = file('build/classes/java/main')
+   
+    }
+
+   task executeJavaFile(dependsOn: compileJavaFile) {
+    doLast {
+        println "Done."
+        javaexec {
+            classpath = sourceSets.main.runtimeClasspath
+            mainClass = 'CLI.java'
+        }
+    }
+    }
+}
+
+
+    
+    // java {
+    // toolchain {
+    //     languageVersion = JavaLanguageVersion.of(21)
+    // }
+    // }
+    
+    // repositories {
+    //     // Use Maven Central for resolving dependencies.
+    //     mavenCentral()
+    // }

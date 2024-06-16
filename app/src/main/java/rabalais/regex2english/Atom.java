@@ -8,6 +8,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.TreeMap;
+import java.util.Comparator;
+
 
 
 public class Atom {
@@ -134,5 +136,10 @@ public class Atom {
 
     public Map.Entry<Integer, String> getFloorEntry(int index){
         return content.floorEntry(index);
+    }
+    public static class AtomComparator implements Comparator<rabalais.regex2english.Atom>{
+        public int compare(Atom atom1, Atom atom2){
+            return Integer.compare(atom1.getIndex(), atom2.getIndex());
+        }
     }
 }

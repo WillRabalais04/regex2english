@@ -17,17 +17,24 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
+
+
     // Use JUnit test framework.
     testImplementation libs.junit
+    implementation project(':CLI')
 
     // This dependency is used by the application.
     implementation libs.guava
-    implementation "info.picocli:picocli:4.7.6"
+    // implementation "info.picocli:picocli:4.7.6"
     implementation "hu.webarticum:tree-printer:3.2.0"
+    // implementation group: 'com.googlecode.lanterna', name: 'lanterna', version: '3.1.2'
     antlr "org.antlr:antlr4:4.9.2"
-    
+
 }
+
+
 
 // Apply a specific Java toolchain to ease working on different environments.
 java {
@@ -49,7 +56,7 @@ application {
 
 // }
 tasks{
-
+    
     generateGrammarSource {
     // maxHeapSize = "64m"
     arguments += ["-visitor", "-no-listener", "-package", "rabalais.regex2english.generated"]

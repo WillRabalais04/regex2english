@@ -3,7 +3,6 @@
  */
 package rabalais.regex2english;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Arrays;
@@ -110,7 +109,6 @@ public class RegexProcessor {
             
             }
             else if(node instanceof TerminalNode){
-                // Vocabulary vocab = lexer.getVocabulary();
                 content = "'" + node.getText() + "' - " + getCleanTerminalName(vocab.getSymbolicName(((Token)node.getPayload()).getType()));
             }
             else{
@@ -128,92 +126,15 @@ public class RegexProcessor {
         }
 
         return new SimpleTreeNode("Failed.");
-
     }
 
-      // public SimpleTreeNode parseTreeToSimpleTreeNode(ParseTree node, boolean compact){
-        
-    //     if(node != null){
-
-    //         String content = "";
-    //         if(node instanceof StartContext){
-    //             node = node.getChild(0);
-    //         }
-
-    //         if(compact && (node instanceof LetterContext || node instanceof Extra_letters_allowed_inside_CCContext) && node.getChildCount() > 1){
-    //             int childCount = node.getChildCount();
-
-    //             String textContent = "'";
-
-    //             for(int i = 0; i < childCount; i++){
-                
-    //                 ParseTree child = node.getChild(i);
-    //                 textContent += child.getText();
-
-    //             }
-
-    //             textContent += "'";
-
-    //             SimpleTreeNode lettersNode = new SimpleTreeNode("Text");
-    //             lettersNode.addChild(new SimpleTreeNode(textContent));
-
-    //             return lettersNode;
-                    
-    //         }
-    //         else if(node instanceof TerminalNode){
-    //             Vocabulary vocab = lexer.getVocabulary();
-    //             content = "'" + node.getText() + "' - " + getCleanTerminalName(vocab.getSymbolicName(((Token)node.getPayload()).getType()));
-    //         }
-    //         else{
-    //             content = getCleanClassName(node.getClass().getSimpleName());
-    //         }
-    //         SimpleTreeNode newTree = new SimpleTreeNode(content);
-
-
-    //         for(int i = 0; i < node.getChildCount(); i++){
-    //             newTree.addChild(parseTreeToSimpleTreeNode(node.getChild(i), compact));
-    //         }
-
-    //         return newTree;
-
-    //     }
-
-    //     return new SimpleTreeNode("Failed.");
-
-    // }
-
-    public static class AtomComparator implements Comparator<rabalais.regex2english.Atom>{
-        public int compare(Atom atom1, Atom atom2){
-            return Integer.compare(atom1.getIndex(), atom2.getIndex());
-        }
-    }
-
-    public static ArrayList<Atom> process(String input, boolean compact){
+    public static void process(String input){
 
         inputStream = CharStreams.fromString(input);         
         lexer = new regex2englishLexer(inputStream);
         tokens = new CommonTokenStream(lexer);
         parser = new regex2englishParser(tokens);
         tree = parser.start();
-       
-        ArrayList<Atom> atoms = new ArrayList<Atom>();
-
-        getAtoms(tree, atoms, input);
-        Collections.sort(atoms, new AtomComparator());
-       
-        splitAtoms(atoms);
-        // for(Atom atom: atoms){
-
-        //     atom.printAtom();
-
-        // }
-
-       
-
-        checkAtomsSumToInput(atoms, input);
-        // printAtoms(atoms);
-
-        return atoms;
 
     }
 
@@ -238,8 +159,6 @@ public class RegexProcessor {
                 }
           }
     }
-
-    System.out.println("sum.toString(): " + sum.toString());
 
       System.out.println("Sum of Atoms Equals Input? '" + (sum.toString().equals(input) ? "✅" : "❌") + "'");
     }
@@ -270,7 +189,23 @@ public class RegexProcessor {
 
     }
 
-    public static void getAtoms(ParseTree node, ArrayList<Atom> atoms, String input){
+    public static ArrayList<Atom> getAtoms(String input, boolean split){
+        ArrayList<Atom> atoms = new ArrayList<Atom>();
+
+        getAtomsHelper(tree, atoms, input);
+        Collections.sort(atoms, new Atom.AtomComparator());
+
+        if(split){
+            splitAtoms(atoms);
+        }
+
+        checkAtomsSumToInput(atoms, input);
+        // printAtoms(atoms);
+
+        return atoms;
+    }
+
+    public static void getAtomsHelper(ParseTree node, ArrayList<Atom> atoms, String input){
 
     
         if(node != null){
@@ -308,7 +243,7 @@ public class RegexProcessor {
                 ParseTree child = node.getChild(i);
                                
                 if(!(child instanceof TerminalNode)){
-                    getAtoms(child, atoms, input);
+                    getAtomsHelper(child, atoms, input);
 
                 }                
             }
@@ -505,7 +440,7 @@ public class RegexProcessor {
                 entry("NonWordBoundaryContext", "Non Word Boundary"),
                 entry("InputStartContext", "Input Start"),
                 entry("EndOfMatchContext", "End Of Match"),
-                entry("LetterContext", "Letter"),
+                entry("LetterContext", "Text"),
                 entry("QuantifierContext", "Quantifier"),
                 entry("DoubleBoundaryMatchersContext", "Double Boundary Matcher"),
                 entry("BoundaryMatcherEndContext", "Boundary Matcher End"),
