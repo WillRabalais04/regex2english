@@ -3,175 +3,133 @@
  */
 package cli;
 
-import java.io.FileNotFoundException;
+
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.lang.Runnable;
-import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
-
-import picocli.CommandLine;
-import picocli.CommandLine.*;
-
-// import hu.webarticum.treeprinter.*;
-// import hu.webarticum.treeprinter.decorator.BorderTreeNodeDecorator;
-// import hu.webarticum.treeprinter.printer.*;
-
-// import hu.webarticum.treeprinter.printer.listing.ListingTreePrinter;
-// import hu.webarticum.treeprinter.printer.traditional.TraditionalTreePrinter;
-// import hu.webarticum.treeprinter.decorator.PadTreeNodeDecorator;
-// import hu.webarticum.treeprinter.decorator.ShadowTreeNodeDecorator;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 
 
-import java.io.IOException;
-import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.*;
+import com.googlecode.lanterna.terminal.*;
+import com.googlecode.lanterna.screen.*;
 import com.googlecode.lanterna.gui2.*;
-import com.googlecode.lanterna.screen.Screen;
-import com.googlecode.lanterna.screen.TerminalScreen;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.Terminal;
-
-// import com.googlecode.lanterna.*;
-// import com.googlecode.lanterna.terminal.*;
-// import com.googlecode.lanterna.terminal.ansi.UnixTerminal;
-// import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-// import com.googlecode.lanterna.terminal.swing.SwingTerminal;
-// import java.io.PrintWriter;
-
-@Command(
-    name = "regex2english",
-    mixinStandardHelpOptions = true,
-    aliases = {"r2e"},
-    description = "..."
-  )
-class CLI implements Runnable{
-
-    @Parameters(description = "The regex input to process.")
-    private String input;
-
-    @Option(names = {"-a", "--atoms"}, description = "Break up the regex input into atoms.")
-    boolean breakUpByAtoms;
-
-    @Option(names = {"-b", "--bblocks"}, description = "List all of the things the regex can be broken down to. Useful when invoking the highlight option.")
-    boolean printBB;
-
-    @Option(names = {"-c", "--char"}, description = "Break up the regex character by character.")
-    boolean breakUpByChar;
-
-    @Option(names = {"-cmp", "--compactmode"}, description = "Combine letters into strings when parsing.")
-    boolean compactMode;
-
-    @Option(names = {"-h", "--highlight"}, description = "Highlights all instances of a given type.")
-    boolean highlight;
-
-    @Option(names = {"-k", "--key"}, description = "Print the key.")
-    boolean printKey;
-    
-    @Option(names = {"-ls", "--list"}, description = "Lists all of the atoms.")
-    boolean list;
-
-    @Option(names = {"-t", "--tree"}, description = "Prints the abstract syntax tree that models the regex.")
-    boolean printTree;
-
-    @Option(names = {"-tl", "--treelist"}, description = "Prints the abstract syntax tree that models the regex as a list. Recommended for longer inputs.")
-    boolean printTreeAsList;
-
-    @Option(names = {"-td", "--treedecorated"}, description = "Prints the abstract syntax tree that models the regex as a prettier tree. Recommended for smaller inputs.")
-    boolean printDecoratedTree;
- 
-    private String key = "Key: \n----------------------------------------------------------------------------------------------------\n- Arrows (x) represent all of the logical operators and quantifiers.\n         \033[31m ∆ \033[37m\n- Single underline (x) represents a token meaning letters or escape sequences.\n                    \033[35m¯\033[37m\n- Double underline (x) represents character classes.\n                    \033[33m=\033[37m\n- Triple underline (x) represents an expression.\n                    \033[34m≡\033[37m\n- Quadruple underline (x) represents TBD\n                    \033[32m≣\033[37m\n----------------------------------------------------------------------------------------------------";
-
-    @Override
-    public void run() {
-
-        RegexProcessor processor = new RegexProcessor();
-        processor.process(input); 
-
-        if(printKey){
-            System.out.println(key);
-        }
-        if(list){
-            ArrayList<Atom> atoms =  processor.getAtoms(input, false); 
-            processor.printAtoms(atoms);
-        }
-        if(printTree || printTreeAsList || printDecoratedTree){
-            SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode(processor.getParseTree(), compactMode);
-
-            if(printTree){
-                new TraditionalTreePrinter().print(tree);
-                // new TraditionalTreePrinter().print(new BorderTreeNodeDecorator(tree));
-
-                // Could maybe use this to allow for horizontal scroll
-                // System.out.println(new TraditionalTreePrinter().stringify(tree));
-            }
-
-            if(printTreeAsList){
-
-                new ListingTreePrinter().print(tree);
-
-            }
-
-            if(printDecoratedTree){
-                TreeNode decoratedTreeNode = new ShadowTreeNodeDecorator(
-                BorderTreeNodeDecorator.builder()
-                        .wideUnicode()
-                        .buildFor(
-                                new PadTreeNodeDecorator(tree, new Insets(0, 1))));
-        
-                new TraditionalTreePrinter().print(decoratedTreeNode);
-            }
-
-            
-    
-        }
-
-       
-    
-        // new TraditionalTreePrinter().print(tree);
-
-    }
-}
-
+import com.googlecode.lanterna.graphics.*;
+import com.googlecode.lanterna.TextColor.*;
+import com.googlecode.lanterna.SGR;
 
 public class CLI{
 
-    public static void main(String[] args) throws IOException{
-        Terminal terminal = new DefaultTerminalFactory().createTerminal();
+    private static Panel mainPanel;
+    private static Panel topPanel;
+    private static Panel bottomPanel;
+    private static TextBox displayText;
+    private static TextBox inputTextBox;
+    private static Button enterButton;
 
+    public static void main(String[] args) throws IOException{
+
+        Terminal terminal = new DefaultTerminalFactory().createTerminal();
         Screen screen = new TerminalScreen(terminal);
         screen.startScreen();
 
-        // Create panel to hold components
-        Panel panel = new Panel();
-        panel.setLayoutManager(new GridLayout(3));
+        WindowBasedTextGUI textGUI = new MultiWindowTextGUI(screen, new DefaultWindowManager(), new EmptySpace(TextColor.ANSI.BLACK));
+        SimpleTheme theme = new SimpleTheme(TextColor.ANSI.GREEN, TextColor.ANSI.BLACK, SGR.BOLD);
+        textGUI.setTheme(theme);
 
-        panel.addComponent(new Label("DURRR"));re
-        panel.addComponent(new TextBox());
-
-        panel.addComponent(new Label("YURRR"));
-        panel.addComponent(new TextBox());
-
-        panel.addComponent(new EmptySpace(new TerminalSize(0,0))); // Empty space underneath labels
-        panel.addComponent(new Button("asdfasdfs"));
-
-        // Create window to hold the panel
         BasicWindow window = new BasicWindow();
-        window.setComponent(panel);
-
-        // Create gui and start gui
-        MultiWindowTextGUI gui = new MultiWindowTextGUI(screen, new DefaultWindowManager(), new EmptySpace(TextColor.ANSI.BLUE));
-        gui.addWindowAndWait(window);
-
-        // CLI2 clit = new CLI2();
+        window.setHints(Arrays.asList(Window.Hint.CENTERED));
         
-        // clit.createTerminal();
-        // int exitCode = new CommandLine(new CLI()).execute(args); 
-        // System.exit(exitCode);
+        mainPanel = new Panel();
+        topPanel = new Panel();
+        bottomPanel = new Panel();
+        
+        displayText = new TextBox(new TerminalSize(screen.getTerminalSize().getColumns(), screen.getTerminalSize().getRows() * 85 / 100));
+        inputTextBox = new TextBox(new TerminalSize(screen.getTerminalSize().getColumns(), screen.getTerminalSize().getRows() *  1 / 10), "-k [abcd]", TextBox.Style.MULTI_LINE);
+  
+        setSizeOfAllComponents(screen.getTerminalSize());
+
+        topPanel.addComponent(displayText);
+        mainPanel.addComponent(topPanel.withBorder(Borders.singleLine("Regex2English")));
+
+        enterButton = new Button("Enter", () -> {
+            String inputText = inputTextBox.getText();
+            try{     
+
+                String cmd = "gradle run --args=\"" + inputText + "\"";
+                ProcessBuilder runGradle = new ProcessBuilder("bash", "-c", cmd);
+
+                Process process = runGradle.start();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                
+                StringBuilder sb = new StringBuilder();
+                String line = bufferedReader.readLine();
+                while (line != null) {
+                    sb.append(line);
+                    sb.append(System.lineSeparator());
+                    line = bufferedReader.readLine();                
+                }
+            
+                String content = sb.toString();
+                // make this more robust
+                content = content.substring(content.indexOf(":App:run") + 9, content.indexOf("BUILD SUCCESSFUL"));
+                if(!content.equals("")){
+                  displayText.setText(content);
+                }
+            }
+            catch(Exception e){
+                e.printStackTrace();
+                System.out.println("Frontend can't reach backend.");
+            }
+
+        });
+
+
+        bottomPanel.addComponent(inputTextBox);
+        bottomPanel.addComponent(enterButton);
+        
+        mainPanel.addComponent(bottomPanel.withBorder(Borders.singleLine("Input")));
+        window.setComponent(mainPanel);
+  
+        terminal.addResizeListener(new TerminalResizeListener() {
+            @Override
+            public void onResized(Terminal terminal, TerminalSize newSize) {
+                setSizeOfAllComponents(newSize);
+                try {
+                    terminal.flush();
+                }
+                catch(Exception e) {
+                    System.out.println("Terminal window resize failed!");
+                }
+            }
+        });
+
+        textGUI.addWindowAndWait(window); 
+    }
+
+    private static void setSizeOfAllComponents(TerminalSize size){
+
+        //main panel:
+        mainPanel.setPreferredSize(size);
+        GridLayout mainPanelLayout =  new GridLayout(1)    
+        .setLeftMarginSize(1)
+        .setRightMarginSize(1);
+        mainPanelLayout.createLayoutData(GridLayout.Alignment.CENTER,GridLayout.Alignment.END,true,true);
+        mainPanel.setLayoutManager(mainPanelLayout);
+
+        // top panel:
+        topPanel.setPreferredSize( new TerminalSize(size.getColumns(),size.getRows() * 85 / 100));
+        topPanel.setLayoutData(GridLayout.createLayoutData(GridLayout.Alignment.CENTER, GridLayout.Alignment.CENTER));
+
+        //bottom panel:
+        bottomPanel.setPreferredSize(new TerminalSize(size.getColumns(), size.getRows() * 1 / 10));
+        bottomPanel.setLayoutData(GridLayout.createLayoutData(GridLayout.Alignment.CENTER, GridLayout.Alignment.END));
+
+        // textboxes:
+        displayText.setSize(new TerminalSize(size.getColumns(), (size.getRows() * 88 / 100)));
+        inputTextBox.setSize(new TerminalSize(size.getColumns(), size.getRows() *  1 / 10));
 
     }
 
-    public void createNewTerminal() throws IOException{
-        
-    }
 }
 

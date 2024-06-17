@@ -7,10 +7,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.lang.Runnable;
-// import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
+import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 
-// import picocli.CommandLine;
-// import picocli.CommandLine.*;
+import picocli.CommandLine;
+import picocli.CommandLine.*;
 
 import hu.webarticum.treeprinter.*;
 import hu.webarticum.treeprinter.decorator.BorderTreeNodeDecorator;
@@ -21,111 +21,124 @@ import hu.webarticum.treeprinter.printer.traditional.TraditionalTreePrinter;
 import hu.webarticum.treeprinter.decorator.PadTreeNodeDecorator;
 import hu.webarticum.treeprinter.decorator.ShadowTreeNodeDecorator;
 
-// import com.googlecode.lanterna.*;
-// import com.googlecode.lanterna.terminal.*;
-// import com.googlecode.lanterna.terminal.ansi.UnixTerminal;
-// import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-// import com.googlecode.lanterna.terminal.swing.SwingTerminal;
-// import java.io.PrintWriter;
+import com.googlecode.lanterna.*;
+import com.googlecode.lanterna.terminal.*;
+import com.googlecode.lanterna.terminal.ansi.UnixTerminal;
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import com.googlecode.lanterna.terminal.swing.SwingTerminal;
+import java.io.PrintWriter;
 
-// @Command(
-//     name = "regex2english",
-//     mixinStandardHelpOptions = true,
-//     aliases = {"r2e"},
-//     description = "..."
-//   )
-// class CLI implements Runnable{
 
-//     @Parameters(description = "The regex input to process.")
-//     private String input;
 
-//     @Option(names = {"-a", "--atoms"}, description = "Break up the regex input into atoms.")
-//     boolean breakUpByAtoms;
+@Command(
+    name = "regex2english",
+    mixinStandardHelpOptions = true,
+    aliases = {"r2e"},
+    description = "..."
+  )
+class CLI implements Runnable{
 
-//     @Option(names = {"-b", "--bblocks"}, description = "List all of the things the regex can be broken down to. Useful when invoking the highlight option.")
-//     boolean printBB;
+    @Parameters(description = "The regex input to process.")
+    private String input;
 
-//     @Option(names = {"-c", "--char"}, description = "Break up the regex character by character.")
-//     boolean breakUpByChar;
+    @Option(names = {"-a", "--atoms"}, description = "Break up the regex input into atoms.")
+    boolean breakUpByAtoms;
 
-//     @Option(names = {"-cmp", "--compactmode"}, description = "Combine letters into strings when parsing.")
-//     boolean compactMode;
+    @Option(names = {"-b", "--bblocks"}, description = "List all of the things the regex can be broken down to. Useful when invoking the highlight option.")
+    boolean printBB;
 
-//     @Option(names = {"-h", "--highlight"}, description = "Highlights all instances of a given type.")
-//     boolean highlight;
+    @Option(names = {"-c", "--char"}, description = "Break up the regex character by character.")
+    boolean breakUpByChar;
 
-//     @Option(names = {"-k", "--key"}, description = "Print the key.")
-//     boolean printKey;
+    @Option(names = {"-cmp", "--compactmode"}, description = "Combine letters into strings when parsing.")
+    boolean compactMode;
+
+    @Option(names = {"-h", "--highlight"}, description = "Highlights all instances of a given type.")
+    boolean highlight;
+
+    @Option(names = {"-k", "--key"}, description = "Print the key.")
+    boolean printKey;
     
-//     @Option(names = {"-ls", "--list"}, description = "Lists all of the atoms.")
-//     boolean list;
+    @Option(names = {"-ls", "--list"}, description = "Lists all of the atoms.")
+    boolean list;
 
-//     @Option(names = {"-t", "--tree"}, description = "Prints the abstract syntax tree that models the regex.")
-//     boolean printTree;
+    @Option(names = {"-t", "--tree"}, description = "Prints the abstract syntax tree that models the regex.")
+    boolean printTree;
 
-//     @Option(names = {"-tl", "--treelist"}, description = "Prints the abstract syntax tree that models the regex as a list. Recommended for longer inputs.")
-//     boolean printTreeAsList;
+    @Option(names = {"-tl", "--treelist"}, description = "Prints the abstract syntax tree that models the regex as a list. Recommended for longer inputs.")
+    boolean printTreeAsList;
 
-//     @Option(names = {"-td", "--treedecorated"}, description = "Prints the abstract syntax tree that models the regex as a prettier tree. Recommended for smaller inputs.")
-//     boolean printDecoratedTree;
+    @Option(names = {"-td", "--treedecorated"}, description = "Prints the abstract syntax tree that models the regex as a prettier tree. Recommended for smaller inputs.")
+    boolean printDecoratedTree;
  
-//     private String key = "Key: \n----------------------------------------------------------------------------------------------------\n- Arrows (x) represent all of the logical operators and quantifiers.\n         \033[31m ∆ \033[37m\n- Single underline (x) represents a token meaning letters or escape sequences.\n                    \033[35m¯\033[37m\n- Double underline (x) represents character classes.\n                    \033[33m=\033[37m\n- Triple underline (x) represents an expression.\n                    \033[34m≡\033[37m\n- Quadruple underline (x) represents TBD\n                    \033[32m≣\033[37m\n----------------------------------------------------------------------------------------------------";
+    private String key = "Key: \n----------------------------------------------------------------------------------------------------\n- Arrows (x) represent all of the logical operators and quantifiers.\n         \033[31m ∆ \033[37m\n- Single underline (x) represents a token meaning letters or escape sequences.\n                    \033[35m¯\033[37m\n- Double underline (x) represents character classes.\n                    \033[33m=\033[37m\n- Triple underline (x) represents an expression.\n                    \033[34m≡\033[37m\n- Quadruple underline (x) represents TBD\n                    \033[32m≣\033[37m\n----------------------------------------------------------------------------------------------------";
+    private String keyNoANSI = "Key: \n ---------------------------------------------------------------------------------------------------\n|    - Arrows (x) represent all of the logical operators and quantifiers.                           |\n|              ∆                                                                                    |\n|    - Single underline (x) represents a token meaning letters or escape sequences.                 |\n|                        ¯                                                                          |\n|    - Double underline (x) represents character classes.                                           |\n|                        =                                                                          |\n|    - Triple underline (x) represents an expression.                                               |\n|                        ≡                                                                          |\n|    - Quadruple underline (x) represents TBD                                                       |\n|                           ≣                                                                       |\n ---------------------------------------------------------------------------------------------------\n";
+    private RegexProcessor processor = new RegexProcessor();
 
-//     @Override
-//     public void run() {
+    @Override
+    public void run() {
+    
+        // Why are inputs being passed in twice
 
-//         RegexProcessor processor = new RegexProcessor();
-//         processor.process(input); 
+        processor.process(input); 
 
-//         if(printKey){
-//             System.out.println(key);
-//         }
-//         if(list){
-//             ArrayList<Atom> atoms =  processor.getAtoms(input, false); 
-//             processor.printAtoms(atoms);
-//         }
-//         if(printTree || printTreeAsList || printDecoratedTree){
-//             SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode(processor.getParseTree(), compactMode);
 
-//             if(printTree){
-//                 new TraditionalTreePrinter().print(tree);
-//                 // new TraditionalTreePrinter().print(new BorderTreeNodeDecorator(tree));
+        // make it so just the key can be entered
+        if(printKey){
+            System.out.println(keyNoANSI);
+        }
+        if(list){
+            ArrayList<Atom> atoms =  processor.getAtoms(input, false); 
+            processor.printAtoms(atoms);
+        }
+        if(printTree || printTreeAsList || printDecoratedTree){
+            SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode(processor.getParseTree(), compactMode);
 
-//                 // Could maybe use this to allow for horizontal scroll
-//                 // System.out.println(new TraditionalTreePrinter().stringify(tree));
-//             }
+            if(printTree){
+                // new TraditionalTreePrinter().print(tree);
+                new TraditionalTreePrinter().print(new BorderTreeNodeDecorator(tree));
 
-//             if(printTreeAsList){
+                // Could maybe use this to allow for horizontal scroll
+                // System.out.println(new TraditionalTreePrinter().stringify(tree));
+            }
 
-//                 new ListingTreePrinter().print(tree);
+            if(printTreeAsList){
 
-//             }
+                new ListingTreePrinter().print(tree);
 
-//             if(printDecoratedTree){
-//                 TreeNode decoratedTreeNode = new ShadowTreeNodeDecorator(
-//                 BorderTreeNodeDecorator.builder()
-//                         .wideUnicode()
-//                         .buildFor(
-//                                 new PadTreeNodeDecorator(tree, new Insets(0, 1))));
+            }
+
+            if(printDecoratedTree){
+                TreeNode decoratedTreeNode = new ShadowTreeNodeDecorator(
+                BorderTreeNodeDecorator.builder()
+                        .wideUnicode()
+                        .buildFor(
+                                new PadTreeNodeDecorator(tree, new Insets(0, 1))));
         
-//                 new TraditionalTreePrinter().print(decoratedTreeNode);
-//             }
+                new TraditionalTreePrinter().print(decoratedTreeNode);
+            }
 
             
     
-//         }
+        }
 
        
     
-//         // new TraditionalTreePrinter().print(tree);
+        // new TraditionalTreePrinter().print(tree);
 
-//     }
-// }
+    }
+}
+
 
 
 public class App{
 
     public static void main(String[] args) throws IOException{
+
+        // CLI test = new CLI();
+        // test.run();
+        int exitCode = new CommandLine(new CLI()).execute(args); 
+        System.exit(exitCode);
 
         // System.out.println("1");
         // CLI mainCLI = new CLI();

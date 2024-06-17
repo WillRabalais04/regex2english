@@ -13,7 +13,10 @@ subprojects {
 
 
 project(':App') {
-    // Apply plugins or configurations for subproject1
+    dependencies {
+        implementation "info.picocli:picocli:4.7.6"
+        implementation group: 'com.googlecode.lanterna', name: 'lanterna', version: '3.1.2'    
+    }
 }
 
 project(':CLI') {

@@ -84,7 +84,7 @@ public class RegexProcessor {
                         textContent += child.getText();
 
                         if(i == childCount - 1 && !textContent.equals("") || (i+1 < childCount && !(node.getParent().getChild(i+1) instanceof Extra_letters_allowed_inside_CCContext || ((child instanceof TerminalNodeImpl || child instanceof TerminalNode) && (vocab.getSymbolicName(((Token)child.getPayload()).getType()).equals("LETTER")))))){
-                            children.put("Text", "'" + textContent + "'");
+                            children.put("Text", textContent);
                         }     
 
                     } else if(child.getChildCount() < 1){
@@ -190,19 +190,21 @@ public class RegexProcessor {
     }
 
     public static ArrayList<Atom> getAtoms(String input, boolean split){
-        ArrayList<Atom> atoms = new ArrayList<Atom>();
+        
+            ArrayList<Atom> atoms = new ArrayList<Atom>();
 
-        getAtomsHelper(tree, atoms, input);
-        Collections.sort(atoms, new Atom.AtomComparator());
+            getAtomsHelper(tree, atoms, input);
+            Collections.sort(atoms, new Atom.AtomComparator());
 
-        if(split){
-            splitAtoms(atoms);
-        }
+            if(split){
+                splitAtoms(atoms);
+            }
 
-        checkAtomsSumToInput(atoms, input);
-        // printAtoms(atoms);
+            checkAtomsSumToInput(atoms, input);
+            // printAtoms(atoms);
+            
+            return atoms;
 
-        return atoms;
     }
 
     public static void getAtomsHelper(ParseTree node, ArrayList<Atom> atoms, String input){
