@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.lang.Runnable;
-import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 
 import picocli.CommandLine;
 import picocli.CommandLine.*;
@@ -20,15 +19,6 @@ import hu.webarticum.treeprinter.printer.listing.ListingTreePrinter;
 import hu.webarticum.treeprinter.printer.traditional.TraditionalTreePrinter;
 import hu.webarticum.treeprinter.decorator.PadTreeNodeDecorator;
 import hu.webarticum.treeprinter.decorator.ShadowTreeNodeDecorator;
-
-import com.googlecode.lanterna.*;
-import com.googlecode.lanterna.terminal.*;
-import com.googlecode.lanterna.terminal.ansi.UnixTerminal;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.swing.SwingTerminal;
-import java.io.PrintWriter;
-
-
 
 @Command(
     name = "regex2english",
@@ -97,9 +87,6 @@ class CLI implements Runnable{
             if(printTree){
                 // new TraditionalTreePrinter().print(tree);
                 new TraditionalTreePrinter().print(new BorderTreeNodeDecorator(tree));
-
-                // Could maybe use this to allow for horizontal scroll
-                // System.out.println(new TraditionalTreePrinter().stringify(tree));
             }
 
             if(printTreeAsList){

@@ -1,13 +1,13 @@
 TODO: 
+- add a quit button to GUI
+- add error handling to GUI
 - add all boundary matchers to grammar (some were forgotten)
 - check all tokens are used in grammar rules
-- Figure out size limits
 - Get rid of Double Boundary matcher classification
 - for lookaheads, treat them differently when traversing the AST so what they reference is clear
 - Implement referential atoms
 - Add test cases
 - change getAtomIndex to to take Atom as parameter instead of node
-- color tree based on whether it's a terminal or not or by categores even
 - Add features after the parse tree is created that treat edge cases like:
     - ^a$bc$ cannot match anything but the parser parses it so must add some error detection
 
