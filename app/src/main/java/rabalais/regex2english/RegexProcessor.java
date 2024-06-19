@@ -31,11 +31,15 @@ public class RegexProcessor {
     private static regex2englishParser  parser; 
     private static ParseTree tree;
     private static Vocabulary vocab;
+    private static ArrayList<Atom> atoms;
 
     public ParseTree getParseTree(){
         return this.tree;
     }
 
+    public ArrayList<Atom> getAtoms(){
+        return this.atoms;
+    }
     public SimpleTreeNode getParseTreeAsSimpleTreeNode(ParseTree node, boolean compact){
 
         if(node != null){
@@ -135,6 +139,7 @@ public class RegexProcessor {
         tokens = new CommonTokenStream(lexer);
         parser = new regex2englishParser(tokens);
         tree = parser.start();
+        atoms = setAtoms(input);
 
     }
 
@@ -160,12 +165,12 @@ public class RegexProcessor {
           }
     }
 
-      System.out.println("Sum of Atoms Equals Input? '" + (sum.toString().equals(input) ? "✅" : "❌") + "'");
+    //   System.out.println("Sum of Atoms Equals Input? '" + (sum.toString().equals(input) ? "✅" : "❌") + "'");
     }
 
-    public static void printAtoms(ArrayList<Atom> atoms){
+    public static String getAtomsList(ArrayList<Atom> atoms){
 
-        String toPrint = "";
+        String ret = "";
 
         TreeMap<Integer, String> allEntries = new TreeMap<>();
 
@@ -182,32 +187,27 @@ public class RegexProcessor {
 
         for(Map.Entry<Integer, String> partition : allEntries.entrySet()){
 
-          toPrint += partition.getValue(); 
+            ret += partition.getValue(); 
         }
         
-        System.out.println(toPrint);
+
+        return ret;
 
     }
 
-    public static ArrayList<Atom> getAtoms(String input, boolean split){
+    public static ArrayList<Atom> setAtoms(String input){
         
             ArrayList<Atom> atoms = new ArrayList<Atom>();
 
-            getAtomsHelper(tree, atoms, input);
+            setAtomsHelper(tree, atoms, input);
             Collections.sort(atoms, new Atom.AtomComparator());
 
-            if(split){
-                splitAtoms(atoms);
-            }
-
             checkAtomsSumToInput(atoms, input);
-            // printAtoms(atoms);
             
             return atoms;
-
     }
 
-    public static void getAtomsHelper(ParseTree node, ArrayList<Atom> atoms, String input){
+    public static void setAtomsHelper(ParseTree node, ArrayList<Atom> atoms, String input){
 
     
         if(node != null){
@@ -245,7 +245,7 @@ public class RegexProcessor {
                 ParseTree child = node.getChild(i);
                                
                 if(!(child instanceof TerminalNode)){
-                    getAtomsHelper(child, atoms, input);
+                    setAtomsHelper(child, atoms, input);
 
                 }                
             }

@@ -20,21 +20,18 @@ repositories {
 
 dependencies {
 
-
     // Use JUnit test framework.
     testImplementation libs.junit
-    implementation project(':CLI')
 
     // This dependency is used by the application.
     implementation libs.guava
-    // implementation "info.picocli:picocli:4.7.6"
+
     implementation "hu.webarticum:tree-printer:3.2.0"
-    // implementation group: 'com.googlecode.lanterna', name: 'lanterna', version: '3.1.2'
     antlr "org.antlr:antlr4:4.9.2"
+    implementation "info.picocli:picocli:4.7.6"
+    implementation group: 'com.googlecode.lanterna', name: 'lanterna', version: '3.1.2'   
 
 }
-
-
 
 // Apply a specific Java toolchain to ease working on different environments.
 java {
@@ -93,6 +90,10 @@ compileJava{
 
 clean{
     delete "${projectDir}/src/main/java/rabalais/regex2english/generated"
+    delete "../cli/out.txt"
+    delete "../cli/CLI\$1.class"
+    delete "../cli/CLI.class"
+
 }
 
 // referenced https://github.com/gregwhitaker/gradle-antlr-example when figuring out gradle source sets
@@ -108,9 +109,3 @@ sourceSets {
 }
 
 }
-
-
-
-
-
- 

@@ -3,9 +3,9 @@
  */
 package cli;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.FileReader;
+import java.io.BufferedReader;
 import java.util.Arrays;
 
 import com.googlecode.lanterna.*;
@@ -15,20 +15,30 @@ import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.graphics.*;
 import com.googlecode.lanterna.TextColor.*;
 import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.input.*;
+
 
 public class CLI{
 
     private static Panel mainPanel;
     private static Panel topPanel;
+    private static Panel inputPanel;
     private static Panel bottomPanel;
+    private static Panel buttonsPanel;
+    private static Panel viewingModePanel;
     private static TextBox displayText;
     private static TextBox inputTextBox;
     private static Button enterButton;
+    private static Button exitButton;
+    private static CheckBoxList<String> checkBoxList;
 
     public static void main(String[] args) throws IOException{
-
+        
         Terminal terminal = new DefaultTerminalFactory().createTerminal();
         Screen screen = new TerminalScreen(terminal);
+        
+        terminal.setCursorVisible(true);
+
         screen.startScreen();
 
         WindowBasedTextGUI textGUI = new MultiWindowTextGUI(screen, new DefaultWindowManager(), new EmptySpace(TextColor.ANSI.BLACK));
@@ -40,25 +50,32 @@ public class CLI{
         
         mainPanel = new Panel();
         topPanel = new Panel();
-        bottomPanel = new Panel();
-        
-        displayText = new TextBox(new TerminalSize(screen.getTerminalSize().getColumns(), screen.getTerminalSize().getRows() * 85 / 100));
-        inputTextBox = new TextBox(new TerminalSize(screen.getTerminalSize().getColumns(), screen.getTerminalSize().getRows() *  1 / 10), "-k [abcd]", TextBox.Style.MULTI_LINE);
+        bottomPanel = new Panel(new GridLayout(2));
+        inputPanel = new Panel();
+        buttonsPanel = new Panel();
+        viewingModePanel = new Panel();
   
-        setSizeOfAllComponents(screen.getTerminalSize());
+        displayText = new TextBox();
+        displayText.setReadOnly(true);
+        inputTextBox = new TextBox("-tl -cmp [aafasdfbcd]", TextBox.Style.MULTI_LINE);
 
-        topPanel.addComponent(displayText);
-        mainPanel.addComponent(topPanel.withBorder(Borders.singleLine("Regex2English")));
-
+        checkBoxList = new CheckBoxList<String>(new TerminalSize(20,20));
+        checkBoxList.addItem("Arrows", true);
+        checkBoxList.addItem("Mouse Pan", false);
+        
         enterButton = new Button("Enter", () -> {
+            
             String inputText = inputTextBox.getText();
             try{     
-
-                String cmd = "gradle run --args=\"" + inputText + "\"";
-                ProcessBuilder runGradle = new ProcessBuilder("bash", "-c", cmd);
-
+                String cmd =  "gradle run --args=\"" + inputText + "\"";
+                ProcessBuilder runGradle = new ProcessBuilder("bash", "-c",cmd);
                 Process process = runGradle.start();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                
+                int exitCode = process.waitFor();
+
+                if(exitCode == 0){
+                FileReader fileReader = new FileReader("./cli/out.txt");
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
                 
                 StringBuilder sb = new StringBuilder();
                 String line = bufferedReader.readLine();
@@ -67,26 +84,52 @@ public class CLI{
                     sb.append(System.lineSeparator());
                     line = bufferedReader.readLine();                
                 }
-            
+                fileReader.close();
+                bufferedReader.close();
+                process.destroy();
+
                 String content = sb.toString();
-                // make this more robust
-                content = content.substring(content.indexOf(":App:run") + 9, content.indexOf("BUILD SUCCESSFUL"));
                 if(!content.equals("")){
                   displayText.setText(content);
+                }
+                else{                  
+                    displayText.setText("Input could not be read.");
+                }
+                } else{
+                    System.out.println("Backend parsing failed.");
                 }
             }
             catch(Exception e){
                 e.printStackTrace();
                 System.out.println("Frontend can't reach backend.");
             }
-
+           
         });
 
 
-        bottomPanel.addComponent(inputTextBox);
-        bottomPanel.addComponent(enterButton);
-        
-        mainPanel.addComponent(bottomPanel.withBorder(Borders.singleLine("Input")));
+        exitButton = new Button("Exit", () -> {
+          System.exit(0);
+        });
+
+
+        topPanel.addComponent(displayText);
+
+        viewingModePanel.addComponent(checkBoxList);
+
+        inputPanel.addComponent(inputTextBox);
+
+        buttonsPanel.addComponent(enterButton);
+        buttonsPanel.addComponent(exitButton);
+
+        bottomPanel.addComponent(buttonsPanel);
+        bottomPanel.addComponent(viewingModePanel.withBorder(Borders.doubleLine("Viewing Mode")));
+
+        mainPanel.addComponent(topPanel.withBorder(Borders.doubleLine("Regex2English")));
+        mainPanel.addComponent(inputPanel.withBorder(Borders.doubleLine("Input")));
+        mainPanel.addComponent(bottomPanel.withBorder(Borders.doubleLine()));
+
+        setSizeOfAllComponents(screen.getTerminalSize());
+
         window.setComponent(mainPanel);
   
         terminal.addResizeListener(new TerminalResizeListener() {
@@ -94,7 +137,9 @@ public class CLI{
             public void onResized(Terminal terminal, TerminalSize newSize) {
                 setSizeOfAllComponents(newSize);
                 try {
-                    terminal.flush();
+                    // terminal.flush();
+                    terminal.clearScreen();
+
                 }
                 catch(Exception e) {
                     System.out.println("Terminal window resize failed!");
@@ -111,21 +156,47 @@ public class CLI{
         mainPanel.setPreferredSize(size);
         GridLayout mainPanelLayout =  new GridLayout(1)    
         .setLeftMarginSize(1)
-        .setRightMarginSize(1);
+        .setRightMarginSize(1)
+        .setTopMarginSize(0)
+        .setBottomMarginSize(0);
         mainPanelLayout.createLayoutData(GridLayout.Alignment.CENTER,GridLayout.Alignment.END,true,true);
         mainPanel.setLayoutManager(mainPanelLayout);
 
-        // top panel:
-        topPanel.setPreferredSize( new TerminalSize(size.getColumns(),size.getRows() * 85 / 100));
-        topPanel.setLayoutData(GridLayout.createLayoutData(GridLayout.Alignment.CENTER, GridLayout.Alignment.CENTER));
+        int cols = size.getColumns();
+        int rows = size.getRows();
 
-        //bottom panel:
-        bottomPanel.setPreferredSize(new TerminalSize(size.getColumns(), size.getRows() * 1 / 10));
-        bottomPanel.setLayoutData(GridLayout.createLayoutData(GridLayout.Alignment.CENTER, GridLayout.Alignment.END));
+        checkBoxList.setPreferredSize(new TerminalSize(40,20));
+        
+        // bottom panel:
+        bottomPanel.setPreferredSize(new TerminalSize(cols, 20));
+
+        //input panel:
+        inputPanel.setPreferredSize(new TerminalSize(cols, 20));
+
+        // ViewingMode Panel:
+        viewingModePanel.setPreferredSize(new TerminalSize(40, 20));
+
+        //buttons panel:
+        buttonsPanel.setPreferredSize(new TerminalSize(cols, 12));
+        GridLayout buttonsPanelLayout =  new GridLayout(1)    
+        .setLeftMarginSize(0)
+        .setRightMarginSize(0)
+        .setTopMarginSize(1)
+        .setBottomMarginSize(0);
+        buttonsPanelLayout.createLayoutData(GridLayout.Alignment.CENTER,GridLayout.Alignment.CENTER);
+        buttonsPanel.setLayoutManager(buttonsPanelLayout);
 
         // textboxes:
-        displayText.setSize(new TerminalSize(size.getColumns(), (size.getRows() * 88 / 100)));
-        inputTextBox.setSize(new TerminalSize(size.getColumns(), size.getRows() *  1 / 10));
+        inputTextBox.setPreferredSize(new TerminalSize(cols, 20));
+
+        // buttons:
+        enterButton.setPreferredSize(new TerminalSize(cols, 2));
+        exitButton.setPreferredSize(new TerminalSize(cols, 2));
+
+        // top panel:
+        topPanel.setPreferredSize(new TerminalSize(cols,rows));
+        displayText.setPreferredSize(new TerminalSize(cols, rows));
+
 
     }
 

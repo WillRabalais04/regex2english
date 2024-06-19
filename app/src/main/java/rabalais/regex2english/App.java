@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.lang.Runnable;
+import java.io.FileWriter;
 
 import picocli.CommandLine;
 import picocli.CommandLine.*;
@@ -20,12 +21,12 @@ import hu.webarticum.treeprinter.printer.traditional.TraditionalTreePrinter;
 import hu.webarticum.treeprinter.decorator.PadTreeNodeDecorator;
 import hu.webarticum.treeprinter.decorator.ShadowTreeNodeDecorator;
 
-@Command(
-    name = "regex2english",
-    mixinStandardHelpOptions = true,
-    aliases = {"r2e"},
-    description = "..."
-  )
+// @Command(
+//     name = "regex2english",
+//     mixinStandardHelpOptions = true,
+//     aliases = {"r2e"},
+//     description = "..."
+//   )
 class CLI implements Runnable{
 
     @Parameters(description = "The regex input to process.")
@@ -67,7 +68,9 @@ class CLI implements Runnable{
 
     @Override
     public void run() {
-    
+
+        String out = "";
+
         // Why are inputs being passed in twice
 
         processor.process(input); 
@@ -78,40 +81,47 @@ class CLI implements Runnable{
             System.out.println(keyNoANSI);
         }
         if(list){
-            ArrayList<Atom> atoms =  processor.getAtoms(input, false); 
-            processor.printAtoms(atoms);
+            ArrayList<Atom> atoms =  processor.getAtoms(); 
+            //    ArrayList<Atom> atoms =  processor.splitAtoms(processor.getAtoms());  get split atoms
+            out += processor.getAtomsList(atoms);
         }
         if(printTree || printTreeAsList || printDecoratedTree){
             SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode(processor.getParseTree(), compactMode);
+            TreePrinter printer;
 
             if(printTree){
-                // new TraditionalTreePrinter().print(tree);
-                new TraditionalTreePrinter().print(new BorderTreeNodeDecorator(tree));
+                printer = new TraditionalTreePrinter();
+                out += printer.stringify(new BorderTreeNodeDecorator(tree));                
             }
 
-            if(printTreeAsList){
+            else if(printTreeAsList){
 
-                new ListingTreePrinter().print(tree);
+                printer = new ListingTreePrinter();
+                out += printer.stringify(tree);  
 
             }
 
             if(printDecoratedTree){
-                TreeNode decoratedTreeNode = new ShadowTreeNodeDecorator(
-                BorderTreeNodeDecorator.builder()
+
+                printer = new TraditionalTreePrinter();
+
+                out += printer.stringify(new ShadowTreeNodeDecorator(
+                    BorderTreeNodeDecorator.builder()
                         .wideUnicode()
                         .buildFor(
-                                new PadTreeNodeDecorator(tree, new Insets(0, 1))));
-        
-                new TraditionalTreePrinter().print(decoratedTreeNode);
+                            new PadTreeNodeDecorator(tree, new Insets(0, 1)))));  
             }
 
-            
     
         }
 
-       
-    
-        // new TraditionalTreePrinter().print(tree);
+        try{
+            FileWriter writer = new FileWriter("../cli/out.txt");
+            writer.write(out);
+            writer.close();
+        }catch(Exception e){
+            System.out.println("Could not write processor output.");
+        }
 
     }
 }
