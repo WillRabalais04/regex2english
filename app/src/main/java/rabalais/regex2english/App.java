@@ -11,6 +11,7 @@ import java.io.FileWriter;
 
 import picocli.CommandLine;
 import picocli.CommandLine.*;
+// import picocli.codegen.docgen.manpage.*;
 
 import hu.webarticum.treeprinter.*;
 import hu.webarticum.treeprinter.decorator.BorderTreeNodeDecorator;
@@ -21,12 +22,12 @@ import hu.webarticum.treeprinter.printer.traditional.TraditionalTreePrinter;
 import hu.webarticum.treeprinter.decorator.PadTreeNodeDecorator;
 import hu.webarticum.treeprinter.decorator.ShadowTreeNodeDecorator;
 
-// @Command(
-//     name = "regex2english",
-//     mixinStandardHelpOptions = true,
-//     aliases = {"r2e"},
-//     description = "..."
-//   )
+@Command(
+    name = "regex2english",
+    mixinStandardHelpOptions = true,
+    aliases = {"r2e"},
+    description = "..."
+  )
 class CLI implements Runnable{
 
     @Parameters(description = "The regex input to process.")
@@ -75,7 +76,6 @@ class CLI implements Runnable{
 
         processor.process(input); 
 
-
         // make it so just the key can be entered
         if(printKey){
             System.out.println(keyNoANSI);
@@ -122,7 +122,6 @@ class CLI implements Runnable{
         }catch(Exception e){
             System.out.println("Could not write processor output.");
         }
-
     }
 }
 

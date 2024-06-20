@@ -28,6 +28,7 @@ dependencies {
     implementation "hu.webarticum:tree-printer:3.2.0"
     antlr "org.antlr:antlr4:4.9.2"
     implementation "info.picocli:picocli:4.7.6"
+    implementation 'info.picocli:picocli-codegen:4.7.1'
     implementation group: 'com.googlecode.lanterna', name: 'lanterna', version: '3.1.2'   
 
 }
@@ -62,10 +63,34 @@ compileJava{
 }
 
 clean{
+
     delete "${projectDir}/src/main/java/rabalais/regex2english/generated"
     delete "../cli/out.txt"
-    delete "../cli/CLI\$1.class"
-    delete "../cli/CLI.class"
+    
+    delete fileTree('../cli/') {
+    include '**/*.class'
+    }
 }
+
+// task generateManpageAsciiDoc(type: JavaExec) {
+//     dependsOn(classes)
+//     group = "Documentation"
+//     description = "Generate AsciiDoc manpage"
+//     classpath(configurations.compileClasspath, configurations.annotationProcessor, sourceSets.main.runtimeClasspath)
+//     main 'picocli.codegen.docgen.manpage.ManPageGenerator'
+//     args 'rabalais.regex2english.App', "--outdir=${project.buildDir}/generated-picocli-docs", "-v", "--template-dir=src/docs/mantemplates"
+// }
+
+// apply plugin: 'org.asciidoctor.jvm.convert'
+// asciidoctor {
+//     dependsOn(generateManpageAsciiDoc)
+//     sourceDir = file("${project.buildDir}/generated-picocli-docs")
+//     outputDir = file("${project.buildDir}/docs")
+//     logDocuments = true
+//     outputOptions {
+//         backends = ['manpage', 'html5']
+//     }
+// }
+// assemble.dependsOn(asciidoctor)
 
 }
