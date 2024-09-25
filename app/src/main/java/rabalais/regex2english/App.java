@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.lang.Runnable;
 import java.io.FileWriter;
+import java.util.HashMap;
 
 import picocli.CommandLine;
 import picocli.CommandLine.*;
@@ -66,13 +67,16 @@ class CLI implements Runnable{
     private String key = "Key: \n----------------------------------------------------------------------------------------------------\n- Arrows (x) represent all of the logical operators and quantifiers.\n         \033[31m ∆ \033[37m\n- Single underline (x) represents a token meaning letters or escape sequences.\n                    \033[35m¯\033[37m\n- Double underline (x) represents character classes.\n                    \033[33m=\033[37m\n- Triple underline (x) represents an expression.\n                    \033[34m≡\033[37m\n- Quadruple underline (x) represents TBD\n                    \033[32m≣\033[37m\n----------------------------------------------------------------------------------------------------";
     private String keyNoANSI = "Key: \n ---------------------------------------------------------------------------------------------------\n|    - Arrows (x) represent all of the logical operators and quantifiers.                           |\n|              ∆                                                                                    |\n|    - Single underline (x) represents a token meaning letters or escape sequences.                 |\n|                        ¯                                                                          |\n|    - Double underline (x) represents character classes.                                           |\n|                        =                                                                          |\n|    - Triple underline (x) represents an expression.                                               |\n|                        ≡                                                                          |\n|    - Quadruple underline (x) represents TBD                                                       |\n|                           ≣                                                                       |\n ---------------------------------------------------------------------------------------------------\n";
     private RegexProcessor processor = new RegexProcessor();
+    private HashMap<String, String> cachedInputs = new HashMap<>();
 
     @Override
     public void run() {
 
         String out = "";
 
-        // Why are inputs being passed in twice
+
+        if(cachedInputs.containsKey(input)){}
+        else{
 
         processor.process(input); 
 
@@ -80,12 +84,12 @@ class CLI implements Runnable{
         if(printKey){
             System.out.println(keyNoANSI);
         }
-        if(list){
+        else if(list){
             ArrayList<Atom> atoms =  processor.getAtoms(); 
             //    ArrayList<Atom> atoms =  processor.splitAtoms(processor.getAtoms());  get split atoms
             out += processor.getAtomsList(atoms);
         }
-        if(printTree || printTreeAsList || printDecoratedTree){
+        else if(printTree || printTreeAsList || printDecoratedTree){
             SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode(processor.getParseTree(), compactMode);
             TreePrinter printer;
 
@@ -101,7 +105,7 @@ class CLI implements Runnable{
 
             }
 
-            if(printDecoratedTree){
+            else if(printDecoratedTree){
 
                 printer = new TraditionalTreePrinter();
 
@@ -112,8 +116,13 @@ class CLI implements Runnable{
                             new PadTreeNodeDecorator(tree, new Insets(0, 1)))));  
             }
 
-    
         }
+        else{ // default behavior: does linting
+            out = "Linting coming soon";
+        }
+        }
+
+        System.out.println("'" + out + "'");
 
         try{
             FileWriter writer = new FileWriter("../cli/out.txt");
@@ -123,7 +132,14 @@ class CLI implements Runnable{
             System.out.println("Could not write processor output.");
         }
     }
+
+    
 }
+
+// public static String checkCache(){
+
+// }
+
 
 
 

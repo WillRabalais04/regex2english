@@ -66,31 +66,12 @@ clean{
 
     delete "${projectDir}/src/main/java/rabalais/regex2english/generated"
     delete "../cli/out.txt"
+
+    delete "../cli/build"
     
     delete fileTree('../cli/') {
     include '**/*.class'
     }
 }
-
-// task generateManpageAsciiDoc(type: JavaExec) {
-//     dependsOn(classes)
-//     group = "Documentation"
-//     description = "Generate AsciiDoc manpage"
-//     classpath(configurations.compileClasspath, configurations.annotationProcessor, sourceSets.main.runtimeClasspath)
-//     main 'picocli.codegen.docgen.manpage.ManPageGenerator'
-//     args 'rabalais.regex2english.App', "--outdir=${project.buildDir}/generated-picocli-docs", "-v", "--template-dir=src/docs/mantemplates"
-// }
-
-// apply plugin: 'org.asciidoctor.jvm.convert'
-// asciidoctor {
-//     dependsOn(generateManpageAsciiDoc)
-//     sourceDir = file("${project.buildDir}/generated-picocli-docs")
-//     outputDir = file("${project.buildDir}/docs")
-//     logDocuments = true
-//     outputOptions {
-//         backends = ['manpage', 'html5']
-//     }
-// }
-// assemble.dependsOn(asciidoctor)
 
 }

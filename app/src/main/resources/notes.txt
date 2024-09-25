@@ -1,5 +1,6 @@
 TODO: 
-- add a quit button to GUI
+- store inputs and outputs for fast rerendering
+- add timer to different parts to see why it got slower
 - add error handling to GUI
 - add all boundary matchers to grammar (some were forgotten)
 - check all tokens are used in grammar rules
