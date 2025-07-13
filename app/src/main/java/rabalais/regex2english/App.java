@@ -95,10 +95,8 @@ class CLI implements Runnable{
             }
 
             else if(printTreeAsList){
-
                 printer = new ListingTreePrinter();
                 out += printer.stringify(tree);  
-
             }
 
             if(printDecoratedTree){
@@ -111,8 +109,6 @@ class CLI implements Runnable{
                         .buildFor(
                             new PadTreeNodeDecorator(tree, new Insets(0, 1)))));  
             }
-
-    
         }
 
         try{
@@ -131,16 +127,8 @@ public class App{
 
     public static void main(String[] args) throws IOException{
 
-        // CLI test = new CLI();
-        // test.run();
         int exitCode = new CommandLine(new CLI()).execute(args); 
         System.exit(exitCode);
-
-        // System.out.println("1");
-        // CLI mainCLI = new CLI();
-        // mainCLI.createNewTerminal();
-        // System.out.println("3");
-
     }
 }
 

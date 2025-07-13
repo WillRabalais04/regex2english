@@ -20,36 +20,29 @@ import com.googlecode.lanterna.TextColor.*;
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.input.*;
 
-// add gettermheight getter
-
-public class CLI{
+public class CLI {
 
     private static Panel mainPanel;
     private static Panel topPanel;
     private static Panel inputPanel;
     private static Panel bottomPanel;
     private static Panel buttonsPanel;
-    private static Panel viewingModePanel;
     private static TextBox displayText;
     private static TextBox inputTextBox;
     private static Button enterButton;
     private static Button clearButton;
     private static Button guideButton;
     private static Button quitButton;
-    private static CheckBoxList<String> checkBoxList;
-    private static boolean arrowsModeToggle;
-    private static boolean mousePanModeToggle;
+
     private static String guide;
 
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException {
         init();
-
-      
     }
-
-    private static void init() throws IOException{
+    
+    private static void init() throws IOException {
         Terminal terminal = new DefaultTerminalFactory().createTerminal();
-        Screen screen = new TerminalScreen(terminal);        
+        Screen screen = new TerminalScreen(terminal);
 
         screen.startScreen();
 
@@ -60,180 +53,54 @@ public class CLI{
         BasicWindow window = new BasicWindow();
         window.setHints(Arrays.asList(Window.Hint.CENTERED));
 
-        arrowsModeToggle = true;
-        mousePanModeToggle = false;    
-        
         mainPanel = new Panel();
         topPanel = new Panel();
         bottomPanel = new Panel(new GridLayout(2));
         inputPanel = new Panel();
         buttonsPanel = new Panel();
-        viewingModePanel = new Panel();
-  
-        displayText = new TextBox(){
-            @Override protected void afterEnterFocus​(Interactable.FocusChangeDirection direction, Interactable previouslyInFocus){
-                // INPROGRESS
-                    if(mousePanModeToggle){
 
-                //     try{
-                //         // displayText.addLine(terminal.getCursorPosition().getColumn() + "x" + terminal.getCursorPosition().getRow());
-
-                //         TerminalPosition mousePos = terminal.getCursorPosition();
-                //         TerminalSize termSize = terminal.getTerminalSize();
-
-                //         int mouseX = mousePos.getColumn();
-                //         int mouseY = mousePos.getRow();
-
-                //         int verticalOffset = inputPanel.getSize().getRows() + bottomPanel.getSize().getRows() + 2;
-
-                //         int termWidth = termSize.getColumns();
-                //         int termHeight = termSize.getRows() - verticalOffset;
-
-                //         int centerX = mainPanel.getSize().getColumns() / 2;
-                //         int centerY = topPanel.getSize().getRows() / 2 + verticalOffset;
-
-                //         displayText.addLine(centerX + "x" + centerY);
-                //         displayText.addLine("termHeight" + termHeight);
-
-
-                //         int xOffset = mouseX - centerX;
-                //         int yOffset = mouseY - centerY;
-
-                //         while(needsToMove(mouseX, mouseY, xOffset, yOffset, termWidth, termHeight)){
-
-                //             if(xOffset > 0 && mouseX < termWidth){
-                //                 displayText.setCaretPosition​(mouseX - 1, mouseY);
-                //             } else if (xOffset < 0 && mouseX > 0){
-                //                 displayText.setCaretPosition​(mouseX + 1, mouseY);
-                //             } else {
-                //                 displayText.addLine("1| xOffset: " + xOffset + " | mouseX: " + mouseX + "| termWidth: " + termWidth);
-                //                 break;
-                //             }
-
-                //             // if(yOffset > 0 && mouseY < termHeight){
-                //             //     displayText.setCaretPosition​(mouseX, mouseY - 1);
-                //             // } else if (yOffset < 0 && mouseY > 0){
-                //             //     displayText.setCaretPosition​(mouseX, mouseY + 1);
-                //             // } else {
-                //             //     displayText.addLine("2| yOffset: " + yOffset + " | mouseY: " + mouseY + "| termHeight: " + termHeight);
-                //             //     break;
-                //             // }
-                        
-                //             TimeUnit.SECONDS.sleep(1);
-
-                //             }
-                        
-                //     //     int currX = pos.getColumn();
-                //     //     int currY = pos.getRow();
-                //     //     int width = size.getColumns();
-                //     //     int height = size.getRows();
-                    
-                //     //     int newX;
-                //     //     int newY;
-                        
-                //     //     if(keyStroke.getKeyType().equals(KeyType.ArrowDown)){
-                //     //         newY = currY -= (height / 10);
-                //     //         newY = ((newY > height) ? height: newY);
-                //     //         newY = ((newY < 0) ? 0: newY);
-                //     //         displayText.setCaretPosition​(currX , newY);
-                //     //     } else if(keyStroke.getKeyType().equals(KeyType.ArrowUp)){
-                //     //         newY = currY += (height / 10);
-                //     //         newY = ((newY > height) ? height: newY);
-                //     //         newY = ((newY < 0) ? 0: newY);
-                //     //         displayText.setCaretPosition​(currX , newY);
-                //     //     }else if(keyStroke.getKeyType().equals(KeyType.ArrowLeft)){
-                //     //         newX = currX -= 2 * width;
-                //     //         newX = ((newX > width) ? width: newX);
-                //     //         newX = ((newX < 0) ? 0: newX);
-                //     //         displayText.setCaretPosition​(newX , currY);
-                //     //     }else if(keyStroke.getKeyType().equals(KeyType.ArrowRight)){
-                //     //         newX = currX += 2 * width;
-                //     //         newX = ((newX > width) ? width: newX);
-                //     //         newX = ((newX < 0) ? 0: newX);
-                //     //         displayText.setCaretPosition​(newX , currY);
-                //     //     }
-                //     }
-                //     catch(Exception e){
-
-                //     }
-                }
-            }
-        };
-        displayText.setReadOnly(true);
-        displayText.setCaretWarp​(true);
+        displayText = new TextBox();
+        displayText.setCaretWarp(true);
         inputTextBox = new TextBox("-t ^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=shadowJar\\s).{8,16}$ ", TextBox.Style.MULTI_LINE);
-        inputTextBox.setCaretWarp​(true);
 
-        checkBoxList = new CheckBoxList<String>(new TerminalSize(20,20));
-        checkBoxList.addItem("Arrows", true);
-        checkBoxList.addItem("Mouse Pan", false);
-        
         enterButton = new Button("Enter", () -> {
-            // displayText.addLine(terminal.getCursorLocation().getColumn() + "x" + terminal.getCursorLocation().getRow());    
             String inputText = inputTextBox.getText();
-            try{     
-
-                if(inputText == null || inputText == ""){
+            try {
+                if (inputText == null || inputText.equals("")) {
                     displayText.setText("Please enter a valid input.");
-                }else{
-                String cmd =  "gradle run --args=\"" + inputText + "\"";
-                ProcessBuilder runGradle = new ProcessBuilder("bash", "-c",cmd);
-                Process process = runGradle.start();
-                
-                int exitCode = process.waitFor();
+                } else {
+                    String cmd = "gradle run --args=\"" + inputText + "\"";
+                    ProcessBuilder runGradle = new ProcessBuilder("bash", "-c", cmd);
+                    Process process = runGradle.start();
 
-                if(exitCode == 0){
-                    FileReader fileReader = new FileReader("./cli/out.txt");
-                    BufferedReader bufferedReader = new BufferedReader(fileReader);
-                    
-                    StringBuilder sb = new StringBuilder();
-                    String line = bufferedReader.readLine();
-                    while (line != null) {
-                        sb.append(line);
-                        sb.append(System.lineSeparator());
-                        line = bufferedReader.readLine();                
-                    }
-                    fileReader.close();
-                    bufferedReader.close();
-                    process.destroy();
+                    int exitCode = process.waitFor();
 
-                    String content = sb.toString();
-                    if(!content.equals("")){
-                        displayText.setText(content);
+                    if (exitCode == 0) {
+                        FileReader fileReader = new FileReader("./cli/out.txt");
+                        BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+                        StringBuilder sb = new StringBuilder();
+                        String line = bufferedReader.readLine();
+                        while (line != null) {
+                            sb.append(line);
+                            sb.append(System.lineSeparator());
+                            line = bufferedReader.readLine();
+                        }
+                        fileReader.close();
+                        bufferedReader.close();
+                        process.destroy();
+
+                        String content = sb.toString();
+                        if (!content.equals("")) {
+                            displayText.setText(content);
+                        } else {
+                            displayText.setText("Input could not be read.");
+                        }
+                    } else {
+                        System.out.println("Backend parsing failed.");
                     }
-                    else{                  
-                        displayText.setText("Input could not be read.");
-                    }
-                } else{
-                    System.out.println("Backend parsing failed.");
                 }
-            }
-
-            // still need to figure out how much to augment with by
-            // System.out.println("term width" + terminal.getTerminalSize().getColumns());
-            // System.out.println("term height" + terminal.getTerminalSize().getRows());
-            // System.out.println("displayText width" + displayText.getSize().getColumns());
-            // System.out.println("displayText height" + displayText.getSize().getRows());
-            // System.out.println("displayText pref width" + displayText.getPreferredSize().getColumns());
-            // System.out.println("displayText pref height" + displayText.getPreferredSize().getRows());
-            // System.out.println("displayText linecount" + displayText.getLineCount());
-            // System.out.println("line1length" + displayText.getLine(0).length());
-            // displayText.setCaretPosition(Integer.MAX_VALUE);
-            // System.out.println("caret pos: " + displayText.getCaretPosition().getColumn());
-            // int longest = 0;
-            // for(int i = 0; i < displayText.getLineCount(); i++){
-            //     int currLength = displayText.getLine(i).length();
-            //     if(currLength > longest){
-            //         longest = currLength;
-            //     }
-
-            // }
-
-            // System.out.println("longest: " + longest);
-
-            
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("Frontend can't reach backend.");
             }
@@ -250,13 +117,10 @@ public class CLI{
         });
 
         quitButton = new Button("↳Quit", () -> {
-          System.exit(0);
+            System.exit(0);
         });
 
-
         topPanel.addComponent(displayText);
-
-        viewingModePanel.addComponent(checkBoxList);
 
         inputPanel.addComponent(inputTextBox);
 
@@ -266,7 +130,6 @@ public class CLI{
         buttonsPanel.addComponent(quitButton);
 
         bottomPanel.addComponent(buttonsPanel);
-        bottomPanel.addComponent(viewingModePanel.withBorder(Borders.doubleLine("Viewing Mode")));
 
         mainPanel.addComponent(topPanel.withBorder(Borders.doubleLine("Regex2English")));
         mainPanel.addComponent(inputPanel.withBorder(Borders.doubleLine("Input")));
@@ -275,166 +138,40 @@ public class CLI{
         setSizeOfAllComponents(screen.getTerminalSize());
 
         window.setComponent(mainPanel);
-  
+
         terminal.addResizeListener(new TerminalResizeListener() {
             @Override
             public void onResized(Terminal terminal, TerminalSize newSize) {
-
                 setSizeOfAllComponents(newSize);
                 try {
-                   
                     screen.refresh();
-                }
-                catch(Exception e) {
+                } catch (Exception e) {
                     System.out.println("Terminal window resize failed!");
                 }
             }
         });
-
-        checkBoxList.addListener(new CheckBoxList.Listener() {
-            @Override
-            public void onStatusChanged(int itemIndex, boolean checked) {
-                if(itemIndex == 0){
-                    arrowsModeToggle = checked;
-                    if(checked){displayText.takeFocus();}
-                }else if(itemIndex == 1){
-                    mousePanModeToggle = checked;
-                    if(checked){displayText.takeFocus();}
-                    try{
-                        terminal.setCursorVisible(true);
-                        TerminalSize topPanelSize = topPanel.getSize();
-                        int verticalOffset = inputPanel.getSize().getRows() + bottomPanel.getSize().getRows() + 2;
-                        terminal.setCursorPosition(topPanelSize.getColumns() / 2, topPanelSize.getRows() / 2 + verticalOffset);
-                    } catch (Exception e){
-                        System.out.println("mousemovefailed");
-                    }
-                }
-                
-            }
-        });
-
-        WindowListenerAdapter listener = new WindowListenerAdapter(){
-            @Override
-            public void onInput​(Window basePane, KeyStroke keyStroke, AtomicBoolean deliverEvent){
-            // if(keyStroke.getCharacter() == 'q' && keyStroke.isAltDown()){ // ALT+Q to quit
-            //     System.exit(0);
-            // }
-
-            // if(keyStroke.isShiftDown​()){ // ALT+Q to quit
-            //     displayText.addLine("ALTDOWN");
-            // }
-
-            // if(keyStroke.getCharacter() == 'ç'){ // ALT+C to clear
-            //     clear();
-            // }
-
-            // if(keyStroke.getCharacter() == '©'){ // ALT+G to show guide
-            //     showGuide();
-            // }
-
-            // if(keyStroke.isShiftDown​()){
-            //     displayText.takeFocus();
-            // }
-            
-            if(displayText.isFocused() && arrowsModeToggle){
-
-                TerminalPosition pos = displayText.getCaretPosition();
-                TerminalSize size = displayText.getSize();
-
-                int currX = pos.getColumn();
-                int currY = pos.getRow();
-                int width = size.getColumns();
-                int height = size.getRows();
-            
-                int newX;
-                int newY;
-                
-                if(keyStroke.getKeyType().equals(KeyType.ArrowDown)){
-                    newY = currY -= (height / 10);
-                    newY = ((newY > height) ? height: newY);
-                    newY = ((newY < 0) ? 0: newY);
-                    displayText.setCaretPosition​(currX , newY);
-                } else if(keyStroke.getKeyType().equals(KeyType.ArrowUp)){
-                    newY = currY += (height / 10);
-                    newY = ((newY > height) ? height: newY);
-                    newY = ((newY < 0) ? 0: newY);
-                    displayText.setCaretPosition​(currX , newY);
-                }else if(keyStroke.getKeyType().equals(KeyType.ArrowLeft)){
-                    newX = currX -= width / 2;
-                    newX = ((newX > width) ? width: newX);
-                    newX = ((newX < 0) ? 0: newX);
-                    displayText.setCaretPosition​(newX , currY);
-                }else if(keyStroke.getKeyType().equals(KeyType.ArrowRight)){
-                    newX = currX += width / 2;
-                    newX = ((newX > width) ? width: newX);
-                    newX = ((newX < 0) ? 0: newX);
-                    displayText.setCaretPosition​(newX , currY);
-                }
-            }
-        }
-    };
-
-        // WindowAdapter windowListener = new WindowAdapter();
-        window.addWindowListener(listener);
-
-        textGUI.addWindowAndWait(window); 
-
-        // while(true) {
-        //     KeyStroke keyStroke = screen.pollInput();
-        //     if(keyStroke != null && (keyStroke.getKeyType() == KeyType.Escape || keyStroke.getKeyType() == KeyType.ArrowUp)) {
-        //         System.out.println("asdasd");
-        //         break;
-        //     }
-        // }
-        // window.onUnhandledKeyboardInteraction(window, Key.Kind.ArrowDown);
-        // System.out.println("here: "  + screen.pollInput().toString());
-
-        // while(true){
-            // try{
-            // }
-            // catch(Exception e){
-            //     System.out.println("exveptpio");
-            // }
-           
-        // }
-        // Use this to tab away from toppanel when it's switched to
-        // onFocusChanged
-        // void onFocusChanged(Window window,
-        //                   Interactable fromComponent,
-        //                   Interactable toComponent)
-        // Called by the window whenever the input focus has changed from one component to another
-        // Parameters:
-        // window - Window that switched input focus
-        // fromComponent - Component that lost focus, or null if no component was previously focused
-        // toComponent - Component that received focus, or null if no component has focus
-    
+        textGUI.addWindowAndWait(window);
     }
-    private static void setSizeOfAllComponents(TerminalSize size){
 
+    private static void setSizeOfAllComponents(TerminalSize size) {
         //main panel:
         mainPanel.setPreferredSize(size);
-        GridLayout mainPanelLayout =  new GridLayout(1)    
-        .setLeftMarginSize(1)
-        .setRightMarginSize(1)
-        .setTopMarginSize(0)
-        .setBottomMarginSize(0);
-        mainPanelLayout.createLayoutData(GridLayout.Alignment.CENTER,GridLayout.Alignment.END,true,true);
+        GridLayout mainPanelLayout = new GridLayout(1)
+                .setLeftMarginSize(1)
+                .setRightMarginSize(1)
+                .setTopMarginSize(0)
+                .setBottomMarginSize(0);
+        mainPanelLayout.createLayoutData(GridLayout.Alignment.CENTER, GridLayout.Alignment.END, true, true);
         mainPanel.setLayoutManager(mainPanelLayout);
 
         int cols = size.getColumns();
         int rows = size.getRows();
 
-        checkBoxList.setPreferredSize(new TerminalSize(40,20));
-        
         // bottom panel:
         bottomPanel.setPreferredSize(new TerminalSize(cols, 20));
 
         //input panel:
         inputPanel.setPreferredSize(new TerminalSize(cols, 20));
-
-        // ViewingMode Panel:
-        viewingModePanel.setPreferredSize(new TerminalSize(40, 20));
-
         //buttons panel:
         buttonsPanel.setPreferredSize(new TerminalSize(cols, 18));
 
@@ -448,33 +185,30 @@ public class CLI{
         quitButton.setPreferredSize(new TerminalSize(cols, 2));
 
         // top panel:
-        topPanel.setPreferredSize(new TerminalSize(cols,rows));
+        topPanel.setPreferredSize(new TerminalSize(cols, rows));
         displayText.setPreferredSize(new TerminalSize(cols, rows));
-
-
     }
 
-    private static void clear(){
+    private static void clear() {
         displayText.setText("");
         inputTextBox.setText("");
     }
 
-    private static void showGuide(){
-        guide = ""; // setup man page with picocli
+    private static void showGuide() {
+        guide = "## Regex2English Guide\n" +
+                "This program converts regular expressions into human-readable English descriptions.\n\n" +
+                "### Usage:\n" +
+                "1.  Input Field: Enter your regular expression in the 'Input' text box.\n" +
+                "    * Example: `^\\d{3}-\\d{2}-\\d{4}$`\n" +
+                "    * The current default pattern shown is a strong password regex for demonstration.\n" +
+                "2.  Enter Button: Click 'Enter' or press Enter in the input field to process the regex.\n" +
+                "3.  Display Area: The 'Regex2English' area will show the English translation.\n" +
+                "    * If there's an issue with the regex or backend, an error message will appear.\n\n" +
+                "### Other Buttons:\n" +
+                "* Clear: Clears both the input and display areas.\n" +
+                "* Guide: Displays this guide.\n" +
+                "* Quit: Exits the application.\n\n" +
+                "Enjoy converting your regexes!"; // setup man page with picocli
         displayText.setText(guide);
     }
-
-
-    // INPROGRESS
-    // private boolean needsToMove(int mouseX, int mouseY, int xOffset, int yOffset, int termWidth, int termHeight){
-
-
-    //     if(mouseX){
-
-    //     }
-
-
-    // }
-
 }
-
