@@ -61,6 +61,7 @@ public class CLI {
 
         displayText = new TextBox();
         displayText.setCaretWarp(true);
+        displayText.setReadOnly​(true);
         inputTextBox = new TextBox("-t ^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=shadowJar\\s).{8,16}$ ", TextBox.Style.MULTI_LINE);
 
         enterButton = new Button("Enter", () -> {
@@ -94,10 +95,10 @@ public class CLI {
                         if (!content.equals("")) {
                             displayText.setText(content);
                         } else {
-                            displayText.setText("Input could not be read.");
+                            displayText.setText("Input formatted incorrectly: check the guide for details. ");
                         }
                     } else {
-                        System.out.println("Backend parsing failed.");
+                        System.out.println("Invalid regex provided.");
                     }
                 }
             } catch (Exception e) {

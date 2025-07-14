@@ -1,4 +1,5 @@
 #!/bin/bash
+echo -ne "\033]0;Regex2English\007"
 read -r ROWS COLS < <(stty size) > /dev/null
 
 if [ "$ROWS" -lt "20" ] || [ "$COLS" -lt "32" ]; then

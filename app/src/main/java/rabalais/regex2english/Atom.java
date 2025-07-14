@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Comparator;
 
-
-
 public class Atom {
 
     private ParseTree node;
@@ -64,11 +62,8 @@ public class Atom {
         String types = "[";
 
         for(String type: atomTypes){
-
             types += " '" + type + "'";
-
         }
-
         types += "]";
 
         return types;
@@ -126,12 +121,10 @@ public class Atom {
         String completeContent = "";
 
         for(String partial: content.values()){
-
             completeContent += partial;
         }
 
         return completeContent;
-
     }
 
     public Map.Entry<Integer, String> getFloorEntry(int index){

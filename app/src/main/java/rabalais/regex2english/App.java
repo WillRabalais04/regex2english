@@ -11,7 +11,7 @@ import java.io.FileWriter;
 
 import picocli.CommandLine;
 import picocli.CommandLine.*;
-// import picocli.codegen.docgen.manpage.*;
+import picocli.codegen.docgen.manpage.*;
 
 import hu.webarticum.treeprinter.*;
 import hu.webarticum.treeprinter.decorator.BorderTreeNodeDecorator;
@@ -42,9 +42,6 @@ class CLI implements Runnable{
     @Option(names = {"-c", "--char"}, description = "Break up the regex character by character.")
     boolean breakUpByChar;
 
-    @Option(names = {"-cmp", "--compactmode"}, description = "Combine letters into strings when parsing.")
-    boolean compactMode;
-
     @Option(names = {"-h", "--highlight"}, description = "Highlights all instances of a given type.")
     boolean highlight;
 
@@ -62,6 +59,9 @@ class CLI implements Runnable{
 
     @Option(names = {"-td", "--treedecorated"}, description = "Prints the abstract syntax tree that models the regex as a prettier tree. Recommended for smaller inputs.")
     boolean printDecoratedTree;
+
+    @Option(names = {"-v", "--verbose"}, description = "Combine letters into strings when parsing.")
+    boolean verboseMode;
  
     private String key = "Key: \n----------------------------------------------------------------------------------------------------\n- Arrows (x) represent all of the logical operators and quantifiers.\n         \033[31m ∆ \033[37m\n- Single underline (x) represents a token meaning letters or escape sequences.\n                    \033[35m¯\033[37m\n- Double underline (x) represents character classes.\n                    \033[33m=\033[37m\n- Triple underline (x) represents an expression.\n                    \033[34m≡\033[37m\n- Quadruple underline (x) represents TBD\n                    \033[32m≣\033[37m\n----------------------------------------------------------------------------------------------------";
     private String keyNoANSI = "Key: \n ---------------------------------------------------------------------------------------------------\n|    - Arrows (x) represent all of the logical operators and quantifiers.                           |\n|              ∆                                                                                    |\n|    - Single underline (x) represents a token meaning letters or escape sequences.                 |\n|                        ¯                                                                          |\n|    - Double underline (x) represents character classes.                                           |\n|                        =                                                                          |\n|    - Triple underline (x) represents an expression.                                               |\n|                        ≡                                                                          |\n|    - Quadruple underline (x) represents TBD                                                       |\n|                           ≣                                                                       |\n ---------------------------------------------------------------------------------------------------\n";
@@ -69,16 +69,12 @@ class CLI implements Runnable{
 
     @Override
     public void run() {
-
         String out = "";
-
-        // Why are inputs being passed in twice
-
         processor.process(input); 
 
         // make it so just the key can be entered
         if(printKey){
-            System.out.println(keyNoANSI);
+            out = keyNoANSI;
         }
         if(list){
             ArrayList<Atom> atoms =  processor.getAtoms(); 
@@ -86,7 +82,7 @@ class CLI implements Runnable{
             out += processor.getAtomsList(atoms);
         }
         if(printTree || printTreeAsList || printDecoratedTree){
-            SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode(processor.getParseTree(), compactMode);
+            SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode(processor.getParseTree(), verboseMode);
             TreePrinter printer;
 
             if(printTree){
@@ -120,8 +116,6 @@ class CLI implements Runnable{
         }
     }
 }
-
-
 
 public class App{
 

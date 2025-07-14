@@ -6,8 +6,6 @@ package rabalais.regex2english;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Arrays;
-import java.util.Queue;
-import java.util.Stack;
 import java.util.TreeMap;
 import java.util.HashMap;
 import java.util.List;
@@ -40,107 +38,85 @@ public class RegexProcessor {
     public ArrayList<Atom> getAtoms(){
         return this.atoms;
     }
-    public SimpleTreeNode getParseTreeAsSimpleTreeNode(ParseTree node, boolean compact){
+    public SimpleTreeNode getParseTreeAsSimpleTreeNode(ParseTree node, boolean verbose){
 
-        if(node != null){
-
-            String content = "";
-            if(node instanceof StartContext){
-                node = node.getChild(0);
-            }
-            vocab = lexer.getVocabulary();
-
-            if(compact && (node instanceof LetterContext || node instanceof Extra_letters_allowed_inside_CCContext) && node.getChildCount() > 1){
-                    
-                    int childCount = node.getChildCount();
-
-                    String textContent = "'";
-                    
-                    for(int i = 0; i < childCount; i++){
-
-                        ParseTree child = node.getChild(i);
-                        textContent += child.getText();
+        if(node == null){
+            return new SimpleTreeNode("Failed.");
+        }
     
-                    }
-    
-                    textContent += "'";
-    
-                    SimpleTreeNode lettersNode = new SimpleTreeNode("Text");
-                    lettersNode.addChild(new SimpleTreeNode(textContent));
-    
-                    return lettersNode;
+        String content = "";
+        if(node instanceof StartContext){
+            node = node.getChild(0);
+        }
+        vocab = lexer.getVocabulary();
 
-            } else if(compact && node instanceof CharacterClassContentContext){
-
-
-                HashMap<String, String> children = new HashMap<>();
-
-                int childCount = node.getChildCount();
-
+        if(!verbose){
+            if (node instanceof CharacterClassContext){
+                ParseTree characterClassContent = node.getChild(1);
+                SimpleTreeNode cc = new SimpleTreeNode("Character Class");
+                cc.addChild(new SimpleTreeNode("'[' - Left Bracket"));
                 String textContent = "";
                 
-                for(int i = 0; i < childCount; i++){
-
-                    ParseTree child = node.getChild(i);
-                    
-                    if(child instanceof Extra_letters_allowed_inside_CCContext || ((child instanceof TerminalNodeImpl || child instanceof TerminalNode) && (vocab.getSymbolicName(((Token)child.getPayload()).getType()).equals("LETTER")))){
-
-                        textContent += child.getText();
-
-                        if(i == childCount - 1 && !textContent.equals("") || (i+1 < childCount && !(node.getParent().getChild(i+1) instanceof Extra_letters_allowed_inside_CCContext || ((child instanceof TerminalNodeImpl || child instanceof TerminalNode) && (vocab.getSymbolicName(((Token)child.getPayload()).getType()).equals("LETTER")))))){
-                            children.put("Text", textContent);
-                        }     
-
-                    } else if(child.getChildCount() < 1){
-                        children.put("Non-text", child.getText());
-                    }
-
-                }
-                SimpleTreeNode characterClassContentNode = new SimpleTreeNode("Character Class Content");
-
-                for(String child: children.keySet()){
-
-                    if(child.equals("Text")){
-                        SimpleTreeNode lettersNode = new SimpleTreeNode("Text");
-                        lettersNode.addChild(new SimpleTreeNode("'" + children.get(child) + "'"));      
-                        characterClassContentNode.addChild(lettersNode);
+                for(int i = 0; i < characterClassContent.getChildCount(); i++){
+                    ParseTree child = characterClassContent.getChild(i);
+                    if((child instanceof TerminalNodeImpl || child instanceof TerminalNode) && (vocab.getSymbolicName(((Token)child.getPayload()).getType()).equals("LETTER"))){
+                        textContent += child.getText();   
                     } else{
-                        characterClassContentNode.addChild(new SimpleTreeNode(children.get(child)));
+                        if (textContent.length() > 0) {
+                            cc.addChild(new SimpleTreeNode("'" + textContent + "'"));
+                            textContent = "";
+                        } 
+                        cc.addChild(getParseTreeAsSimpleTreeNode(child, verbose));
                     }
                 }
 
-                return characterClassContentNode;
-            
-            }
-            else if(node instanceof TerminalNode){
-                content = "'" + node.getText() + "' - " + getCleanTerminalName(vocab.getSymbolicName(((Token)node.getPayload()).getType()));
-            }
-            else{
-                content = getCleanClassName(node.getClass().getSimpleName());
-            }
-            SimpleTreeNode newTree = new SimpleTreeNode(content);
+                if (textContent.length() > 0) {
+                    cc.addChild(new SimpleTreeNode("'" + textContent + "'"));
+                    textContent = "";
+                }
+                cc.addChild(new SimpleTreeNode("']' - Right Bracket"));
+                return cc;
+            } 
 
+            if (node.getChildCount() == 1 && (node instanceof ZeroWidthAssertionsContext || node instanceof PredefinedCharacterClassContext)){
+                    node = node.getChild(0);        
+            }
+        }
+        
+        if(node instanceof TerminalNode){
+            content = "'" + node.getText() + "' - " + getCleanTerminalName(vocab.getSymbolicName(((Token)node.getPayload()).getType()));
+        }
+        else{
+            content = getCleanClassName(node.getClass().getSimpleName());
+        }
+        SimpleTreeNode newTree = new SimpleTreeNode(content);
 
-            for(int i = 0; i < node.getChildCount(); i++){
-                newTree.addChild(getParseTreeAsSimpleTreeNode(node.getChild(i), compact));
+        for(int i = 0; i < node.getChildCount(); i++){
+
+            ParseTree child = node.getChild(i);
+            if (!verbose && child.getChildCount() == 1 ){
+                if ((child instanceof ExprContext || child instanceof ExprHelperContext)){
+                    child = child.getChild(0);
+                }
+                if (child instanceof ConcatenationContext) {
+                    child = child.getChild(0);
+                }
             }
 
-            return newTree;
-
+            newTree.addChild(getParseTreeAsSimpleTreeNode(child, verbose));
         }
 
-        return new SimpleTreeNode("Failed.");
+        return newTree;
     }
+    
 
     public static void process(String input){
-
         inputStream = CharStreams.fromString(input);         
         lexer = new regex2englishLexer(inputStream);
         tokens = new CommonTokenStream(lexer);
         parser = new regex2englishParser(tokens);
         tree = parser.start();
         atoms = setAtoms(input);
-
     }
 
     public static void checkAtomsSumToInput(ArrayList<Atom> atoms, String input){
@@ -152,47 +128,31 @@ public class RegexProcessor {
         }
 
         for(Atom atom: atoms){ // O(n^3) but n is small
-
           for(int index: atom.getContent().keySet()){
-
               String content = atom.getContent(index);
-              
                 for(int i = 0; i < content.length(); i++){
-                
-                sum.setCharAt(index + i, content.charAt(i));
-              
+                    sum.setCharAt(index + i, content.charAt(i));
                 }
-          }
-    }
-
-    //   System.out.println("Sum of Atoms Equals Input? '" + (sum.toString().equals(input) ? "✅" : "❌") + "'");
+            }
+        }
     }
 
     public static String getAtomsList(ArrayList<Atom> atoms){
 
         String ret = "";
-
         TreeMap<Integer, String> allEntries = new TreeMap<>();
 
-
         for(Atom atom: atoms){
-
             for(Map.Entry<Integer, String> partition: atom.getContent().entrySet()){
-
                 String atomText = partition.getKey() + ") '" + partition.getValue() + "' | Categories: " + atom.getAtomTypes() + "\n";
                 allEntries.put(partition.getKey(), atomText);
             }
-
         }
 
         for(Map.Entry<Integer, String> partition : allEntries.entrySet()){
-
             ret += partition.getValue(); 
         }
-        
-
         return ret;
-
     }
 
     public static ArrayList<Atom> setAtoms(String input){
@@ -208,14 +168,12 @@ public class RegexProcessor {
     }
 
     public static void setAtomsHelper(ParseTree node, ArrayList<Atom> atoms, String input){
-
     
         if(node != null){
                                  
             if(isAtom(node)){
 
                 Atom atom = new Atom(node);
-
                 String type = getCleanClassName(node.getClass().getSimpleName());
                 atom.addType(type);
 
@@ -249,333 +207,317 @@ public class RegexProcessor {
 
                 }                
             }
-
         }
-       
     }     
     
-        public static int getAtomIndex(String input, ParseTree node){
-            
-            String atomContent = node.getText();
-            int index = input.indexOf(atomContent);
+    public static int getAtomIndex(String input, ParseTree node){
+        
+        String atomContent = node.getText();
+        int index = input.indexOf(atomContent);
 
-            String leftAtomContent = "";
-    
-            while(instancesOfWithDuplicates(input, atomContent) != 1 && node != null && node.getParent() != null){
+        String leftAtomContent = "";
 
+        while(instancesOfWithDuplicates(input, atomContent) != 1 && node != null && node.getParent() != null){
 
-                while(node.getParent() != null && node.getParent().getChildCount() == 1){
-                    node = node.getParent();
+            while(node.getParent() != null && node.getParent().getChildCount() == 1){
+                node = node.getParent();
+            }
+
+            for(int i = 0; i < getChildIndex(node); i++){
+                leftAtomContent = node.getParent().getChild(i).getText() + leftAtomContent;
+            }
+
+            if(instancesOfWithDuplicates(input, atomContent) == 0){
+                break;
+            }
+
+            node =  node.getParent();
+
+            atomContent = node.getText();
+            index = input.indexOf(atomContent) + leftAtomContent.length();
+
+        }
+
+        return index;
+    }
+
+    public static Map.Entry<Integer, Integer> getAtomOverlap(Atom atom1, Atom atom2){
+
+        HashMap<Integer, Integer> atomOneBounds = new HashMap<>();
+        HashMap<Integer, Integer> atomTwoBounds = new HashMap<>();
+
+        atom1.getContent().forEach((start, content) -> atomOneBounds.put(start, start + (content.length())) );
+        atom2.getContent().forEach((start, content) -> atomTwoBounds.put(start, start + (content.length())) );
+
+        //             (start1 < end2 && end1 > start2) || (start2 < end1 && end2 > start1)
+        Map.Entry<Integer, Integer> overlapBounds = atomOneBounds.entrySet().stream().filter(range1 -> atomTwoBounds.entrySet().stream()
+        .anyMatch(range2 -> (range1.getKey() < range2.getValue() && range1.getValue() > range2.getKey())
+        ||
+        ( range2.getKey() < range1.getValue() && range2.getValue() > range1.getKey())
+        ||
+        range1.getKey() == range2.getKey() && range1.getValue() == range2.getValue()))
+        .findFirst()
+        .orElse(null);
+
+        return overlapBounds;
+    }
+
+    public static void splitAtoms(ArrayList<Atom> atoms){
+        
+        for(int i = 0; i < atoms.size(); i++){
+
+            Atom atom = atoms.get(i);
+            // could speed up this loop
+            for(int j = i - 1; j >= 0; j--){
+
+                Atom precedingAtom = atoms.get(j);
+
+                Map.Entry<Integer, Integer> overlapRange = getAtomOverlap(atom, precedingAtom);
+
+                if(overlapRange != null){
+
+                    int start = overlapRange.getKey();
+                    int end = overlapRange.getValue();
+
+                    Map.Entry<Integer, String> portionToRemove = precedingAtom.getFloorEntry(start);
+
+                    int index = portionToRemove.getKey();                        
+                    String partition1 = portionToRemove.getValue();
+                    String partition2 = portionToRemove.getValue();
+
+                    partition1 = partition1.substring(0, start - index);
+                    partition2 = partition2.substring(end - index, partition2.length());
+                    
+                    precedingAtom.removeAtomPortion(index);
+
+                    if(!partition1.equals("")){precedingAtom.addContent(index, partition1);}
+                    if(!partition2.equals("")){precedingAtom.addContent(end, partition2);}
+                    
                 }
+            }
+        }
+    }
+    
+    public static int instancesOfWithDuplicates(String input, String substring){
 
-                for(int i = 0; i < getChildIndex(node); i++){
-    
-                    leftAtomContent = node.getParent().getChild(i).getText() + leftAtomContent;
-    
-                }
-    
-                if(instancesOfWithDuplicates(input, atomContent) == 0){
+        if(input.equals(substring)){
+            return 1;
+        }
+
+        int count = 0;
+
+        for(int i = 0; i < input.length() - (substring.length() - 1);i++){
+            if(input.substring(i, i + substring.length()).equals(substring)){
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    // method to get getChild() index for the parent of a given child 
+    public static int getChildIndex(ParseTree node){
+
+        ParseTree parent = node.getParent();
+
+        if(parent.getChildCount() == 1){
+            return 0;
+        }
+        int index = 0;
+        if(parent != null){  
+            for(int i = 0; i < parent.getChildCount(); i++){
+                if(parent.getChild(i) == node){
+
+                    index = i;
                     break;
                 }
-    
-                node =  node.getParent();
-    
-                atomContent = node.getText();
-                index = input.indexOf(atomContent) + leftAtomContent.length();
-    
             }
-    
-            return index;
         }
+        return index;
+    }
 
-        public static Map.Entry<Integer, Integer> getAtomOverlap(Atom atom1, Atom atom2){
-
-            HashMap<Integer, Integer> atomOneBounds = new HashMap<>();
-            HashMap<Integer, Integer> atomTwoBounds = new HashMap<>();
-
-            atom1.getContent().forEach((start, content) -> atomOneBounds.put(start, start + (content.length())) );
-            atom2.getContent().forEach((start, content) -> atomTwoBounds.put(start, start + (content.length())) );
-
-            //             (start1 < end2 && end1 > start2) || (start2 < end1 && end2 > start1)
-            Map.Entry<Integer, Integer> overlapBounds = atomOneBounds.entrySet().stream().filter(range1 -> atomTwoBounds.entrySet().stream()
-            .anyMatch(range2 -> (range1.getKey() < range2.getValue() && range1.getValue() > range2.getKey())
-            ||
-            ( range2.getKey() < range1.getValue() && range2.getValue() > range1.getKey())
-            ||
-            range1.getKey() == range2.getKey() && range1.getValue() == range2.getValue()))
-            .findFirst()
-            .orElse(null);
+    public static boolean isAtom(ParseTree node){
     
-            return overlapBounds;
-        }
+        List<String> atomTypes = Arrays.asList("DoubleBoundaryMatchersContext",
+        "EscapedToLiteralOutsideCharClassContext",
+        "QuoteContext",
+        "ZeroWidthAssertionsContext",
+        "InlineModifierContext",
+        "CaptureGroupContext",
+        "GroupContext",
+        "BoundaryMatcherStartContext",
+        "EscapedFromLiteralContext",
+        "CharacterClassContext",
+        "BackReferenceContext",
+        "WordBoundaryContext",
+        "NonWordBoundaryContext",
+        "InputStartContext",
+        "EndOfMatchContext",
+        "LetterContext",
+        "QuantifierContext",
+        "BoundaryMatcherEndContext",
+        "EndOfInputExceptFinalTerminator",
+        "OrContext"
+        );
 
-        public static void splitAtoms(ArrayList<Atom> atoms){
-            
-            for(int i = 0; i < atoms.size(); i++){
+        String nodeClassName = node.getClass().getSimpleName();
+        return atomTypes.stream().anyMatch(type -> nodeClassName.equals(type));
+    }
 
-                Atom atom = atoms.get(i);
-                // could speed up this loop
-                for(int j = i - 1; j >= 0; j--){
+    public static String getCleanClassName(String dirty){
 
-                    Atom precedingAtom = atoms.get(j);
-
-                    Map.Entry<Integer, Integer> overlapRange = getAtomOverlap(atom, precedingAtom);
-
-                    if(overlapRange != null){
-
-                        int start = overlapRange.getKey();
-                        int end = overlapRange.getValue();
-
-                        Map.Entry<Integer, String> portionToRemove = precedingAtom.getFloorEntry(start);
-
-
-                        int index = portionToRemove.getKey();                        
-                        String partition1 = portionToRemove.getValue();
-                        String partition2 = portionToRemove.getValue();
-
-                        partition1 = partition1.substring(0, start - index);
-                        partition2 = partition2.substring(end - index, partition2.length());
-                        
-                        precedingAtom.removeAtomPortion(index);
-
-                        if(!partition1.equals("")){precedingAtom.addContent(index, partition1);}
-                        if(!partition2.equals("")){precedingAtom.addContent(end, partition2);}
-                      
-                    }
-
-                }
-
-            }
-          
-        }
+        Map<String, String> cleanClassNames = Map.ofEntries(
+            entry("StartContext", "Start"),
+            entry("ExprContext", "Expression"),
+            entry("ExprHelperContext", "Expression"),
+            entry("CharacterClassContentContext", "Character Class Content"),
+            entry("CharacterClassContentHelperContext", "Character Class Content"),
+            entry("ConcatenationContext", "Concatenation"),
+            entry("EscapedToLiteralInsideCharClassContext", "Escape Sequence (inside character class)"),
+            entry("EscapedToLiteralOutsideCharClassContext", "Escape Sequence (outside character class)"),
+            entry("ZeroWidthAssertionsContext", "Zero Width Assertion"),
+            entry("CaptureGroupContext", "Capture Group"),
+            entry("GroupContext", "Group"),
+            entry("RangeContext", "Range"),
+            entry("PredefinedCharacterClassContext", "Predefined Character Class"),
+            entry("CharacterClassContext", "Character Class"),
+            entry("BackReferenceContext", "Back Reference"),
+            entry("BoundaryMatcherStartContext", "Boundary Matcher Start"),
+            entry("WordBoundaryContext", "Word Boundary"),
+            entry("NonWordBoundaryContext", "Non Word Boundary"),
+            entry("InputStartContext", "Input Start"),
+            entry("EndOfMatchContext", "End Of Match"),
+            entry("LetterContext", "Text"),
+            entry("QuantifierContext", "Quantifier"),
+            entry("DoubleBoundaryMatchersContext", "Double Boundary Matcher"),
+            entry("BoundaryMatcherEndContext", "Boundary Matcher End"),
+            entry("EndOfInputExceptFinalTerminatorContext", "End Of Input (except terminator)"),
+            entry("EndOfInputContext", "End Of Input"),
+            entry("OrContext", "Or"),
+            entry("EscapedFromLiteralContext", "Escape Sequence"),
+            entry("InlineModifierContext", "Inline Modifier"),
+            entry("NamedCaptureGroupContext", "Named Capture Group"),
+            entry("NonCaptureGroupContext", "Non Capture Group"),
+            entry("IndependentNonCapturingGroupContext", "Independent Non Capturing Group"),
+            entry("ZeroWidthPositiveLookAheadContext", "Zero Width Positive Look Ahead"),
+            entry("ZeroWidthNegativeLookAheadContext", "Zero Width Negative Look Ahead"),
+            entry("ZeroWidthPositiveLookBehindContext", "Zero Width Positive Look Behind"),
+            entry("ZeroWidthNegativeLookBehindContext", "Zero Width Negative Look Behind"),
+            entry("PosixContext", "POSIX"),
+            entry("POSIX_LETTERSContext", "POSIX LETTERS"),
+            entry("POSIX_ALPHANUMERICContext", "POSIX ALPHANUMERIC"),
+            entry("POSIX_LOWERCASEContext", "POSIX Lowercase"),
+            entry("POSIX_WHITESPACE_OR_GLYPHContext", "POSIX Whitespace or Glyph"),
+            entry("POSIX_CONTROL_CHARACTERSContext", "POSIX Control Characters"),
+            entry("POSIX_ALPHANUM_PUNCTUATIONContext", "POSIX Alphanumeric or Punctuation"),
+            entry("POSIX_DIGITSContext", "POSIX Digits"),
+            entry("POSIX_WHITESPACEContext", "POSIX Whitespace"),
+            entry("POSIX_SPACE_OR_TABContext", "POSIX Space or Tab"),
+            entry("POSIX_ASCIIContext", "POSIX ASCII"),
+            entry("POSIX_UPPERCASEContext", "POSIX Uppercase"),
+            entry("POSIX_X_DIGITContext", "POSIX HEX"),
+            entry("POSIX_PUNCTUATIONContext", "POSIX Punctuation"),
+            entry("JavalangCharacterClassContext", "java.lang.Character"),
+            entry("JAVALANG_CC_LOWERCASEContext", "java.lang.Character Lowercase"),
+            entry("JAVALANG_CC_WHITESPACEContext", "java.lang.Character Whitespace"),
+            entry("JAVALANG_CC_UPPERCASEContext", "java.lang.Character Uppercase"),
+            entry("JAVALANG_CC_MIRROREDContext", "java.lang.Character Mirrored"),
+            entry("UnicodeScriptClassContext", "Unicode Script Class"),
+            entry("NOT_UPPERCASEContext", "Not Uppercase"),
+            entry("IS_ALPHABETICContext", "Is Alphabetic"),
+            entry("CURRENCY_SYMBOLContext", "Currency Symbol"),
+            entry("UPPERCASEContext", "Is Uppercase"),
+            entry("LATINContext", "Is Latin"),
+            entry("NOT_GREEKContext", "Not Greek"),
+            entry("GREEKContext", "Is Greek"),
+            entry("Extra_letters_allowed_inside_CCContext", "Letter"),
+            entry("QuoteContext", "Quote")); 
     
-        public static int instancesOfWithDuplicates(String input, String substring){
-    
-            if(input.equals(substring)){
-                return 1;
-            }
-    
-            int count = 0;
-    
-            for(int i = 0; i < input.length() - (substring.length() - 1);i++){
-                if(input.substring(i, i + substring.length()).equals(substring)){
-                    count++;
-                }
-            }
+        String clean = cleanClassNames.get(dirty);
+        return (clean == null) ? dirty : clean;
+    }
 
-            return count;
-        }
+    public static String getCleanTerminalName(String dirty){
 
-        // method to get getChild() index for the parent of a given child 
-        public static int getChildIndex(ParseTree node){
-
-            ParseTree parent = node.getParent();
-
-            if(parent.getChildCount() == 1){
-                return 0;
-            }
-            int index = 0;
-
-            if(parent != null){  
-                for(int i = 0; i < parent.getChildCount(); i++){
-                    if(parent.getChild(i) == node){
-
-                        index = i;
-                        break;
-                    }
-                }
-            }
-
-            return index;
-        }
-
-        public static boolean isAtom(ParseTree node){
-        
-            List<String> atomTypes = Arrays.asList("DoubleBoundaryMatchersContext",
-            "EscapedToLiteralOutsideCharClassContext",
-            "QuoteContext",
-            "ZeroWidthAssertionsContext",
-            "InlineModifierContext",
-            "CaptureGroupContext",
-            "GroupContext",
-            "BoundaryMatcherStartContext",
-            "EscapedFromLiteralContext",
-            "CharacterClassContext",
-            "BackReferenceContext",
-            "WordBoundaryContext",
-            "NonWordBoundaryContext",
-            "InputStartContext",
-            "EndOfMatchContext",
-            "LetterContext",
-            "QuantifierContext",
-            "BoundaryMatcherEndContext",
-            "EndOfInputExceptFinalTerminator",
-            "OrContext"
-            );
-    
-            String nodeClassName = node.getClass().getSimpleName();
-            
-            return atomTypes.stream().anyMatch(type -> nodeClassName.equals(type));
-    
-        }
-
-        public static String getCleanClassName(String dirty){
-
-            Map<String, String> cleanClassNames = Map.ofEntries(
-                entry("StartContext", "Start"),
-                entry("ExprContext", "Expression"),
-                entry("ExprHelperContext", "Expression"),
-                entry("CharacterClassContentContext", "Character Class Content"),
-                entry("CharacterClassContentHelperContext", "Character Class Content"),
-                entry("ConcatenationContext", "Concatenation"),
-                entry("EscapedToLiteralInsideCharClassContext", "Escape Sequence (inside character class)"),
-                entry("EscapedToLiteralOutsideCharClassContext", "Escape Sequence (outside character class)"),
-                entry("ZeroWidthAssertionsContext", "Zero Width Assertion"),
-                entry("CaptureGroupContext", "Capture Group"),
-                entry("GroupContext", "Group"),
-                entry("RangeContext", "Range"),
-                entry("PredefinedCharacterClassContext", "Predefined Character Class"),
-                entry("CharacterClassContext", "Character Class"),
-                entry("BackReferenceContext", "Back Reference"),
-                entry("BoundaryMatcherStartContext", "Boundary Matcher Start"),
-                entry("WordBoundaryContext", "Word Boundary"),
-                entry("NonWordBoundaryContext", "Non Word Boundary"),
-                entry("InputStartContext", "Input Start"),
-                entry("EndOfMatchContext", "End Of Match"),
-                entry("LetterContext", "Text"),
-                entry("QuantifierContext", "Quantifier"),
-                entry("DoubleBoundaryMatchersContext", "Double Boundary Matcher"),
-                entry("BoundaryMatcherEndContext", "Boundary Matcher End"),
-                entry("EndOfInputExceptFinalTerminatorContext", "End Of Input (except terminator)"),
-                entry("EndOfInputContext", "End Of Input"),
-                entry("OrContext", "Or"),
-                entry("EscapedFromLiteralContext", "Escape Sequence"),
-                entry("InlineModifierContext", "Inline Modifier"),
-                entry("NamedCaptureGroupContext", "Named Capture Group"),
-                entry("NonCaptureGroupContext", "Non Capture Group"),
-                entry("IndependentNonCapturingGroupContext", "Independent Non Capturing Group"),
-                entry("ZeroWidthPositiveLookAheadContext", "Zero Width Positive Look Ahead"),
-                entry("ZeroWidthNegativeLookAheadContext", "Zero Width Negative Look Ahead"),
-                entry("ZeroWidthPositiveLookBehindContext", "Zero Width Positive Look Behind"),
-                entry("ZeroWidthNegativeLookBehindContext", "Zero Width Negative Look Behind"),
-                entry("PosixContext", "POSIX"),
-                entry("POSIX_LETTERSContext", "POSIX LETTERS"),
-                entry("POSIX_ALPHANUMERICContext", "POSIX ALPHANUMERIC"),
-                entry("POSIX_LOWERCASEContext", "POSIX Lowercase"),
-                entry("POSIX_WHITESPACE_OR_GLYPHContext", "POSIX Whitespace or Glyph"),
-                entry("POSIX_CONTROL_CHARACTERSContext", "POSIX Control Characters"),
-                entry("POSIX_ALPHANUM_PUNCTUATIONContext", "POSIX Alphanumeric or Punctuation"),
-                entry("POSIX_DIGITSContext", "POSIX Digits"),
-                entry("POSIX_WHITESPACEContext", "POSIX Whitespace"),
-                entry("POSIX_SPACE_OR_TABContext", "POSIX Space or Tab"),
-                entry("POSIX_ASCIIContext", "POSIX ASCII"),
-                entry("POSIX_UPPERCASEContext", "POSIX Uppercase"),
-                entry("POSIX_X_DIGITContext", "POSIX HEX"),
-                entry("POSIX_PUNCTUATIONContext", "POSIX Punctuation"),
-                entry("JavalangCharacterClassContext", "java.lang.Character"),
-                entry("JAVALANG_CC_LOWERCASEContext", "java.lang.Character Lowercase"),
-                entry("JAVALANG_CC_WHITESPACEContext", "java.lang.Character Whitespace"),
-                entry("JAVALANG_CC_UPPERCASEContext", "java.lang.Character Uppercase"),
-                entry("JAVALANG_CC_MIRROREDContext", "java.lang.Character Mirrored"),
-                entry("UnicodeScriptClassContext", "Unicode Script Class"),
-                entry("NOT_UPPERCASEContext", "Not Uppercase"),
-                entry("IS_ALPHABETICContext", "Is Alphabetic"),
-                entry("CURRENCY_SYMBOLContext", "Currency Symbol"),
-                entry("UPPERCASEContext", "Is Uppercase"),
-                entry("LATINContext", "Is Latin"),
-                entry("NOT_GREEKContext", "Not Greek"),
-                entry("GREEKContext", "Is Greek"),
-                entry("Extra_letters_allowed_inside_CCContext", "Letter"),
-                entry("QuoteContext", "Quote")
-            ); 
-        
-            String clean = cleanClassNames.get(dirty);
-            return (clean == null) ? dirty : clean;
-    
-        }
-
-        public static String getCleanTerminalName(String dirty){
-
-            Map<String, String> cleanTerminalNames = new HashMap<>();
-            cleanTerminalNames.put("WILDCARD", "Wildcard");
-            cleanTerminalNames.put("CARET", "Caret");
-            cleanTerminalNames.put("DIGIT", "Digit");
-            cleanTerminalNames.put("NON_DIGIT", "Non-Digit");
-            cleanTerminalNames.put("HORIZONTAL_WHITESPACE", "Horizontal Whitespace");
-            cleanTerminalNames.put("NON_HORIZONTAL_WHITESPACE", "Non-Horizontal Whitespace");
-            cleanTerminalNames.put("WHITESPACE", "Whitespace");
-            cleanTerminalNames.put("NON_WHITESPACE", "Non-Whitespace");
-            cleanTerminalNames.put("VERTICAL_WHITESPACE", "Vertical Whitespace");
-            cleanTerminalNames.put("NON_VERTICAL_WHITESPACE", "Non-Vertical Whitespace");
-            cleanTerminalNames.put("WORD", "Word");
-            cleanTerminalNames.put("NON_WORD", "Non-Word");
-            cleanTerminalNames.put("LEFT_QUOTE", "Left Quote");
-            cleanTerminalNames.put("RIGHT_QUOTE", "Right Quote");
-            cleanTerminalNames.put("LETTER_RANGE", "Letter Range");
-            cleanTerminalNames.put("NUMBER_RANGE", "Number Range");
-            cleanTerminalNames.put("DOUBLE_AMPERSAND", "Double Ampersand");
-            cleanTerminalNames.put("PIPE", "Pipe");
-            cleanTerminalNames.put("PLUS_ESCAPED", "Plus Escaped");
-            cleanTerminalNames.put("LBRACE_ESCAPED", "Left Brace Escaped");
-            cleanTerminalNames.put("PIPE_ESCAPED", "Pipe Escaped");
-            cleanTerminalNames.put("BACKSLASH_ESCAPED", "Backslash Escaped");
-            cleanTerminalNames.put("LPAREN_ESCAPED", "Left Parenthesis Escaped");
-            cleanTerminalNames.put("RPAREN_ESCAPED", "Right Parenthesis Escaped");
-            cleanTerminalNames.put("LBRACKET_ESCAPED", "Left Bracket Escaped");
-            cleanTerminalNames.put("RBRACKET_ESCAPED", "Right Bracket Escaped");
-            cleanTerminalNames.put("DOT_ESCAPED", "Dot Escaped");
-            cleanTerminalNames.put("CARET_ESCAPED", "Caret Escaped");
-            cleanTerminalNames.put("QMARK_ESCAPED", "Question Mark Escaped");
-            cleanTerminalNames.put("ASTERISK_ESCAPED", "Asterisk Escaped");
-            cleanTerminalNames.put("DOLLAR_SIGN_ESCAPED", "Dollar Sign Escaped");
-            cleanTerminalNames.put("HYPHEN_ESCAPED", "Hyphen Escaped");
-            cleanTerminalNames.put("N_OCCURRANCES", "N Occurrences");
-            cleanTerminalNames.put("MAX_QUANTIFIER", "Max Quantifier");
-            cleanTerminalNames.put("MIN_QUANTIFIER", "Min Quantifier");
-            cleanTerminalNames.put("RANGE_QUANTIFIER", "Range Quantifier");
-            cleanTerminalNames.put("PLUS", "Plus");
-            cleanTerminalNames.put("ASTERISK", "Asterisk");
-            cleanTerminalNames.put("QMARK", "Question Mark");
-            cleanTerminalNames.put("LBRACKET", "Left Bracket");
-            cleanTerminalNames.put("RBRACKET", "Right Bracket");
-            cleanTerminalNames.put("LPAREN", "Left Parenthesis");
-            cleanTerminalNames.put("RPAREN", "Right Parenthesis");
-            cleanTerminalNames.put("BACKSLASH", "Backslash");
-            cleanTerminalNames.put("OCTAL_1", "Octal 1");
-            cleanTerminalNames.put("OCTAL_2", "Octal 2");
-            cleanTerminalNames.put("OCTAL_3", "Octal 3");
-            cleanTerminalNames.put("HEXA_2", "Hexadecimal 2");
-            cleanTerminalNames.put("HEXA_4", "Hexadecimal 4");
-            cleanTerminalNames.put("HEXA_6", "Hexadecimal 6");
-            cleanTerminalNames.put("CARRIAGE_RETURN", "Carriage Return");
-            cleanTerminalNames.put("TAB", "Tab");
-            cleanTerminalNames.put("FORM_FEED", "Form Feed");
-            cleanTerminalNames.put("ALERT", "Alert");
-            cleanTerminalNames.put("ESC", "Escape");
-            cleanTerminalNames.put("POSITIVE_LA", "Positive Lookahead");
-            cleanTerminalNames.put("NEGATIVE_LA", "Negative Lookahead");
-            cleanTerminalNames.put("POSITIVE_LB", "Positive Lookbehind");
-            cleanTerminalNames.put("NEGATIVE_LB", "Negative Lookbehind");
-            cleanTerminalNames.put("DOLLAR_SIGN", "Dollar Sign");
-            cleanTerminalNames.put("WORD_BOUNDARY", "Word Boundary");
-            cleanTerminalNames.put("NON_WORD_BOUNDARY", "Non-Word Boundary");
-            cleanTerminalNames.put("INPUT_START", "Input Start");
-            cleanTerminalNames.put("END_OF_MATCH", "End of Match");
-            cleanTerminalNames.put("INPUT_END", "Input End");
-            cleanTerminalNames.put("INPUT_END_INC_NEWLINE", "Input End Including Newline");
-            cleanTerminalNames.put("LINEBREAK_MATCHER", "Linebreak Matcher");
-            cleanTerminalNames.put("LETTER", "Letter");
-            cleanTerminalNames.put("INLINEMODIFIER", "Inline Modifier");
-            cleanTerminalNames.put("LOCAL_INLINE_MODIFIER_TEMPLATE", "Local Inline Modifier Template");
-            cleanTerminalNames.put("N_TH_CAPTURE_GROUP", "Nth Capture Group");
-            cleanTerminalNames.put("NAMED_CAPTURE_GROUP_MATCH", "Named Capture Group Match");
-            cleanTerminalNames.put("NAMED_CAPTURE_GROUP_NAME", "Named Capture Group Name");             
-        
-            String clean = cleanTerminalNames.get(dirty);
-            return (clean == null) ? dirty : clean;
-    
-        }
-
+        Map<String, String> cleanTerminalNames =  Map.ofEntries(
+            entry("WILDCARD", "Wildcard"),
+            entry("CARET", "Caret"),
+            entry("DIGIT", "Digit"),
+            entry("NON_DIGIT", "Non-Digit"),
+            entry("HORIZONTAL_WHITESPACE", "Horizontal Whitespace"),
+            entry("NON_HORIZONTAL_WHITESPACE", "Non-Horizontal Whitespace"),
+            entry("WHITESPACE", "Whitespace"),
+            entry("NON_WHITESPACE", "Non-Whitespace"),
+            entry("VERTICAL_WHITESPACE", "Vertical Whitespace"),
+            entry("NON_VERTICAL_WHITESPACE", "Non-Vertical Whitespace"),
+            entry("WORD", "Word"),
+            entry("NON_WORD", "Non-Word"),
+            entry("LEFT_QUOTE", "Left Quote"),
+            entry("RIGHT_QUOTE", "Right Quote"),
+            entry("LETTER_RANGE", "Letter Range"),
+            entry("NUMBER_RANGE", "Number Range"),
+            entry("DOUBLE_AMPERSAND", "Double Ampersand"),
+            entry("PIPE", "Pipe"),
+            entry("PLUS_ESCAPED", "Plus Escaped"),
+            entry("LBRACE_ESCAPED", "Left Brace Escaped"),
+            entry("PIPE_ESCAPED", "Pipe Escaped"),
+            entry("BACKSLASH_ESCAPED", "Backslash Escaped"),
+            entry("LPAREN_ESCAPED", "Left Parenthesis Escaped"),
+            entry("RPAREN_ESCAPED", "Right Parenthesis Escaped"),
+            entry("LBRACKET_ESCAPED", "Left Bracket Escaped"),
+            entry("RBRACKET_ESCAPED", "Right Bracket Escaped"),
+            entry("DOT_ESCAPED", "Dot Escaped"),
+            entry("CARET_ESCAPED", "Caret Escaped"),
+            entry("QMARK_ESCAPED", "Question Mark Escaped"),
+            entry("ASTERISK_ESCAPED", "Asterisk Escaped"),
+            entry("DOLLAR_SIGN_ESCAPED", "Dollar Sign Escaped"),
+            entry("HYPHEN_ESCAPED", "Hyphen Escaped"),
+            entry("N_OCCURRANCES", "N Occurrences"),
+            entry("MAX_QUANTIFIER", "Max Quantifier"),
+            entry("MIN_QUANTIFIER", "Min Quantifier"),
+            entry("RANGE_QUANTIFIER", "Range Quantifier"),
+            entry("PLUS", "Plus"),
+            entry("ASTERISK", "Asterisk"),
+            entry("QMARK", "Question Mark"),
+            entry("LBRACKET", "Left Bracket"),
+            entry("RBRACKET", "Right Bracket"),
+            entry("LPAREN", "Left Parenthesis"),
+            entry("RPAREN", "Right Parenthesis"),
+            entry("BACKSLASH", "Backslash"),
+            entry("OCTAL_1", "Octal 1"),
+            entry("OCTAL_2", "Octal 2"),
+            entry("OCTAL_3", "Octal 3"),
+            entry("HEXA_2", "Hexadecimal 2"),
+            entry("HEXA_4", "Hexadecimal 4"),
+            entry("HEXA_6", "Hexadecimal 6"),
+            entry("CARRIAGE_RETURN", "Carriage Return"),
+            entry("TAB", "Tab"),
+            entry("FORM_FEED", "Form Feed"),
+            entry("ALERT", "Alert"),
+            entry("ESC", "Escape"),
+            entry("POSITIVE_LA", "Positive Lookahead"),
+            entry("NEGATIVE_LA", "Negative Lookahead"),
+            entry("POSITIVE_LB", "Positive Lookbehind"),
+            entry("NEGATIVE_LB", "Negative Lookbehind"),
+            entry("DOLLAR_SIGN", "Dollar Sign"),
+            entry("WORD_BOUNDARY", "Word Boundary"),
+            entry("NON_WORD_BOUNDARY", "Non-Word Boundary"),
+            entry("INPUT_START", "Input Start"),
+            entry("END_OF_MATCH", "End of Match"),
+            entry("INPUT_END", "Input End"),
+            entry("INPUT_END_INC_NEWLINE", "Input End Including Newline"),
+            entry("LINEBREAK_MATCHER", "Linebreak Matcher"),
+            entry("LETTER", "Letter"),
+            entry("INLINEMODIFIER", "Inline Modifier"),
+            entry("LOCAL_INLINE_MODIFIER_TEMPLATE", "Local Inline Modifier Template"),
+            entry("N_TH_CAPTURE_GROUP", "Nth Capture Group"),
+            entry("NAMED_CAPTURE_GROUP_MATCH", "Named Capture Group Match"),
+            entry("NAMED_CAPTURE_GROUP_NAME", "Named Capture Group Name")
+            );      
+        String clean = cleanTerminalNames.get(dirty);
+        return (clean == null) ? dirty : clean;
+    }
+}
  
 
 
@@ -694,8 +636,3 @@ public class RegexProcessor {
 
     //     return ret;
     //  }
-
-
-
-
-}
