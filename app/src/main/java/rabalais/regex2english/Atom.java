@@ -34,7 +34,6 @@ public class Atom {
         for(Integer index: content.keySet()){
             System.out.println(index + ")'" + getContentAsString() + "' " + term + " | Categories: " + atomTypes.toString());
         }
-
     }
     
     public int getIndex() { // index of first portion of the atom

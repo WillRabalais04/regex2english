@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +22,7 @@ import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.input.*;
 
 public class CLI {
-
+    
     private static Panel mainPanel;
     private static Panel topPanel;
     private static Panel inputPanel;
@@ -33,14 +34,24 @@ public class CLI {
     private static Button clearButton;
     private static Button guideButton;
     private static Button quitButton;
+    private static char mode = 'g';
+
+    private static ArrayList<TextBox> textboxes; // 0{input, display, optional atom mode : prev, curr, next, top}
+    private static ArrayList<Panel> panels;
+    private static ArrayList<Button> buttons;
 
     private static String guide;
 
     public static void main(String[] args) throws IOException {
         init();
     }
-    
+
     private static void init() throws IOException {
+
+        panels = new ArrayList<>();
+        textboxes = new ArrayList<>();
+        buttons = new ArrayList<>();
+
         Terminal terminal = new DefaultTerminalFactory().createTerminal();
         Screen screen = new TerminalScreen(terminal);
 
@@ -52,18 +63,65 @@ public class CLI {
 
         BasicWindow window = new BasicWindow();
         window.setHints(Arrays.asList(Window.Hint.CENTERED));
+        
 
+        createComponents();
+        addComponents();
+
+        displayText.setReadOnly(true);
+
+        sizeComponents(screen.getTerminalSize());
+
+        window.setComponent(mainPanel);
+
+        terminal.addResizeListener(new TerminalResizeListener() {
+            @Override
+            public void onResized(Terminal terminal, TerminalSize newSize) {
+                sizeComponents(newSize);
+                try {
+                    screen.refresh();
+                } catch (Exception e) {
+                    System.out.println("Terminal window resize failed!");
+                }
+            }
+        });
+        textGUI.addWindowAndWait(window);
+    }
+
+    private static void createComponents(){
+        createPanels();
+        createTextboxes();
+        createButtons();
+    }
+
+    private static void createPanels(){
         mainPanel = new Panel();
         topPanel = new Panel();
         bottomPanel = new Panel(new GridLayout(2));
         inputPanel = new Panel();
         buttonsPanel = new Panel();
 
+        panels.add(mainPanel);
+        panels.add(topPanel);
+        panels.add(bottomPanel);
+        panels.add(inputPanel);
+        panels.add(buttonsPanel);
+    }
+
+    private static void createTextboxes(){
+
+        switch (mode) {
+            case 'a':
+            case 'g':
+            case 't':
+                break;
+        } 
+        inputTextBox = new TextBox("-t ^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=shadowJar\\s).{8,16}$ ", TextBox.Style.MULTI_LINE);
         displayText = new TextBox();
         displayText.setCaretWarp(true);
-        displayText.setReadOnly​(true);
-        inputTextBox = new TextBox("-t ^(?=.*\\d\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=shadowJar\\s).{8,16}$ ", TextBox.Style.MULTI_LINE);
-
+    }
+    
+    private static void createButtons(){
         enterButton = new Button("Enter", () -> {
             String inputText = inputTextBox.getText();
             try {
@@ -82,6 +140,11 @@ public class CLI {
 
                         StringBuilder sb = new StringBuilder();
                         String line = bufferedReader.readLine();
+                        // if (line == null || line.length() < 2) {
+                        //     throw new RuntimeException("Empty output.");
+                        // }
+                        // mode = line.charAt(0);
+                        // line = line.substring(1,line.length());
                         while (line != null) {
                             sb.append(line);
                             sb.append(System.lineSeparator());
@@ -90,13 +153,23 @@ public class CLI {
                         fileReader.close();
                         bufferedReader.close();
                         process.destroy();
-
                         String content = sb.toString();
                         if (!content.equals("")) {
                             displayText.setText(content);
                         } else {
                             displayText.setText("Input formatted incorrectly: check the guide for details. ");
                         }
+                        // String content = sb.toString();
+                        // displayText.setText(content);
+
+                        // switch (mode) {
+                        //     case 'a':
+                        //     case 'g':
+                        //     case 't':
+                        //         break;
+                        //     default:
+                        //         displayText.setText(content);
+                        // } 
                     } else {
                         System.out.println("Invalid regex provided.");
                     }
@@ -120,9 +193,11 @@ public class CLI {
         quitButton = new Button("↳Quit", () -> {
             System.exit(0);
         });
+    }
+
+    private static void addComponents(){
 
         topPanel.addComponent(displayText);
-
         inputPanel.addComponent(inputTextBox);
 
         buttonsPanel.addComponent(enterButton);
@@ -135,26 +210,9 @@ public class CLI {
         mainPanel.addComponent(topPanel.withBorder(Borders.doubleLine("Regex2English")));
         mainPanel.addComponent(inputPanel.withBorder(Borders.doubleLine("Input")));
         mainPanel.addComponent(bottomPanel.withBorder(Borders.doubleLine()));
-
-        setSizeOfAllComponents(screen.getTerminalSize());
-
-        window.setComponent(mainPanel);
-
-        terminal.addResizeListener(new TerminalResizeListener() {
-            @Override
-            public void onResized(Terminal terminal, TerminalSize newSize) {
-                setSizeOfAllComponents(newSize);
-                try {
-                    screen.refresh();
-                } catch (Exception e) {
-                    System.out.println("Terminal window resize failed!");
-                }
-            }
-        });
-        textGUI.addWindowAndWait(window);
     }
 
-    private static void setSizeOfAllComponents(TerminalSize size) {
+    private static void sizeComponents(TerminalSize size) {
         //main panel:
         mainPanel.setPreferredSize(size);
         GridLayout mainPanelLayout = new GridLayout(1)
@@ -187,11 +245,28 @@ public class CLI {
 
         // top panel:
         topPanel.setPreferredSize(new TerminalSize(cols, rows));
-        displayText.setPreferredSize(new TerminalSize(cols, rows));
+
+        switch (mode) {
+            case 'a':
+            break;
+            case 'g':
+            case 't':
+                displayText.setPreferredSize(new TerminalSize(cols, rows));
+                break;
+        }
     }
 
     private static void clear() {
-        displayText.setText("");
+
+        switch (mode) {
+            case 'a':
+
+            break;
+            case 'g':
+            case 't':
+                displayText.setText("");
+                break;
+        }
         inputTextBox.setText("");
     }
 

@@ -155,6 +155,11 @@ public class RegexProcessor {
         return ret;
     }
 
+    public static String getAtomsListJson(ArrayList<Atom> atoms){
+        StringBuilder json = new StringBuilder();
+        
+    }
+
     public static ArrayList<Atom> setAtoms(String input){
         
             ArrayList<Atom> atoms = new ArrayList<Atom>();

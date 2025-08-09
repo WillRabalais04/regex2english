@@ -71,17 +71,19 @@ class CLI implements Runnable{
     public void run() {
         String out = "";
         processor.process(input); 
-
         // make it so just the key can be entered
         if(printKey){
-            out = keyNoANSI;
+            out += keyNoANSI;
         }
-        if(list){
+        else if(list){
             ArrayList<Atom> atoms =  processor.getAtoms(); 
             //    ArrayList<Atom> atoms =  processor.splitAtoms(processor.getAtoms());  get split atoms
             out += processor.getAtomsList(atoms);
         }
-        if(printTree || printTreeAsList || printDecoratedTree){
+        else if (breakUpByAtoms){
+            ArrayList<Atom> atoms =  processor.getAtoms(); 
+        }
+        else if(printTree || printTreeAsList || printDecoratedTree){
             SimpleTreeNode tree = processor.getParseTreeAsSimpleTreeNode(processor.getParseTree(), verboseMode);
             TreePrinter printer;
 
@@ -89,7 +91,6 @@ class CLI implements Runnable{
                 printer = new TraditionalTreePrinter();
                 out += printer.stringify(new BorderTreeNodeDecorator(tree));                
             }
-
             else if(printTreeAsList){
                 printer = new ListingTreePrinter();
                 out += printer.stringify(tree);  
@@ -98,7 +99,6 @@ class CLI implements Runnable{
             if(printDecoratedTree){
 
                 printer = new TraditionalTreePrinter();
-
                 out += printer.stringify(new ShadowTreeNodeDecorator(
                     BorderTreeNodeDecorator.builder()
                         .wideUnicode()

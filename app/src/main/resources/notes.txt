@@ -1,5 +1,12 @@
+Up to date TODOs:
+- add atom mode where you scroll between atoms
+    - setup referential atoms
+        - define categories ie. boundary matchers links to cc. etc..
+- add underline / highlighting system
+- configure manual
+- unit testing
+
 TODO: 
-- add a quit button to GUI
 - add error handling to GUI
 - add all boundary matchers to grammar (some were forgotten)
 - check all tokens are used in grammar rules
