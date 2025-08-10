@@ -1,4 +1,4 @@
-package rabalais.regex2english;
+package regex2english;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
@@ -129,9 +129,22 @@ public class Atom {
     public Map.Entry<Integer, String> getFloorEntry(int index){
         return content.floorEntry(index);
     }
-    public static class AtomComparator implements Comparator<rabalais.regex2english.Atom>{
+    public static class AtomComparator implements Comparator<regex2english.Atom>{
         public int compare(Atom atom1, Atom atom2){
             return Integer.compare(atom1.getIndex(), atom2.getIndex());
         }
     }
 }
+
+// public class ReferentialAtom extends Atom{
+
+//     private Atom ref1 = null;
+//     private Atom ref2 = null;
+
+//     public ReferentialAtom(ParseTree node, Atom ref1, Atom ref2){
+//         super(node);
+//         this.ref1 = ref1;
+//         this.ref2 = ref2;
+//     }
+
+// }

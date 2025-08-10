@@ -6,8 +6,8 @@
             "name": "Debug ANTLR4 grammar",
             "type": "antlr-debug",
             "request": "launch",
-            "input": "app/src/main/resources/input.txt",
-            "grammar": "app/src/main/antlr/regex2english.g4",
+            "input": "src/main/resources/input.txt",
+            "grammar": "src/main/antlr/regex2english.g4",
             "startRule": "start",
             "printParseTree": true,
             "visualParseTree": true
