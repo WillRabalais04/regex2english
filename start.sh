@@ -1,10 +1,22 @@
 #!/bin/bash
 printf "\033]0;Regex2English\007"
 
+read -r ROWS COLS < <(stty size) > /dev/null
+
+if [ "$ROWS" -lt "20" ] || [ "$COLS" -lt "32" ]; then
+    if [ "$TERM" == "xterm-256color" ]; then
+        resize -s 20 32 > /dev/null
+        stty rows 20
+        stty cols 32
+    elif [ "$TERM" == "other term" ]; then
+        echo "Too small"
+    fi
+fi
+
 VERBOSE=false
 if [[ "$1" == "-v" || "$1" == "--verbose" ]]; then
     VERBOSE=true
-    shift # remove the verbose flag from arguments passed to the app
+    shift 
 fi
 
 log() {
@@ -55,7 +67,6 @@ if [ -f "$GRAMMAR_FILE" ] && { [ ! -d "$OUTPUT_DIR" ] || [ "$GRAMMAR_FILE" -nt "
     fi
     
     rm -rf "src/main/antlr/.antlr"
-    rm -rf ".antlr"
 fi
 
 CLASSPATH=".:src/main/java:generated"
